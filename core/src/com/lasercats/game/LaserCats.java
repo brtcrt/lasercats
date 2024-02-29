@@ -29,8 +29,8 @@ public class LaserCats extends ApplicationAdapter {
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("1.png");
-		whiteCat =  new Texture("WhiteCat.png");
+		img = new Texture(Gdx.files.internal("1.png"));
+		whiteCat =  new Texture(Gdx.files.internal("WhiteCat.png"));
 		TextureRegion[][] tmp = TextureRegion.split(whiteCat, 32, 32);
 		TextureRegion[] idleFrames = new TextureRegion[2];
 		TextureRegion[] walkFrames = new TextureRegion[2];
