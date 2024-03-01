@@ -1,64 +1,46 @@
 package com.lasercats.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
 
 
 public class LaserCats extends ApplicationAdapter {
 	private SpriteBatch batch;
-	private Texture catTexture;
 	private OrthographicCamera camera;
-	private Texture catAnimationSheet;
-	private Player cat;
-
+	private ArrayList<GameObject> gameObjects;
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		catTexture = new Texture(Gdx.files.internal("Cat.png"));
-		catAnimationSheet =  new Texture(Gdx.files.internal("CatAnimationSheet.png"));
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 32, 32, catTexture, catAnimationSheet);
+		Player cat = new Player(32, 32, 32, 32);
+		gameObjects = new ArrayList<>();
+		gameObjects.add(cat);
 	}
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 1, 1, 1);
-
-		camera.update();
-
-
-		// TODO This if chain is dumb change this ~brtcrt
-		cat.velocity.x = 0;
-		cat.velocity.y = 0;
-		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			cat.direction.x = 1;
-			cat.velocity.x = 1;
-		} if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			cat.direction.x = -1;
-			cat.velocity.x = -1;
-		} if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			cat.velocity.y = 1;
-		} if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			cat.velocity.y = -1;
+		for (GameObject object : gameObjects)
+		{
+			object.process();
 		}
-		cat.velocity.nor();
-		cat.move();
-		Sprite catSprite = cat.getSprite();
+
+		ScreenUtils.clear(1, 1, 1, 1);
+		camera.update();
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+		for (GameObject object : gameObjects)
+		{
+			object.render(batch);
+		}
 		// TODO make the height and width dynamic as well
-		batch.draw(catSprite, cat.x, cat.y, 128, 128); 
 		batch.end();
 
 	}
@@ -66,8 +48,10 @@ public class LaserCats extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
+		for (GameObject object : gameObjects)
+		{
+			object.destroy();
+		}
 		batch.dispose();
-		catTexture.dispose();
-		catAnimationSheet.dispose();
 	}
 }
