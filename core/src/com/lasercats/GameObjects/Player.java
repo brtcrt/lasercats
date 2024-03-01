@@ -15,6 +15,7 @@ import java.util.Scanner;
 
 public class Player extends Empty implements  GameObject{
 
+    static int count = 0;
     private  Texture animationSheet;
     private Sprite sprite;
     private Animation<TextureRegion> idleAnimation;
@@ -27,6 +28,8 @@ public class Player extends Empty implements  GameObject{
 
     public Vector2 velocity;
     public Vector2 direction;
+
+    public int[] controlScheme;
 
 
 
@@ -51,6 +54,15 @@ public class Player extends Empty implements  GameObject{
         velocity = new Vector2();
         direction = new Vector2();
         stateTime = 0;
+
+        controlScheme = new int[4];
+        if (count % 2 == 0)
+        {
+            controlScheme = new int[]{Input.Keys.D, Input.Keys.A, Input.Keys.W, Input.Keys.S};
+        } else {
+            controlScheme = new int[]{Input.Keys.L, Input.Keys.J, Input.Keys.I, Input.Keys.K};
+        }
+        count ++;
     }
 
     public void process()
@@ -58,15 +70,15 @@ public class Player extends Empty implements  GameObject{
         // Movement
         velocity.x = 0;
         velocity.y = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyPressed(controlScheme[0])) {
             direction.x = 1;
             velocity.x = 1;
-        } if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+        } if (Gdx.input.isKeyPressed(controlScheme[1])) {
             direction.x = -1;
             velocity.x = -1;
-        } if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+        } if (Gdx.input.isKeyPressed(controlScheme[2])) {
             velocity.y = 1;
-        } if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+        } if (Gdx.input.isKeyPressed(controlScheme[3])) {
             velocity.y = -1;
         }
         velocity.nor();

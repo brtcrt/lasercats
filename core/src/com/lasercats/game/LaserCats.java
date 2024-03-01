@@ -32,7 +32,6 @@ public class LaserCats extends ApplicationAdapter {
 		{
 			object.process();
 		}
-		gameObjects.get(0).setIdentifiers(gameObjects.get(1).getIdentifiers());
 
 		ScreenUtils.clear(1, 1, 1, 1);
 		camera.update();
