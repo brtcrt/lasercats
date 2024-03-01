@@ -108,7 +108,7 @@ public class Player extends Empty {
     {
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
-        walking = velocity.len() > 0;
+        walking = !velocity.isZero();
     }
 
 }
