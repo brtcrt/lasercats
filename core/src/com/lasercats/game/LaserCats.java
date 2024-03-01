@@ -57,15 +57,21 @@ public class LaserCats extends ApplicationAdapter {
 
 
 		// TODO This if chain is dumb change this ~brtcrt
+		cat.velocity.x = 0;
+		cat.velocity.y = 0;
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			cat.move(Input.Keys.D);
+			cat.direction.x = 1;
+			cat.velocity.x = 1;
 		} if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			cat.move(Input.Keys.A);
+			cat.direction.x = -1;
+			cat.velocity.x = -1;
 		} if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			cat.move(Input.Keys.W);
+			cat.velocity.y = 1;
 		} if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			cat.move(Input.Keys.S);
-		} 
+			cat.velocity.y = -1;
+		}
+		cat.velocity.nor();
+		cat.move();
 		Sprite catSprite = cat.getSprite();
 
 		batch.setProjectionMatrix(camera.combined);
@@ -73,7 +79,7 @@ public class LaserCats extends ApplicationAdapter {
 		batch.draw(catSprite, cat.x, cat.y, 128, 128);
 		batch.end();
 
-		cat.move(-1);
+//		cat.move(-1);
 	}
 
 	

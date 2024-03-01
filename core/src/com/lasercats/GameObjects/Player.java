@@ -1,7 +1,6 @@
 package com.lasercats.GameObjects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -16,6 +15,8 @@ public class Player extends Empty {
 
 
     private float stateTime;
+
+    public Vector2 velocity;
 
     public Vector2 direction;
 
@@ -44,6 +45,7 @@ public class Player extends Empty {
 
         this.stateTime = 0f;
 
+        this.velocity = new Vector2();
         this.direction = new Vector2();
 
         this.walkSpeed = 100f;
@@ -70,36 +72,43 @@ public class Player extends Empty {
 
     }
 
-    public void move(int key) {
-        switch (key) {
-            case Input.Keys.D:
-                x += walkSpeed * Gdx.graphics.getDeltaTime();
-                direction.x = 1;
-                walking = true; 
-                break;
+//    public void move(int key) {
+//        switch (key) {
+//            case Input.Keys.D:
+//                x += walkSpeed * Gdx.graphics.getDeltaTime();
+//                direction.x = 1;
+//                walking = true;
+//                break;
+//
+//            case Input.Keys.A:
+//                x -= walkSpeed * Gdx.graphics.getDeltaTime();
+//                direction.x = -1;
+//                walking = true;
+//                break;
+//
+//            case Input.Keys.W:
+//                y += walkSpeed * Gdx.graphics.getDeltaTime();
+//                direction.y = +1;
+//                walking = true;
+//                break;
+//
+//            case Input.Keys.S:
+//                y -= walkSpeed * Gdx.graphics.getDeltaTime();
+//                direction.y = -1;
+//                walking = true;
+//                break;
+//
+//            default:
+//                walking = false;
+//                break;
+//        }
+//    }
 
-            case Input.Keys.A:
-                x -= walkSpeed * Gdx.graphics.getDeltaTime();
-                direction.x = -1;
-                walking = true;
-                break;
-
-            case Input.Keys.W:
-                y += walkSpeed * Gdx.graphics.getDeltaTime();
-                direction.y = +1;
-                walking = true;
-                break;
-
-            case Input.Keys.S:
-                y -= walkSpeed * Gdx.graphics.getDeltaTime();
-                direction.y = -1;
-                walking = true; 
-                break;
-
-            default:
-                walking = false;
-                break;
-        }
+    public void move()
+    {
+        x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
+        y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
+        walking = velocity.len() > 0;
     }
 
 }
