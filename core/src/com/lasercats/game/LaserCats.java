@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.lasercats.GameObjects.Player;
 import com.badlogic.gdx.math.Rectangle;
 
 
@@ -25,33 +26,37 @@ public class LaserCats extends ApplicationAdapter {
 	private boolean walking;
 	private int direction;
 	boolean changedDirection;
+	private Player player;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		img = new Texture(Gdx.files.internal("1.png"));
 		whiteCat =  new Texture(Gdx.files.internal("WhiteCat.png"));
-		TextureRegion[][] tmp = TextureRegion.split(whiteCat, 32, 32);
-		TextureRegion[] idleFrames = new TextureRegion[2];
-		TextureRegion[] walkFrames = new TextureRegion[2];
-		walkFrames[0] = tmp[1][0];
-		walkFrames[1] = tmp[1][1];
 
-		idleFrames[0] = tmp[0][0];
-		idleFrames[1] = tmp[0][1];
+		// TextureRegion[][] tmp = TextureRegion.split(whiteCat, 32, 32);
+		// TextureRegion[] idleFrames = new TextureRegion[2];
+		// TextureRegion[] walkFrames = new TextureRegion[2];
+		// walkFrames[0] = tmp[1][0];
+		// walkFrames[1] = tmp[1][1];
 
-		idleCat = new Animation<TextureRegion>(0.14f, idleFrames);
-		walkCat = new Animation<TextureRegion>(0.14f, walkFrames);
+		// idleFrames[0] = tmp[0][0];
+		// idleFrames[1] = tmp[0][1];
 
-		cat = new Rectangle();
-		cat.x = 32;
-		cat.y = 32;
+		// idleCat = new Animation<TextureRegion>(0.14f, idleFrames);
+		// walkCat = new Animation<TextureRegion>(0.14f, walkFrames);
+
+		// cat = new Rectangle();
+		// cat.x = 32;
+		// cat.y = 32;
+		// cat.width = 128;
+		// cat.height = 128;
 		camera = new OrthographicCamera();
-		camera.setToOrtho(false, 256, 256);
-
-		stateTime = 0f;
-		walking = false;
-		direction = -1;
+		camera.setToOrtho(false, 1024, 720);
+		// stateTime = 0f;
+		// walking = false;
+		// direction = -1;
+		this.player = new Player(32, 32, 32, 32, img, whiteCat);
 	}
 
 	@Override
@@ -61,49 +66,26 @@ public class LaserCats extends ApplicationAdapter {
 		camera.update();
 
 
+		// TODO This if chain is dumb change this ~brtcrt
+		// also doesn't work for multiple inputs I'm dumb whatever
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			cat.x += 50 * Gdx.graphics.getDeltaTime();
-			direction = 1;
-			walking = true;
-		}
-
-		if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			cat.x -= 50 * Gdx.graphics.getDeltaTime();
-			direction = -1;
-			walking = true;
-		}
-
-		if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			cat.y += 50 * Gdx.graphics.getDeltaTime();
-			walking = true;
-		}
-
-		if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			cat.y -= 50 * Gdx.graphics.getDeltaTime();
-			walking = true;
-		}
-
-
-		stateTime += Gdx.graphics.getDeltaTime();
-		TextureRegion currFrame;
-		if (walking) {
-			currFrame = walkCat.getKeyFrame(stateTime, true);
-			
+			player.move(Input.Keys.D);
+		} else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+			player.move(Input.Keys.A);
+		} else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+			player.move(Input.Keys.W);
+		} else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+			player.move(Input.Keys.S);
 		} else {
-			currFrame = idleCat.getKeyFrame(stateTime, true);
+			player.move(-1);
 		}
 
-		Sprite catSprite = new Sprite(currFrame);
-		if(direction == 1) {
-			catSprite.flip(true, false);
-			changedDirection = false;
-		}
+		Sprite catSprite = player.getSprite();
+
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(catSprite, cat.x, cat.y);
+		batch.draw(catSprite, player.x, player.y);
 		batch.end();
-
-		walking = false;
 
 	}
 	
