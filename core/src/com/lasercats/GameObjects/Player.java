@@ -11,12 +11,11 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Player extends Empty implements  GameObject{
 
+    private  Texture animationSheet;
     private Sprite sprite;
-
-    Texture animationSheet;
-
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> walkAnimation;
+    private Animation<TextureRegion> currentAnimation;
 
     private final float walkSpeed = 150f;
     private final float animationPeriod = 0.14f;
@@ -24,8 +23,6 @@ public class Player extends Empty implements  GameObject{
 
     public Vector2 velocity;
     public Vector2 direction;
-    public boolean walking;
-
 
 
 
@@ -45,6 +42,7 @@ public class Player extends Empty implements  GameObject{
 
         idleAnimation = new Animation<TextureRegion>(animationPeriod, idleFrames);
         walkAnimation = new Animation<TextureRegion>(animationPeriod, walkFrames);
+        currentAnimation = idleAnimation;
 
         velocity = new Vector2();
         direction = new Vector2();
@@ -72,51 +70,39 @@ public class Player extends Empty implements  GameObject{
 
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
+
+        if (is_walking()) {
+            currentAnimation = walkAnimation;
+        } else {
+            currentAnimation = idleAnimation;
+        }
+        sprite = new Sprite(currentAnimation.getKeyFrame(stateTime, true));
+
+        if(direction.x > 0) {
+            sprite.flip(true, false);
+        }
     }
 
     public void render(SpriteBatch batch)
     {
-        sprite = getSprite();
         batch.draw(sprite, x, y, 128, 128);
-    }
-
-    public Sprite getSprite() {
-        
-		TextureRegion currFrame;
-		if (walking) {
-			currFrame = this.walkAnimation.getKeyFrame(stateTime, true);
-			
-		} else {
-			currFrame = this.idleAnimation.getKeyFrame(stateTime, true);
-		}
-
-        Sprite playerSprite = new Sprite(currFrame);
-
-        if(direction.x > 0) {
-			playerSprite.flip(true, false);
-		}        
-
-        return playerSprite;
-
     }
 
     public void move()
     {
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
-        walking = !velocity.isZero();
     }
 
-    public void move(Vector2 v) {
-        if (v.isZero()) {
-            this.walking = false;
-        } else {
-            this.walking = true;
-            this.x += v.x * this.walkSpeed;
-            this.y += v.y * this.walkSpeed;
-            this.direction.x = v.x < 0 ? -1 : 1;
-            this.direction.y = v.y < 0 ? -1 : 1;
-        }
+    public boolean is_walking()
+    {
+        return !velocity.isZero();
     }
+
+    public void dispose()
+    {
+        animationSheet.dispose();
+    }
+
 
 }
