@@ -48,7 +48,7 @@ public class Player extends Empty {
         this.velocity = new Vector2();
         this.direction = new Vector2();
 
-        this.walkSpeed = 5f;
+        this.walkSpeed = 150f;
     }
 
     public Sprite getSprite() {
