@@ -17,7 +17,7 @@ public class Player extends Empty {
 
     private float stateTime;
 
-    public int direction;
+    public Vector2 direction;
 
     public boolean walking;
 
@@ -44,7 +44,7 @@ public class Player extends Empty {
 
         this.stateTime = 0f;
 
-        this.direction = -1;
+        this.direction = new Vector2();
 
         this.walkSpeed = 5f;
     }
@@ -62,7 +62,7 @@ public class Player extends Empty {
 
         Sprite playerSprite = new Sprite(currFrame);
 
-        if(direction == 1) {
+        if(direction.x > 0) {
 			playerSprite.flip(true, false);
 		}        
 
@@ -74,23 +74,25 @@ public class Player extends Empty {
         switch (key) {
             case Input.Keys.D:
                 x += walkSpeed * Gdx.graphics.getDeltaTime();
-                direction = 1;
+                direction.x = 1;
                 walking = true; 
                 break;
 
             case Input.Keys.A:
                 x -= walkSpeed * Gdx.graphics.getDeltaTime();
-                direction = -1;
-                walking = true; 
+                direction.x = -1;
+                walking = true;
                 break;
 
             case Input.Keys.W:
                 y += walkSpeed * Gdx.graphics.getDeltaTime();
-                walking = true; 
+                direction.y = +1;
+                walking = true;
                 break;
 
             case Input.Keys.S:
                 y -= walkSpeed * Gdx.graphics.getDeltaTime();
+                direction.y = -1;
                 walking = true; 
                 break;
 
