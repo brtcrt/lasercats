@@ -1,6 +1,8 @@
 package com.lasercats.GameObjects;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 public interface GameObject {
     public void process();
-    public void render();
+    public void render(SpriteBatch batch);
 }

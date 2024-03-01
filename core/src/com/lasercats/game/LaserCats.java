@@ -15,19 +15,15 @@ import com.badlogic.gdx.math.Vector2;
 
 public class LaserCats extends ApplicationAdapter {
 	private SpriteBatch batch;
-	private Texture catTexture;
 	private OrthographicCamera camera;
-	private Texture catAnimationSheet;
 	private Player cat;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		catTexture = new Texture(Gdx.files.internal("Cat.png"));
-		catAnimationSheet =  new Texture(Gdx.files.internal("CatAnimationSheet.png"));
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 32, 32, catTexture, catAnimationSheet);
+		this.cat = new Player(32, 32, 32, 32);
 	}
 
 	@Override
@@ -35,16 +31,13 @@ public class LaserCats extends ApplicationAdapter {
 		ScreenUtils.clear(1, 1, 1, 1);
 
 		camera.update();
-
-
-		// TODO This if chain is dumb change this ~brtcrt
 		cat.process();
-		Sprite catSprite = cat.getSprite();
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
 		// TODO make the height and width dynamic as well
-		batch.draw(catSprite, cat.x, cat.y, 128, 128); 
+//		batch.draw(catSprite, cat.x, cat.y, 128, 128);
+		cat.render(batch);
 		batch.end();
 
 	}
@@ -53,7 +46,5 @@ public class LaserCats extends ApplicationAdapter {
 	@Override
 	public void dispose () {
 		batch.dispose();
-		catTexture.dispose();
-		catAnimationSheet.dispose();
 	}
 }

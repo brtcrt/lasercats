@@ -3,82 +3,85 @@ package com.lasercats.GameObjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 
 public class Player extends Empty implements  GameObject{
-    private Texture playerTexture;
-    private Texture playerAnimations;
+
+    private Sprite sprite;
+
+    Texture animationSheet;
+
     private Animation<TextureRegion> idleAnimation;
     private Animation<TextureRegion> walkAnimation;
 
-
+    private final float walkSpeed = 150f;
+    private final float animationPeriod = 0.14f;
     private float stateTime;
 
     public Vector2 velocity;
-
     public Vector2 direction;
-
     public boolean walking;
 
-    private float walkSpeed;
 
 
-    public Player (float x, float y, float width, float height, Texture playerTexture, Texture playerAnimations) {
+
+    public Player (float x, float y, float width, float height) {
         super(x, y, width, height);
-        this.playerTexture = playerTexture;
-        this.playerAnimations = playerAnimations;
-        this.playerTexture = playerTexture;
-        TextureRegion[][] tmp = TextureRegion.split(playerAnimations, (int)width, (int)height);
-		TextureRegion[] idleFrames = new TextureRegion[2];
-		TextureRegion[] walkFrames = new TextureRegion[2];
-        
+        animationSheet = new Texture(Gdx.files.internal("CatAnimationSheet.png"));
+
+        TextureRegion[][] tmp = TextureRegion.split(animationSheet, (int) width, (int) height);
+        TextureRegion[] idleFrames = new TextureRegion[2];
+        TextureRegion[] walkFrames = new TextureRegion[2];
+
         walkFrames[0] = tmp[1][0];
-		walkFrames[1] = tmp[1][1];
+        walkFrames[1] = tmp[1][1];
 
-		idleFrames[0] = tmp[0][0];
-		idleFrames[1] = tmp[0][1];
+        idleFrames[0] = tmp[0][0];
+        idleFrames[1] = tmp[0][1];
 
-		this.idleAnimation = new Animation<TextureRegion>(0.14f, idleFrames);
-		this.walkAnimation = new Animation<TextureRegion>(0.14f, walkFrames);
+        idleAnimation = new Animation<TextureRegion>(animationPeriod, idleFrames);
+        walkAnimation = new Animation<TextureRegion>(animationPeriod, walkFrames);
 
-        this.stateTime = 0f;
-
-        this.velocity = new Vector2();
-        this.direction = new Vector2();
-
-        this.walkSpeed = 150f;
+        velocity = new Vector2();
+        direction = new Vector2();
+        stateTime = 0;
     }
 
     public void process()
     {
+        // Movement
         velocity.x = 0;
         velocity.y = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.D)) {
             direction.x = 1;
             velocity.x = 1;
         } if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-        direction.x = -1;
-        velocity.x = -1;
-    } if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-        velocity.y = 1;
-    } if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-        velocity.y = -1;
-    }
+            direction.x = -1;
+            velocity.x = -1;
+        } if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+            velocity.y = 1;
+        } if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+            velocity.y = -1;
+        }
         velocity.nor();
         move();
+
+        // Animation
+        stateTime += Gdx.graphics.getDeltaTime();
     }
 
-    public void render()
+    public void render(SpriteBatch batch)
     {
-        
+        sprite = getSprite();
+        batch.draw(sprite, x, y, 128, 128);
     }
 
     public Sprite getSprite() {
         
-		this.stateTime += Gdx.graphics.getDeltaTime();
 		TextureRegion currFrame;
 		if (walking) {
 			currFrame = this.walkAnimation.getKeyFrame(stateTime, true);
