@@ -109,6 +109,8 @@ public class Player extends Empty {
             this.walking = true;
             this.x += v.x * this.walkSpeed;
             this.y += v.y * this.walkSpeed;
+            this.direction.x = v.x < 0 ? -1 : 1;
+            this.direction.y = v.y < 0 ? -1 : 1;
         }
     }
 
