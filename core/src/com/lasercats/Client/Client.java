@@ -1,2 +1,103 @@
-package com.lasercats.Client;public class Client {
+package com.lasercats.Client;
+
+import com.badlogic.gdx.Gdx;
+
+import com.lasercats.GameObjects.Player;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+public class Client {
+    private final String uri;
+    private Socket socket;
+    private Player otherPlayer;
+    public JSONObject otherPlayerData;
+    private final String roomName;
+
+    public Client (Player otherPlayer) {
+        this.uri = "http://localhost:8080/";
+        this.roomName = "cat";
+        this.connectSocket();
+        this.configSocketEvents();
+        this.otherPlayer = otherPlayer;
+    }
+
+    public void sendUpdate(JSONObject data) {
+        try {
+            data.put("roomName", this.roomName);
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+        this.socket.emit("updateFromPlayer", data);
+    }
+
+    public void close() {
+        this.socket.close();
+    }
+    private void connectSocket() {
+        try {
+            this.socket = IO.socket(uri);
+            socket.connect();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
+    private void configSocketEvents() {
+        this.socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONObject data = new JSONObject();
+                try {
+                    data.put("roomName", roomName);
+                } catch (JSONException e) {
+                    System.out.println(e);
+                }
+                socket.emit("newRoom", data);
+                Gdx.app.log("SocketIO", "Connected");
+            }
+        }).on("socketID", new Emitter.Listener() {
+            // currently not used
+            @Override
+            public void call(Object... objects) {
+                JSONObject data = (JSONObject) objects[0];
+                String id = "";
+                try {
+                    id = data.getString("id");
+                } catch (JSONException e) {
+                    System.out.println(e);
+                }
+                Gdx.app.log("SocketID", id);
+            }
+        }).on("newPlayer", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                JSONObject data = (JSONObject) objects[0];
+                String id = "";
+                try {
+                    id = data.getString("id");
+                } catch (JSONException e) {
+                    System.out.println(e);
+                }
+                Gdx.app.log("SocketID", "New player id: " + id);
+            }
+        }).on("updateFromServer", new Emitter.Listener() {
+            @Override
+            public void call(Object... objects) {
+                otherPlayerData = (JSONObject) objects[0];
+                try {
+                    float x = (float) otherPlayerData.getDouble("x");
+                    float y = (float) otherPlayerData.getDouble("y");
+                    otherPlayer.x = x;
+                    otherPlayer.y = y;
+                } catch (JSONException e) {
+                    System.out.println(e);
+                }
+
+            }
+        });
+    }
 }
