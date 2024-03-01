@@ -8,6 +8,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonValue;
+
+import java.util.Scanner;
 
 public class Player extends Empty implements  GameObject{
 
@@ -92,6 +96,29 @@ public class Player extends Empty implements  GameObject{
     {
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
+    }
+
+    public String getIdentifiers()
+    {
+        String s = "";
+        s += direction.x;
+        s += ",";
+        s += direction.y;
+        s += ",";
+        s += velocity.x;
+        s += ",";
+        s += velocity.y;
+        return s;
+    }
+
+    public void setIdentifiers(String identifiers)
+    {
+        Scanner scanner = new Scanner(identifiers);
+        scanner.useDelimiter(",");
+        direction.x = scanner.nextFloat();
+        direction.y = scanner.nextFloat();
+        velocity.x = scanner.nextFloat();
+        velocity.y = scanner.nextFloat();
     }
 
     public boolean is_walking()

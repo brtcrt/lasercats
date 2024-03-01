@@ -20,8 +20,10 @@ public class LaserCats extends ApplicationAdapter {
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
 		Player cat = new Player(32, 32, 32, 32);
+		Player cat2 = new Player(100, 100, 32, 32);
 		gameObjects = new ArrayList<>();
 		gameObjects.add(cat);
+		gameObjects.add(cat2);
 	}
 
 	@Override
@@ -30,6 +32,7 @@ public class LaserCats extends ApplicationAdapter {
 		{
 			object.process();
 		}
+		gameObjects.get(0).setIdentifiers(gameObjects.get(1).getIdentifiers());
 
 		ScreenUtils.clear(1, 1, 1, 1);
 		camera.update();
