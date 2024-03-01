@@ -48,7 +48,7 @@ public class Player extends Empty {
         this.velocity = new Vector2();
         this.direction = new Vector2();
 
-        this.walkSpeed = 100f;
+        this.walkSpeed = 5f;
     }
 
     public Sprite getSprite() {
@@ -109,6 +109,18 @@ public class Player extends Empty {
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
         walking = !velocity.isZero();
+    }
+
+    public void move(Vector2 v) {
+        if (v.isZero()) {
+            this.walking = false;
+        } else {
+            this.walking = true;
+            this.x += v.x * this.walkSpeed;
+            this.y += v.y * this.walkSpeed;
+            this.direction.x = v.x < 0 ? -1 : 1;
+            this.direction.y = v.y < 0 ? -1 : 1;
+        }
     }
 
 }
