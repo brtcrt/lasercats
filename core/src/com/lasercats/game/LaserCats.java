@@ -25,29 +25,8 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		catTexture = new Texture(Gdx.files.internal("Cat.png"));
 		catAnimationSheet =  new Texture(Gdx.files.internal("CatAnimationSheet.png"));
-
-		// TextureRegion[][] tmp = TextureRegion.split(whiteCat, 32, 32);
-		// TextureRegion[] idleFrames = new TextureRegion[2];
-		// TextureRegion[] walkFrames = new TextureRegion[2];
-		// walkFrames[0] = tmp[1][0];
-		// walkFrames[1] = tmp[1][1];
-
-		// idleFrames[0] = tmp[0][0];
-		// idleFrames[1] = tmp[0][1];
-
-		// idleCat = new Animation<TextureRegion>(0.14f, idleFrames);
-		// walkCat = new Animation<TextureRegion>(0.14f, walkFrames);
-
-		// cat = new Rectangle();
-		// cat.x = 32;
-		// cat.y = 32;
-		// cat.width = 128;
-		// cat.height = 128;
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		// stateTime = 0f;
-		// walking = false;
-		// direction = -1;
 		this.cat = new Player(32, 32, 32, 32, catTexture, catAnimationSheet);
 	}
 
@@ -57,20 +36,14 @@ public class LaserCats extends ApplicationAdapter {
 
 		camera.update();
 
-
-		// 
 		Vector2 moveVector = new Vector2();
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			// player.move(Input.Keys.D); 
 			moveVector.add(1, 0);
 		} if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			// player.move(Input.Keys.A);
 			moveVector.add(-1, 0);
 		} if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			// player.move(Input.Keys.W);
 			moveVector.add(0, 1);
 		} if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			// player.move(Input.Keys.S);
 			moveVector.add(0, -1);
 		} 
 
@@ -80,7 +53,8 @@ public class LaserCats extends ApplicationAdapter {
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(catSprite, cat.x, cat.y, 128, 128);
+		// TODO make the height and width dynamic as well
+		batch.draw(catSprite, cat.x, cat.y, 128, 128); 
 		batch.end();
 
 	}
