@@ -67,27 +67,25 @@ public class LaserCats extends ApplicationAdapter {
 
 
 		// TODO This if chain is dumb change this ~brtcrt
-		// also doesn't work for multiple inputs I'm dumb whatever
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			player.move(Input.Keys.D);
-		} else if (Gdx.input.isKeyPressed(Input.Keys.A)) {
+		} if (Gdx.input.isKeyPressed(Input.Keys.A)) {
 			player.move(Input.Keys.A);
-		} else if (Gdx.input.isKeyPressed(Input.Keys.W)) {
+		} if (Gdx.input.isKeyPressed(Input.Keys.W)) {
 			player.move(Input.Keys.W);
-		} else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
+		} if (Gdx.input.isKeyPressed(Input.Keys.S)) {
 			player.move(Input.Keys.S);
-		} else {
-			player.move(-1);
-		}
-
+		} 
 		Sprite catSprite = player.getSprite();
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
-		batch.draw(catSprite, player.x, player.y);
+		batch.draw(catSprite, player.x, player.y, 128, 128);
 		batch.end();
 
+		player.move(-1);
 	}
+
 	
 	@Override
 	public void dispose () {

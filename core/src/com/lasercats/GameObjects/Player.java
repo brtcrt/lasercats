@@ -50,7 +50,7 @@ public class Player extends Empty {
 
         this.direction = -1;
 
-        this.walkSpeed = 50f;
+        this.walkSpeed = 100f;
     }
 
     public Sprite getSprite() {
