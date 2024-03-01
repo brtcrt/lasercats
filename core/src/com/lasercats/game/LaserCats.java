@@ -13,10 +13,7 @@ import java.util.ArrayList;
 public class LaserCats extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
-
 	private ArrayList<GameObject> gameObjects;
-	private Player cat;
-
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
