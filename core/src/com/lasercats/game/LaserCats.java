@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.lasercats.GameObjects.Player;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
 
@@ -60,14 +61,21 @@ public class LaserCats extends ApplicationAdapter {
 		// 
 		Vector2 moveVector = new Vector2();
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-			cat.move(Input.Keys.D);
+			// player.move(Input.Keys.D); 
+			moveVector.add(1, 0);
 		} if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-			cat.move(Input.Keys.A);
+			// player.move(Input.Keys.A);
+			moveVector.add(-1, 0);
 		} if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-			cat.move(Input.Keys.W);
+			// player.move(Input.Keys.W);
+			moveVector.add(0, 1);
 		} if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-			cat.move(Input.Keys.S);
+			// player.move(Input.Keys.S);
+			moveVector.add(0, -1);
 		} 
+
+		cat.move(moveVector);
+
 		Sprite catSprite = cat.getSprite();
 
 		batch.setProjectionMatrix(camera.combined);
@@ -75,7 +83,6 @@ public class LaserCats extends ApplicationAdapter {
 		batch.draw(catSprite, cat.x, cat.y, 128, 128);
 		batch.end();
 
-		// player.move(-1);
 	}
 
 	
