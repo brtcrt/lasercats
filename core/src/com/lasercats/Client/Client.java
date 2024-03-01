@@ -2,6 +2,7 @@ package com.lasercats.Client;
 
 import com.badlogic.gdx.Gdx;
 
+import com.badlogic.gdx.math.Vector2;
 import com.lasercats.GameObjects.Player;
 
 import io.socket.client.IO;
@@ -10,6 +11,9 @@ import io.socket.emitter.Emitter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+
 public class Client {
     private final String uri;
     private Socket socket;
@@ -89,10 +93,14 @@ public class Client {
             public void call(Object... objects) {
                 otherPlayerData = (JSONObject) objects[0];
                 try {
-                    float x = (float) otherPlayerData.getDouble("x");
-                    float y = (float) otherPlayerData.getDouble("y");
-                    otherPlayer.x = x;
-                    otherPlayer.y = y;
+                    // TODO change this later
+                    JSONObject position = otherPlayerData.getJSONObject("position");
+                    JSONObject velocity = otherPlayerData.getJSONObject("velocity");
+                    JSONObject direction = otherPlayerData.getJSONObject("direction");
+                    otherPlayer.x = (float) position.getDouble("x");
+                    otherPlayer.y = (float) position.getDouble("y");
+                    otherPlayer.velocity = new Vector2((float) velocity.getDouble("x"), (float) velocity.getDouble("y"));
+                    otherPlayer.direction = new Vector2((float) direction.getDouble("x"), (float) direction.getDouble("y"));
                 } catch (JSONException e) {
                     System.out.println(e);
                 }

@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class LaserCats extends ApplicationAdapter {
@@ -19,7 +20,8 @@ public class LaserCats extends ApplicationAdapter {
 	private ArrayList<GameObject> gameObjects;
 	private Client client;
 
-	// test JSON data delete later ~brtcrt
+	// TODO test JSON data delete later ~brtcrt
+	private Player cat; // TODO move this down to create() later probably ~brtcrt
 	private JSONObject testJSON;
 
 	@Override
@@ -27,19 +29,12 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		Player cat = new Player(32, 32, 32, 32);
+		cat = new Player(32, 32, 32, 32);
 		Player otherCat = new Player(-300, -300, 32, 32); // initially out of screen
 		gameObjects = new ArrayList<>();
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
 		client = new Client(otherCat);
-		testJSON = new JSONObject();
-		try {
-			testJSON.put("x", 100f);
-			testJSON.put("y", 100f);
-		} catch (JSONException e) {
-			System.out.println(e);
-		}
 	}
 
 	@Override
@@ -48,6 +43,24 @@ public class LaserCats extends ApplicationAdapter {
 		{
 			object.process();
 		}
+
+		// TODO for testing, remove later ~brtcrt
+		HashMap<String, HashMap<String, Float>> playerMap = new HashMap<String, HashMap<String, Float>>();
+		HashMap<String, Float> velocityMap = new HashMap<String, Float>();
+		velocityMap.put("x", this.cat.velocity.x);
+		velocityMap.put("y", this.cat.velocity.y);
+		HashMap<String, Float> directionMap = new HashMap<String, Float>();
+		directionMap.put("x", this.cat.direction.x);
+		directionMap.put("y", this.cat.direction.y);
+		HashMap<String, Float> positionMap = new HashMap<String, Float>();
+		positionMap.put("x", this.cat.x);
+		positionMap.put("y", this.cat.y);
+		playerMap.put("position", positionMap);
+		playerMap.put("velocity", velocityMap);
+		playerMap.put("direction", directionMap);
+		this.testJSON = new JSONObject(playerMap);
+
+		client.sendUpdate(this.testJSON);
 
 		ScreenUtils.clear(1, 1, 1, 1);
 		camera.update();
@@ -58,10 +71,9 @@ public class LaserCats extends ApplicationAdapter {
 		{
 			object.render(batch);
 		}
-		// TODO make the height and width dynamic as well
+		// TODO make the height and width dynamic as well ~brtcrt
 		batch.end();
 
-		client.sendUpdate(this.testJSON);
 
 	}
 
