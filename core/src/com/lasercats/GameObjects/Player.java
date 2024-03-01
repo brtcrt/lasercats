@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Vector2;
 
 public class Player extends Empty {
     private Texture playerTexture;
@@ -45,7 +46,7 @@ public class Player extends Empty {
 
         this.direction = -1;
 
-        this.walkSpeed = 100f;
+        this.walkSpeed = 5f;
     }
 
     public Sprite getSprite() {
@@ -96,6 +97,16 @@ public class Player extends Empty {
             default:
                 walking = false;
                 break;
+        }
+    }
+
+    public void move(Vector2 v) {
+        if (v.isZero()) {
+            this.walking = false;
+        } else {
+            this.walking = true;
+            this.x += v.x * this.walkSpeed;
+            this.y += v.y * this.walkSpeed;
         }
     }
 

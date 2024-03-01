@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.lasercats.GameObjects.Player;
+import com.badlogic.gdx.math.Vector2;
 
 
 public class LaserCats extends ApplicationAdapter {
@@ -56,7 +57,8 @@ public class LaserCats extends ApplicationAdapter {
 		camera.update();
 
 
-		// TODO This if chain is dumb change this ~brtcrt
+		// 
+		Vector2 moveVector = new Vector2();
 		if (Gdx.input.isKeyPressed(Input.Keys.D)) {
 			cat.move(Input.Keys.D);
 		} if (Gdx.input.isKeyPressed(Input.Keys.A)) {
@@ -73,7 +75,7 @@ public class LaserCats extends ApplicationAdapter {
 		batch.draw(catSprite, cat.x, cat.y, 128, 128);
 		batch.end();
 
-		cat.move(-1);
+		// player.move(-1);
 	}
 
 	
