@@ -8,14 +8,19 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+
+import java.util.ArrayList;
 
 
 public class LaserCats extends ApplicationAdapter {
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
+
+	private ArrayList<GameObject> gameObjects;
 	private Player cat;
 
 	@Override
@@ -23,21 +28,28 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 32, 32);
+		Player cat = new Player(32, 32, 32, 32);
+		gameObjects = new ArrayList<>();
+		gameObjects.add(cat);
 	}
 
 	@Override
 	public void render () {
-		ScreenUtils.clear(1, 1, 1, 1);
+		for (GameObject object : gameObjects)
+		{
+			object.process();
+		}
 
+		ScreenUtils.clear(1, 1, 1, 1);
 		camera.update();
-		cat.process();
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+		for (GameObject object : gameObjects)
+		{
+			object.render(batch);
+		}
 		// TODO make the height and width dynamic as well
-//		batch.draw(catSprite, cat.x, cat.y, 128, 128);
-		cat.render(batch);
 		batch.end();
 
 	}
@@ -45,6 +57,10 @@ public class LaserCats extends ApplicationAdapter {
 	
 	@Override
 	public void dispose () {
+		for (GameObject object : gameObjects)
+		{
+			object.dispose();
+		}
 		batch.dispose();
 	}
 }
