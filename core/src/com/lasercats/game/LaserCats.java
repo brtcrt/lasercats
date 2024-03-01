@@ -1,17 +1,11 @@
 package com.lasercats.game;
 
 import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 
 import java.util.ArrayList;
 
@@ -59,7 +53,7 @@ public class LaserCats extends ApplicationAdapter {
 	public void dispose () {
 		for (GameObject object : gameObjects)
 		{
-			object.dispose();
+			object.destroy();
 		}
 		batch.dispose();
 	}

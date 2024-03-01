@@ -6,5 +6,5 @@ public interface GameObject {
     public void process();
     public void render(SpriteBatch batch);
 
-    public void dispose();
+    public void destroy();
 }

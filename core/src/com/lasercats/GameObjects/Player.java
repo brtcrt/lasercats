@@ -99,7 +99,7 @@ public class Player extends Empty implements  GameObject{
         return !velocity.isZero();
     }
 
-    public void dispose()
+    public void destroy()
     {
         animationSheet.dispose();
     }
