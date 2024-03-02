@@ -32,7 +32,6 @@ public class LaserCats extends ApplicationAdapter {
 		{
 			object.process();
 		}
-
 		ScreenUtils.clear(1, 1, 1, 1);
 		camera.update();
 
@@ -42,9 +41,7 @@ public class LaserCats extends ApplicationAdapter {
 		{
 			object.render(batch);
 		}
-		// TODO make the height and width dynamic as well
 		batch.end();
-
 	}
 
 	

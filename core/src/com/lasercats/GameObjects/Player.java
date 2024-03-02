@@ -9,13 +9,17 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
+import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.badlogic.gdx.utils.JsonWriter;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Scanner;
 
 public class Player extends Empty implements  GameObject{
 
-    static int count = 0;
     private  Texture animationSheet;
     private Sprite sprite;
     private Animation<TextureRegion> idleAnimation;
@@ -55,21 +59,12 @@ public class Player extends Empty implements  GameObject{
         direction = new Vector2();
         stateTime = 0;
 
-        controlScheme = new int[4];
-        if (count % 2 == 0)
-        {
-            controlScheme = new int[]{Input.Keys.D, Input.Keys.A, Input.Keys.W, Input.Keys.S};
-        } else {
-            controlScheme = new int[]{Input.Keys.L, Input.Keys.J, Input.Keys.I, Input.Keys.K};
-        }
-        count ++;
+        controlScheme = new int[]{Input.Keys.D, Input.Keys.A, Input.Keys.W, Input.Keys.S};
     }
 
     public void process()
     {
         // Movement
-        velocity.x = 0;
-        velocity.y = 0;
         if (Gdx.input.isKeyPressed(controlScheme[0])) {
             direction.x = 1;
             velocity.x = 1;
@@ -83,6 +78,8 @@ public class Player extends Empty implements  GameObject{
         }
         velocity.nor();
         move();
+        velocity.x = 0;
+        velocity.y = 0;
 
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
@@ -112,25 +109,30 @@ public class Player extends Empty implements  GameObject{
 
     public String getIdentifiers()
     {
-        String s = "";
-        s += direction.x;
-        s += ",";
-        s += direction.y;
-        s += ",";
-        s += velocity.x;
-        s += ",";
-        s += velocity.y;
-        return s;
+        Json json = new Json();
+        StringWriter jsonText = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(jsonText);
+
+        json.setOutputType(JsonWriter.OutputType.json);
+        json.setWriter(jsonWriter);
+        json.writeObjectStart();
+        json.writeValue("direction.x", direction.x);
+        json.writeValue("direction.y", direction.y);
+        json.writeValue("velocity.x", velocity.x);
+        json.writeValue("velocity.y", velocity.y);
+        json.writeObjectEnd();
+
+        return json.getWriter().getWriter().toString();
     }
 
-    public void setIdentifiers(String identifiers)
+    public void setIdentifiers(String json)
     {
-        Scanner scanner = new Scanner(identifiers);
-        scanner.useDelimiter(",");
-        direction.x = scanner.nextFloat();
-        direction.y = scanner.nextFloat();
-        velocity.x = scanner.nextFloat();
-        velocity.y = scanner.nextFloat();
+        JsonReader reader = new JsonReader();
+        JsonValue jsonValue = reader.parse(json);
+        direction.x = jsonValue.getFloat("direction.x");
+        direction.y = jsonValue.getFloat("direction.y");
+        velocity.x = jsonValue.getFloat("velocity.x");
+        velocity.y = jsonValue.getFloat("velocity.y");
     }
 
     public boolean is_walking()
