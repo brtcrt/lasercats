@@ -65,6 +65,8 @@ public class Player extends Empty implements  GameObject{
     public void process()
     {
         // Movement
+        velocity.x = 0;
+        velocity.y = 0;
         if (Gdx.input.isKeyPressed(controlScheme[0])) {
             direction.x = 1;
             velocity.x = 1;
@@ -78,8 +80,6 @@ public class Player extends Empty implements  GameObject{
         }
         velocity.nor();
         move();
-        velocity.x = 0;
-        velocity.y = 0;
 
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
