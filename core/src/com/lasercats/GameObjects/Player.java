@@ -8,27 +8,20 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
-import com.badlogic.gdx.utils.JsonWriter;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Scanner;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class Player extends Empty implements  GameObject{
 
-    private  Texture animationSheet;
-    private Sprite sprite;
-    private Animation<TextureRegion> idleAnimation;
-    private Animation<TextureRegion> walkAnimation;
-    private Animation<TextureRegion> currentAnimation;
+    protected Texture animationSheet;
+    protected Sprite sprite;
+    protected Animation<TextureRegion> idleAnimation;
+    protected Animation<TextureRegion> walkAnimation;
+    protected Animation<TextureRegion> currentAnimation;
 
-    private final float walkSpeed = 150f;
-    private final float animationPeriod = 0.14f;
-    private float stateTime;
+    protected final float walkSpeed = 150f;
+    protected final float animationPeriod = 0.14f;
+    protected float stateTime;
 
     public Vector2 velocity;
     public Vector2 direction;
@@ -107,32 +100,36 @@ public class Player extends Empty implements  GameObject{
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
     }
 
-    public String getIdentifiers()
+    public JSONObject getIdentifiers()
     {
-        Json json = new Json();
-        StringWriter jsonText = new StringWriter();
-        JsonWriter jsonWriter = new JsonWriter(jsonText);
-
-        json.setOutputType(JsonWriter.OutputType.json);
-        json.setWriter(jsonWriter);
-        json.writeObjectStart();
-        json.writeValue("direction.x", direction.x);
-        json.writeValue("direction.y", direction.y);
-        json.writeValue("velocity.x", velocity.x);
-        json.writeValue("velocity.y", velocity.y);
-        json.writeObjectEnd();
-
-        return json.getWriter().getWriter().toString();
+        // Fuck libgdx's json library I'm changing it to org.json ~brtcrt
+        JSONObject json = new JSONObject();
+        try {
+            json.put("direction.x", direction.x);
+            json.put("direction.y", direction.y);
+            json.put("velocity.x", velocity.x);
+            json.put("velocity.y", velocity.y);
+            json.put("x", x);
+            json.put("y", y);
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+        return json;
     }
 
-    public void setIdentifiers(String json)
+    public void setIdentifiers(JSONObject json)
     {
-        JsonReader reader = new JsonReader();
-        JsonValue jsonValue = reader.parse(json);
-        direction.x = jsonValue.getFloat("direction.x");
-        direction.y = jsonValue.getFloat("direction.y");
-        velocity.x = jsonValue.getFloat("velocity.x");
-        velocity.y = jsonValue.getFloat("velocity.y");
+        try {
+            direction.x = (float)json.getDouble("direction.x");
+            direction.y = (float)json.getDouble("direction.y");
+            velocity.x = (float)json.getDouble("velocity.x");
+            velocity.y = (float)json.getDouble("velocity.y");
+            x = (float)json.getDouble("x");
+            y = (float)json.getDouble("y");
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+
     }
 
     public boolean is_walking()

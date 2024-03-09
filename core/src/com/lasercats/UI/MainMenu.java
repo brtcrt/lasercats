@@ -8,24 +8,28 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.Pixmap.Format;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton.ImageButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton.TextButtonStyle;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField.TextFieldStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.lasercats.Client.Client;
+import com.lasercats.Client.Room;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainMenu {
     private Stage stage;
     private Table table;
 
     private TextButton[] gameModeButtons;
+    private ArrayList<TextButton> roomButtons;
     private Skin gameModeButtonsConfig;
     private TextButtonStyle gameModeButtonStyle;
 
@@ -39,12 +43,23 @@ public class MainMenu {
     private ImageButtonStyle exitButtonStyle;
     private Texture exitButtonIcon;
 
+    private Skin skin;
+    private TextField roomCreateField;
+    private TextButton roomCreateButton;
+
     private TextField gameTitle;
     private TextFieldStyle gameTitleStyle;
 
     private Pixmap red;
 
-    public MainMenu() {
+    private Client client;
+
+    private ArrayList<Room> rooms;
+
+    private VerticalGroup roomList;
+    private Label roomNameLabel;
+
+    public MainMenu(Client client) {
         stage = new Stage();
         table = new Table();
         table.setWidth(1024);
@@ -54,6 +69,19 @@ public class MainMenu {
 
         red = new Pixmap(64, 64, Format.RGB888);
         red.setColor(Color.RED);
+
+        this.client = client;
+        rooms = new ArrayList<Room>();
+
+        roomList = new VerticalGroup();
+
+        roomButtons = new ArrayList<TextButton>();
+
+
+        skin = new Skin(Gdx.files.internal("flatearthui/flat-earth-ui.json"));
+        roomCreateField = new TextField("", skin);
+
+        roomNameLabel = new Label("Currently in no Room", skin);
 
         gameModeButtonsConfig = new Skin();
         gameModeButtonStyle = new TextButtonStyle();
@@ -68,6 +96,10 @@ public class MainMenu {
         for (int i = 0; i < gameModeButtons.length; i++) {
             setListeners(gameModeButtons[i]);
         }
+
+
+        roomCreateButton = new TextButton("Create Room", gameModeButtonStyle);
+        setListeners(roomCreateButton);
 
         optionsButtonConfig = new Skin();
         optionsButtonStyle = new ImageButtonStyle();
@@ -96,12 +128,69 @@ public class MainMenu {
 
         stage.addActor(table);
         table.add(exitButton).align(Align.topRight).expand();
+
+        // list of rooms hopefully
+        table.row();
+        table.add(roomNameLabel);
+        table.row();
+        table.add(roomList).align(Align.center);
+        table.row();
+        table.add(roomCreateField);
+        table.add(roomCreateButton).align(Align.center);
+
+
         table.row();
         table.add(gameTitle).align(Align.center).expandX().padLeft(76);
         table.row();
         for (int i = 0; i < gameModeButtons.length; i++) {
             table.add(gameModeButtons[i]).align(Align.center);
             table.row();
+        }
+    }
+
+    private void getRooms() {
+        this.client.updateRooms();
+        this.rooms = new ArrayList<Room>();
+        for (int i = 0; i < client.rooms.length(); i++) {
+            try {
+                JSONObject room = client.rooms.getJSONObject(i);
+                String id = room.getString("roomId");
+                String name = room.getString("roomName");
+                JSONArray players = room.getJSONArray("players");
+                this.rooms.add(new Room(id, name, players));
+            } catch (JSONException e) {
+                System.out.println(e);
+            }
+        }
+    }
+
+    public void updateRoomList() {
+        getRooms();
+
+        roomList.setWidth(Gdx.graphics.getWidth() / 2f);
+        roomList.setHeight(Gdx.graphics.getHeight() / 2f);
+
+        roomList.clear();
+
+        roomButtons.clear();
+
+        for (Room r : rooms) {
+            TextButton roomButton = new TextButton(r.toString(), skin);
+            setListeners(roomButton);
+            if (!(r.getPlayerCount() < 2)) {
+                roomButton.setDisabled(true);
+            }
+            roomButtons.add(roomButton);
+            roomList.addActor(roomButton);
+        }
+    }
+
+    public void updateCurrentRoom() {
+        Room currentRoom = this.client.getRoom();
+        if (currentRoom.isEmpty()) {
+            this.roomNameLabel.setText("Currently in No Room");
+        } else {
+            this.roomNameLabel.setText("Current in Room " + currentRoom.getName());
         }
     }
     private void setSkinColor (Skin skin, Pixmap pix) {
@@ -119,6 +208,19 @@ public class MainMenu {
     public TextButton getGameModeButton() {
         return this.gameModeButtons[0];
     }
+
+    public TextButton getRoomCreateButton() { return this.roomCreateButton; }
+    public TextField getRoomCreateField() { return this.roomCreateField; }
+
+    public Room getRoomClicked() {
+        for (int i = 0; i < roomButtons.size(); i++) {
+            TextButton btn = roomButtons.get(i);
+            if (btn.isPressed()) {
+                return rooms.get(i);
+            }
+        }
+        return new Room();
+    }
     public void disposeMenu() {
         stage.dispose();
         red.dispose();
@@ -126,4 +228,5 @@ public class MainMenu {
     public Stage getStage() {
         return stage;
     }
+
 }

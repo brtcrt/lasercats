@@ -5,16 +5,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
+import com.lasercats.GameObjects.PlayerNonMain;
 import com.lasercats.UI.MainMenu;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class LaserCats extends ApplicationAdapter {
 	private SpriteBatch batch;
@@ -22,29 +23,42 @@ public class LaserCats extends ApplicationAdapter {
 	private ArrayList<GameObject> gameObjects;
 	private Client client;
 	private MainMenu menu;
-
-	// TODO test JSON data delete later ~brtcrt
 	private Player cat; // TODO move this down to create() later probably ~brtcrt
-	private JSONObject testJSON;
+	private long roomUpdateTime;
 
 	@Override
 	public void create () {
-		menu = new MainMenu();
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
 		this.cat = new Player(32, 32, 32, 32);
-		Player otherCat = new Player(-300, -300, 32, 32);
+		PlayerNonMain otherCat = new PlayerNonMain(-300, -300, 32, 32);
 		gameObjects = new ArrayList<>();
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
 		client = new Client(otherCat);
+		menu = new MainMenu(client);
 	}
 
 	@Override
 	public void render () {
+		ScreenUtils.clear(0, 0, 0, 0);
 		menu.getStage().act(Gdx.graphics.getDeltaTime());
 		menu.getStage().draw();
+		if (TimeUtils.nanoTime() - this.roomUpdateTime > TimeUtils.millisToNanos(1000)) {
+			menu.updateRoomList();
+			menu.updateCurrentRoom();
+			this.roomUpdateTime = TimeUtils.nanoTime();
+		}
+		if (!menu.getGameModeButton().isChecked() && menu.getRoomCreateButton().isPressed()) {
+			// menu.getRoomCreateButton().setDisabled(true);
+			String roomName = menu.getRoomCreateField().getText();
+			client.createRoom(roomName);
+			Gdx.app.log("New Room Request", roomName);
+		}
+		if (!menu.getGameModeButton().isChecked() && !menu.getRoomClicked().isEmpty()) {
+			client.joinRoom(menu.getRoomClicked());
+		}
 		if (menu.getGameModeButton().isChecked()) {
 			menu.getGameModeButton().setDisabled(true);
 			for (GameObject object : gameObjects)
@@ -52,23 +66,7 @@ public class LaserCats extends ApplicationAdapter {
 				object.process();
 			}
 
-			// TODO for testing, remove later ~brtcrt
-			HashMap<String, HashMap<String, Float>> playerMap = new HashMap<String, HashMap<String, Float>>();
-			HashMap<String, Float> velocityMap = new HashMap<String, Float>();
-			velocityMap.put("x", this.cat.velocity.x);
-			velocityMap.put("y", this.cat.velocity.y);
-			HashMap<String, Float> directionMap = new HashMap<String, Float>();
-			directionMap.put("x", this.cat.direction.x);
-			directionMap.put("y", this.cat.direction.y);
-			HashMap<String, Float> positionMap = new HashMap<String, Float>();
-			positionMap.put("x", this.cat.x);
-			positionMap.put("y", this.cat.y);
-			playerMap.put("position", positionMap);
-			playerMap.put("velocity", velocityMap);
-			playerMap.put("direction", directionMap);
-			this.testJSON = new JSONObject(playerMap);
-
-			client.sendUpdate(this.testJSON);
+			client.sendUpdate(this.cat.getIdentifiers());
 
 			ScreenUtils.clear(1, 1, 1, 1);
 			camera.update();
@@ -79,7 +77,6 @@ public class LaserCats extends ApplicationAdapter {
 			{
 				object.render(batch);
 			}
-			// TODO make the height and width dynamic as well
 			batch.end();
 		}		
 	}

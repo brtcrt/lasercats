@@ -1,8 +1,7 @@
 package com.lasercats.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.JsonValue;
+import org.json.JSONObject;
 
 
 public interface GameObject {
@@ -11,7 +10,7 @@ public interface GameObject {
 
     public void destroy();
 
-    public String getIdentifiers();
+    public JSONObject getIdentifiers();
 
-    public void setIdentifiers(String json);
+    public void setIdentifiers(JSONObject json);
 }
