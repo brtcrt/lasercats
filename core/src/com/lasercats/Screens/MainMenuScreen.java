@@ -125,7 +125,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.add(joinLobbyButton).width(200).padTop(50).height(50).padRight(100);
         this.root.add(new Image(catImageTwo)).expandX().align(Align.right);
         this.root.row();
-        this.root.add(levelEditorButton).width(200).padTop(50).height(50).colspan(3);
+        this.root.add(levelEditorButton).width(200).padTop(50).height(50).colspan(3).padBottom(100);
         this.stage.setRoot(root);
         //this.stage.setDebugAll(true);
     }
