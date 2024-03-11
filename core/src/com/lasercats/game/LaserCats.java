@@ -10,7 +10,7 @@ import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
 import com.lasercats.GameObjects.PlayerNonMain;
-import com.lasercats.UI.MainMenu;
+import com.lasercats.Screens.MainMenu;
 
 import org.json.JSONException;
 import org.json.JSONObject;
