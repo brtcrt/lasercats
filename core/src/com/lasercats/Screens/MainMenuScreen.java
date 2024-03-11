@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -68,19 +69,9 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.stage.act(delta);
         this.batch.setProjectionMatrix(this.genericViewport.getCamera().combined);
         this.stage.draw();
-        this.batch.begin();
-
-        //TODO We need to come up with a dynamic positioning implementation here so that batch always renders the textures in the right place no matter the window size.
-        //You might be able to add Textures to the root table as well (not might, you can actually, will adjust this part later.)
-        //The cords of the actor can be accessed via the methods of the table as well. 
-
-        //TODO Delete this part later.
-        //A major issue with this implementation is that position of textures are completely wrong when you change the window size.
-        //batch.draw(title, this.genericViewport.getWorldHeight(),  createLobbyButton.getY() + 50);
-        //batch.draw(laserPointer, createLobbyButton.getX() + 40, createLobbyButton.getY() + 80);
-        //batch.draw(catImageOne, joinLobbyButton.getX() - 200, joinLobbyButton.getY());
-        //batch.draw(catImageTwo, joinLobbyButton.getX() + 200 , joinLobbyButton.getY());
-        batch.end();
+        //One interesting thing about using stage is that because all resources of the main menu are part of the stage, when we call stage.draw() it draws all the resources.
+        //So no need for batch.begin(), batch.end()
+        //In fact, stage.draw() internally calls this sequence.
     }
     @Override
     public void hide() {
@@ -121,18 +112,22 @@ public class MainMenuScreen extends LaserCatsScreen {
     @Override
     public void positionActors() {
         //Feel free to play around with alignment and cell sizes.
-        //TODO Also add the textures to root table and align them properly.
         this.buttonTable.add(optionsButton).align(Align.topLeft).padRight(10).width(60).height(60);
         this.buttonTable.add(tutorialButton).align(Align.topLeft).width(60).height(60);
         this.root.add(buttonTable).align(Align.topLeft).expand();
-        this.root.add(exitButton).align(Align.topRight).width(60).height(60);
+        this.root.add(exitButton).align(Align.topRight).width(60).height(60).expand().colspan(2);
         this.root.row();
-        this.buttonTableTwo.add(createLobbyButton).width(200).height(50);
-        this.buttonTableTwo.row();
-        this.buttonTableTwo.add(joinLobbyButton).width(200).padTop(50).height(50);
-        this.buttonTableTwo.row();
-        this.buttonTableTwo.add(levelEditorButton).width(200).padTop(50).height(50);
-        this.root.add(buttonTableTwo).expandY();
+        this.root.add(new Image(laserPointer)).colspan(3).padBottom(20);
+        this.root.row();
+        this.root.add(new Image(title)).padBottom(175).colspan(3);
+        this.root.row();
+        this.root.add(createLobbyButton).width(200).height(50).expandX().colspan(3);
+        this.root.row();
+        this.root.add(new Image(catImageOne)).expandX().align(Align.left);
+        this.root.add(joinLobbyButton).width(200).padTop(50).height(50).padRight(100);
+        this.root.add(new Image(catImageTwo)).expandX().align(Align.right);
+        this.root.row();
+        this.root.add(levelEditorButton).width(200).padTop(50).height(50).colspan(3);
         this.stage.setRoot(root);
         //this.stage.setDebugAll(true);
     }
