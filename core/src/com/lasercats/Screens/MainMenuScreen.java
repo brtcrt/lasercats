@@ -26,7 +26,6 @@ public class MainMenuScreen extends LaserCatsScreen {
     private TextButton levelEditorButton;
 
     private Table buttonTable;
-    private Table buttonTableTwo;
 
     private Texture laserPointer;
     private Texture catImageOne;
@@ -97,7 +96,6 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.joinLobbyButton = new TextButton("Join Lobby", skin, "default");
         this.levelEditorButton = new TextButton("Level Editor", skin, "default");
         this.buttonTable = new Table();
-        this.buttonTableTwo = new Table();
         this.root.setOrigin(0, 0);
         this.root.setHeight(Gdx.graphics.getHeight());
         this.root.setWidth(Gdx.graphics.getWidth());
