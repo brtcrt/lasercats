@@ -84,8 +84,7 @@ public class MainMenuScreen extends LaserCatsScreen {
     }
     @Override
     public void hide() {
-        //I think the screen should dispose all of its resources when it is no longer the current screen.
-        //Might not be the correct way of doing this.
+        //The screen should dispose all of its resources when it is no longer the current screen.
         this.dispose();
     }
     @Override
@@ -145,11 +144,7 @@ public class MainMenuScreen extends LaserCatsScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (exitButton.isChecked()) {
                     //When the exit button is pressed, the screen should dispose all its sources and close the application.
-                    //This only disposes the main menu elements. It doesn't actually close the application.
-                    //This implementation gives "buffer not allocated with newUnsafeByteBuffer or already disposed" runtime error when you close the application. 
-                    //Doesn't effect anything as far as I know.
-                    //TODO find a way to close application on button press.
-                    dispose();
+                    Gdx.app.exit();
                 }
             }
         });
