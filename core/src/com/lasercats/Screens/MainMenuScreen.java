@@ -87,6 +87,11 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.stage.dispose();
     }
     @Override
+    public void resume() {}
+    @Override
+    public void pause() {}
+    
+    @Override
     public void createActors() {
         //TODO Placeholder style names. Change later.
         this.tutorialButton = new ImageButton(skin, "default");

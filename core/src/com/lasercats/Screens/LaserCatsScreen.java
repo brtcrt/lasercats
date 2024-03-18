@@ -30,36 +30,25 @@ public abstract class LaserCatsScreen implements Screen {
     }
 
     //Methods inherited from the Screen interface.
-	public void show () {
+	public abstract void show();
 
-    }
-	public void render (float delta) {
+    public abstract void render(float delta);
 
-    }
-	public void resize (int width, int height) {
+    public abstract void resize(int width, int height); 
 
-    }
-	public void pause () {
+    public abstract void pause(); 
 
-    }
-	public void resume () {
+    public abstract void resume(); 
 
-    }
-	public void hide () {
+    public abstract void hide(); 
 
-    }
-	public void dispose () {
-
-    }
+    public abstract void dispose(); 
 
     //Methods regarding UI components.
-    public void createActors() {
+    public abstract void createActors(); 
 
-    }
-    public void positionActors() {
+    public abstract void positionActors(); 
 
-    }
-    public void setListeners() {
+    public abstract void setListeners(); 
 
-    }
 }
