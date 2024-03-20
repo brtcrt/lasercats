@@ -21,8 +21,7 @@ public class MainMenuScreen extends LaserCatsScreen {
     private ImageButton tutorialButton;
     private ImageButton exitButton;
     private ImageButton optionsButton;
-    private TextButton createLobbyButton;
-    private TextButton joinLobbyButton; 
+    private TextButton playButton;
     private TextButton levelEditorButton;
 
     private Table buttonTable;
@@ -56,8 +55,8 @@ public class MainMenuScreen extends LaserCatsScreen {
     @Override
     public void resize(int width, int height) {
         this.genericViewport.update(width, height, true);
-        this.root.setHeight(Gdx.graphics.getHeight());
-        this.root.setWidth(Gdx.graphics.getWidth());
+        this.root.setHeight(height);
+        this.root.setWidth(width);
     }
     @Override
     public void render(float delta) {
@@ -97,8 +96,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.tutorialButton = new ImageButton(skin, "default");
         this.optionsButton = new ImageButton(skin, "default");
         this.exitButton = new ImageButton(skin, "default");
-        this.createLobbyButton = new TextButton("Create Lobby", skin, "default");
-        this.joinLobbyButton = new TextButton("Join Lobby", skin, "default");
+        this.playButton = new TextButton("Play", skin, "default");
         this.levelEditorButton = new TextButton("Level Editor", skin, "default");
         this.buttonTable = new Table();
         this.root.setOrigin(0, 0);
@@ -124,13 +122,12 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.row();
         this.root.add(new Image(title)).padBottom(175).colspan(3);
         this.root.row();
-        this.root.add(createLobbyButton).width(200).height(50).expandX().colspan(3);
+        this.root.add(playButton).width(200).height(50).expandX().colspan(3);
         this.root.row();
         this.root.add(new Image(catImageOne)).expandX().align(Align.left);
-        this.root.add(joinLobbyButton).width(200).padTop(50).height(50).padRight(100);
         this.root.add(new Image(catImageTwo)).expandX().align(Align.right);
         this.root.row();
-        this.root.add(levelEditorButton).width(200).padTop(50).height(50).colspan(3).padBottom(100);
+        this.root.add(levelEditorButton).width(200).height(50).colspan(3).padBottom(100);
         this.stage.setRoot(root);
         //this.stage.setDebugAll(true);
     }
@@ -146,20 +143,11 @@ public class MainMenuScreen extends LaserCatsScreen {
                 }
             }
         });
-        this.createLobbyButton.addListener(new ChangeListener() {
+        this.playButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (createLobbyButton.isChecked()) {
-                    //TODO Change to lobbyCreationScreen.
-                    game.setScreen(null);
-                }
-            }
-        });
-        this.joinLobbyButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (joinLobbyButton.isChecked()) {
-                    //TODO Change to joinLobbyScreen.
+                if (playButton.isChecked()) {
+                    //TODO Change to lobbyScreen.
                     game.setScreen(null);
                 }
             }
