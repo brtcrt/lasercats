@@ -27,7 +27,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (PlayerNonMain otherPlayer) {
-        this.uri = "http://localhost:8080/";
+        this.uri = "https://lasercats-dev.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.lasercats.Client.Client;
+import com.lasercats.GameObjects.Box;
 import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
 import com.lasercats.GameObjects.PlayerNonMain;
@@ -31,11 +32,12 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 32, 32);
-		PlayerNonMain otherCat = new PlayerNonMain(-300, -300, 32, 32);
+		this.cat = new Player(32, 32, 128, 128);
+		PlayerNonMain otherCat = new PlayerNonMain(-300, -300, 128, 128);
 		gameObjects = new ArrayList<>();
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
+		gameObjects.add(new Box(400, 400, cat, otherCat));
 		client = new Client(otherCat);
 		menu = new MainMenu(client);
 	}
