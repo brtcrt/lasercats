@@ -115,3 +115,8 @@ Thumbs.db
 
 ## node.js
 /server/node_modules
+
+## fly.io
+/server/.dockerignore
+Dockerfile
+fly.toml

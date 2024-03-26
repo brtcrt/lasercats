@@ -7,11 +7,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class Player extends Empty implements  GameObject{
+import javax.sound.midi.Receiver;
+
+public class Player extends Empty implements  GameObject {
 
     protected Texture animationSheet;
     protected Sprite sprite;
@@ -23,8 +26,6 @@ public class Player extends Empty implements  GameObject{
     protected final float animationPeriod = 0.14f;
     private final static float WIDTH = 128 , HEIGHT = 128;
     protected float stateTime;
-
-    public Vector2 velocity;
     public Vector2 direction;
 
     public int[] controlScheme;
@@ -49,7 +50,6 @@ public class Player extends Empty implements  GameObject{
         walkAnimation = new Animation<TextureRegion>(animationPeriod, walkFrames);
         currentAnimation = idleAnimation;
 
-        velocity = new Vector2();
         direction = new Vector2();
         stateTime = 0;
 
@@ -138,9 +138,6 @@ public class Player extends Empty implements  GameObject{
         return !velocity.isZero();
     }
 
-    public float getY() {
-        return y;
-    }
 
     public void destroy()
     {

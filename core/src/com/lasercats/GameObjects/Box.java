@@ -1,5 +1,6 @@
 package com.lasercats.GameObjects;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,31 +12,31 @@ import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class Box extends Empty implements GameObject{
     private Texture boxImage;
     private Sprite sprite;
-    public Vector2 velocity;
-    private Player[] players = new Player[2];
-    protected final float walkSpeed = 150f;
+    private ArrayList<GameObject> gameObject;
+    protected final float moveSpeed = 150f;
     private final static float WIDTH = 128 , HEIGHT = 128;
 
-    public Box(int x, int y, Player p1, PlayerNonMain p2){
+    public Box(int x, int y, ArrayList<GameObject> gameObjects){
         super(x, y, WIDTH, HEIGHT);
         boxImage = new Texture(Gdx.files.internal("Box.png"));
         sprite = new Sprite(boxImage);
-        velocity = new Vector2();
-        players[0] = p1;
-        players[1] = p2;
+        // changed this to GameObject ArrayList so boxes can also interact with each other.
+        this.gameObject = gameObjects;
     }
 
     public void process(){
         // Movement
         velocity.x = 0;
         velocity.y = 0;
-        for(Player p: players){
-            if (p.overlaps(this)) {
-                velocity.x = p.velocity.x;
-                velocity.y = p.velocity.y;
+        for(GameObject object : gameObject){
+            if (object.getCollider().overlaps(this)) {
+                velocity.x = object.getVelocity().x;
+                velocity.y = object.getVelocity().y;
             }
         }   
         velocity.nor();
@@ -51,10 +52,6 @@ public class Box extends Empty implements GameObject{
         boxImage.dispose();
     }
 
-
-    public float getY() {
-        return y;
-    }
 
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
@@ -82,8 +79,8 @@ public class Box extends Empty implements GameObject{
 
     public void move()
     {
-        x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
-        y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
+        x += velocity.x * moveSpeed * Gdx.graphics.getDeltaTime();
+        y += velocity.y * moveSpeed * Gdx.graphics.getDeltaTime();
     }
 }
 

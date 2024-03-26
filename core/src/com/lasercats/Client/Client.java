@@ -3,6 +3,7 @@ package com.lasercats.Client;
 import com.badlogic.gdx.Gdx;
 
 import com.badlogic.gdx.math.Vector2;
+import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
 
 import com.lasercats.GameObjects.PlayerNonMain;
@@ -14,24 +15,29 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Client {
     private final String uri;
     private Socket socket;
+    private Player player;
     private PlayerNonMain otherPlayer;
-    public JSONObject otherPlayerData;
-
+    private ArrayList<GameObject> gameObjects;
+    public JSONObject dataFromServer;
+    private String clientID;
     private Room room;
-
     public JSONArray rooms;
 
-    public Client (PlayerNonMain otherPlayer) {
+    public Client (ArrayList<GameObject> gameObjects) {
         this.uri = "https://lasercats-dev.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
-        this.otherPlayer = otherPlayer;
+        this.gameObjects = gameObjects;
+        // IF we ever change the indexes of the two player objects we are fucked btw... ~brtcrt
+        this.player = (Player) gameObjects.get(0);
+        this.otherPlayer = (PlayerNonMain) gameObjects.get(1);
         this.rooms = new JSONArray();
     }
 
@@ -98,7 +104,8 @@ public class Client {
                     System.out.println(e);
                 }
                 // socket.emit("newRoom", data);
-                Gdx.app.log("SocketIO", "Connected");
+                clientID = socket.id();
+                Gdx.app.log("SocketIO", "Connected with ID: " + clientID);
             }
         });
         socket.on("createRoomRes", new Emitter.Listener() {
@@ -148,8 +155,30 @@ public class Client {
         socket.on("updateFromServer", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                otherPlayerData = (JSONObject) args[0];
-                otherPlayer.setIdentifiers(otherPlayerData);
+                dataFromServer = (JSONObject) args[0];
+                try {
+                    JSONArray data = dataFromServer.getJSONArray("gameObjects");
+                    // If this client is the creator of the room
+                    // we will do all object calculations on this client
+                    // and send the data to the other so,
+                    // we should only set the identifiers of the otherPlayer ~brtcrt
+                    if (room.getPlayerIDs()[0].equals(clientID)) {
+                        JSONObject identifier = (JSONObject) data.get(0);
+                        otherPlayer.setIdentifiers(identifier);
+                    } else {
+                        JSONObject identifier = (JSONObject) data.get(0);
+                        otherPlayer.setIdentifiers(identifier);
+                        for (int i = 2; i < data.length(); i++) {
+                            // This will cause a lot of problems later on... End me. ~brtcrt
+                            identifier = (JSONObject) data.get(i);
+                            GameObject g = gameObjects.get(i);
+                            g.setIdentifiers(identifier);
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    System.out.println(e);
+                }
             }
         });
     }
