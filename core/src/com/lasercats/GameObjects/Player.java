@@ -21,6 +21,7 @@ public class Player extends Empty implements  GameObject{
 
     protected final float walkSpeed = 150f;
     protected final float animationPeriod = 0.14f;
+    private final static float WIDTH = 128 , HEIGHT = 128;
     protected float stateTime;
 
     public Vector2 velocity;
@@ -91,7 +92,7 @@ public class Player extends Empty implements  GameObject{
 
     public void render(SpriteBatch batch)
     {
-        batch.draw(sprite, x, y, width, height);
+        batch.draw(sprite, x, y, WIDTH, HEIGHT);
     }
 
     public void move()
@@ -135,6 +136,10 @@ public class Player extends Empty implements  GameObject{
     public boolean is_walking()
     {
         return !velocity.isZero();
+    }
+
+    public float getY() {
+        return y;
     }
 
     public void destroy()

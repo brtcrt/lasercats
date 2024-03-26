@@ -32,8 +32,8 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 128, 128);
-		PlayerNonMain otherCat = new PlayerNonMain(-300, -300, 128, 128);
+		this.cat = new Player(32, 32, 128, 80);
+		PlayerNonMain otherCat = new PlayerNonMain(-300, -300, 128, 80);
 		gameObjects = new ArrayList<>();
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
@@ -75,6 +75,7 @@ public class LaserCats extends ApplicationAdapter {
 
 			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
+			ySort();
 			for (GameObject object : gameObjects)
 			{
 				object.render(batch);
@@ -91,5 +92,11 @@ public class LaserCats extends ApplicationAdapter {
 		batch.dispose();
 		client.close();
 		menu.disposeMenu();
+	}
+
+	private void ySort() {
+		gameObjects.sort((o1, o2) -> {
+			return -1 * Float.compare(o1.getY(), o2.getY());
+		});
 	}
 }

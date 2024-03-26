@@ -51,6 +51,11 @@ public class Box extends Empty implements GameObject{
         boxImage.dispose();
     }
 
+
+    public float getY() {
+        return y;
+    }
+
     public JSONObject getIdentifiers(){return new JSONObject();}
 
     public void setIdentifiers(JSONObject json){}

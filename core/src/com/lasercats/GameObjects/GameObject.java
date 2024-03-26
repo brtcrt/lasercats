@@ -13,4 +13,6 @@ public interface GameObject {
     public JSONObject getIdentifiers();
 
     public void setIdentifiers(JSONObject json);
+
+    public float getY();
 }
