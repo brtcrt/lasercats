@@ -56,9 +56,29 @@ public class Box extends Empty implements GameObject{
         return y;
     }
 
-    public JSONObject getIdentifiers(){return new JSONObject();}
+    public JSONObject getIdentifiers(){
+        JSONObject json = new JSONObject();
+        try {
+            json.put("velocity.x", velocity.x);
+            json.put("velocity.y", velocity.y);
+            json.put("x", x);
+            json.put("y", y);
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+        return json;
+    }
 
-    public void setIdentifiers(JSONObject json){}
+    public void setIdentifiers(JSONObject json){
+        try {
+            velocity.x = (float)json.getDouble("velocity.x");
+            velocity.y = (float)json.getDouble("velocity.y");
+            x = (float)json.getDouble("x");
+            y = (float)json.getDouble("y");
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+    }
 
     public void move()
     {
