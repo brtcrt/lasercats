@@ -23,7 +23,7 @@ public class LaserCats extends ApplicationAdapter {
 	private Client client;
 	private MainMenu menu;
 	private Player cat; // TODO move this down to create() later probably ~brtcrt
-	private PlayerNonMain otherCat;
+	private Player otherCat;
 	private long roomUpdateTime;
 	private JSONObject dataToServer;
 
@@ -32,8 +32,8 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 128, 128);
-		this.otherCat = new PlayerNonMain(-300, -300, 128, 128);
+		this.cat = new Player(32, 32, 128, 128, true);
+		this.otherCat = new Player(-300, -300, 128, 128, false);
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);

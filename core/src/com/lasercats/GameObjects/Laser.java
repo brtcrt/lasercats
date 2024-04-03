@@ -11,7 +11,7 @@ import java.awt.*;
 
 import com.badlogic.gdx.graphics.Color;
 
-public class Laser implements GameObject {
+public class Laser {
     int x1, x2, y1, y2;
     private static ShapeRenderer debugRenderer = new ShapeRenderer();
     private static Matrix4 projectionMatrix = new Matrix4();

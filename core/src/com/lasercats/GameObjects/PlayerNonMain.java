@@ -10,27 +10,28 @@ import com.badlogic.gdx.math.Vector2;
 
 public class PlayerNonMain extends Player {
 
-    public PlayerNonMain (float x, float y, float width, float height) {
-        super(x, y, width, height);
+    public PlayerNonMain (float x, float y, float width, float height, boolean isMainPlayer) {
+        super(x, y, width, height, isMainPlayer);
     }
 
     @Override
     public void process() {
-        velocity.nor();
-        move();
-
-        // Animation
-        stateTime += Gdx.graphics.getDeltaTime();
-
-        if (is_walking()) {
-            currentAnimation = walkAnimation;
-        } else {
-            currentAnimation = idleAnimation;
-        }
-        sprite = new Sprite(currentAnimation.getKeyFrame(stateTime, true));
-
-        if(direction.x > 0) {
-            sprite.flip(true, false);
-        }
+        super.process();
+//        velocity.nor();
+//        move();
+//
+//        // Animation
+//        stateTime += Gdx.graphics.getDeltaTime();
+//
+//        if (is_walking()) {
+//            currentAnimation = walkAnimation;
+//        } else {
+//            currentAnimation = idleAnimation;
+//        }
+//        sprite = new Sprite(currentAnimation.getKeyFrame(stateTime, true));
+//
+//        if(direction.x > 0) {
+//            sprite.flip(true, false);
+//        }
     }
 }
