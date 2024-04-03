@@ -70,6 +70,9 @@ public class LaserCats extends ApplicationAdapter {
 			for (GameObject object : gameObjects)
 			{
 				object.process();
+			}
+
+			for (GameObject object : gameObjects) {
 				identifiers.add(object.getIdentifiers());
 			}
 
