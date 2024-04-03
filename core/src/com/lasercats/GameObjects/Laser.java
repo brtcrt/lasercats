@@ -54,12 +54,14 @@ public class Laser implements GameObject {
 
     @Override
     public void render(SpriteBatch batch) {
+        batch.end();
         Gdx.gl.glLineWidth(2);
         debugRenderer.setProjectionMatrix(projectionMatrix);
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
         debugRenderer.line(new Vector2(x1,y1), direction);
         debugRenderer.end();
+        batch.begin();
     }
 
     @Override
