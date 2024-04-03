@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.lasercats.Client.Client;
@@ -38,6 +39,7 @@ public class LaserCats extends ApplicationAdapter {
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
 		createBoxes();
+		gameObjects.add(new Laser(0,0, new Vector2(100,100)));
 		// gameObjects.add(new Box(400, 400, cat, otherCat));
 		renderQueue = new ArrayList<GameObject>(gameObjects);
 		client = new Client(gameObjects);
@@ -48,6 +50,7 @@ public class LaserCats extends ApplicationAdapter {
 	@Override
 	public void render () {
 		ScreenUtils.clear(0, 0, 0, 0);
+		System.out.println(gameObjects);
 		menu.getStage().act(Gdx.graphics.getDeltaTime());
 		menu.getStage().draw();
 		if (TimeUtils.nanoTime() - this.roomUpdateTime > TimeUtils.millisToNanos(1000)) {
