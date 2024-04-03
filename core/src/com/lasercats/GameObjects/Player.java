@@ -33,7 +33,7 @@ public class Player extends Empty implements  GameObject {
 
 
     public Player (float x, float y, float width, float height) {
-        super(x, y, width, height);
+        super(x, y, width - 20, height);
         animationSheet = new Texture(Gdx.files.internal("CatAnimationSheet.png"));
 
         TextureRegion[][] tmp = TextureRegion.split(animationSheet, 32, 32);
@@ -92,7 +92,7 @@ public class Player extends Empty implements  GameObject {
 
     public void render(SpriteBatch batch)
     {
-        batch.draw(sprite, x, y, WIDTH, HEIGHT);
+        batch.draw(sprite, x - 10, y, WIDTH, HEIGHT);
     }
 
     public void move()

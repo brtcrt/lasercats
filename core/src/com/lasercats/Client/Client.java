@@ -30,7 +30,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "https://lasercats-dev.fly.dev";
+        this.uri = "https://lasercats.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
@@ -168,6 +168,7 @@ public class Client {
                     } else {
                         JSONObject identifier = (JSONObject) data.get(0);
                         otherPlayer.setIdentifiers(identifier);
+                        assert data.length() == gameObjects.size();
                         for (int i = 2; i < data.length(); i++) {
                             // This will cause a lot of problems later on... End me. ~brtcrt
                             identifier = (JSONObject) data.get(i);
