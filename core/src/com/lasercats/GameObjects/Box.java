@@ -22,7 +22,7 @@ public class Box extends Empty implements GameObject{
     private final static float WIDTH = 128 , HEIGHT = 128;
 
     public Box(int x, int y, ArrayList<GameObject> gameObjects){
-        super(x, y, WIDTH - 36, HEIGHT);
+        super(x, y, WIDTH - 36, HEIGHT - 4);
         boxImage = new Texture(Gdx.files.internal("Box.png"));
         sprite = new Sprite(boxImage);
         // changed this to GameObject ArrayList so boxes can also interact with each other.
@@ -45,7 +45,7 @@ public class Box extends Empty implements GameObject{
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(sprite, x - 16, y, WIDTH, HEIGHT);
+        batch.draw(sprite, x - 16, y , WIDTH, HEIGHT);
     }
 
     public void destroy(){
