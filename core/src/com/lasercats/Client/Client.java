@@ -30,7 +30,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "https://lasercats.fly.dev/";
+        this.uri = "https://lasercats.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();

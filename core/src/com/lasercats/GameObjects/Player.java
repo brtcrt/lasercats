@@ -150,6 +150,7 @@ public class Player extends Empty implements  GameObject {
     public void destroy()
     {
         animationSheet.dispose();
+        meow.dispose();
     }
 
 
