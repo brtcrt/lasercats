@@ -28,6 +28,10 @@ public class Laser implements GameObject {
         Gdx.gl.glLineWidth(1);
     }
 
+    public void setProjectionMatrix(Matrix4 projectionMatrix)
+    {
+        this.projectionMatrix = projectionMatrix;
+    }
     @Override
     public void process() {
 
