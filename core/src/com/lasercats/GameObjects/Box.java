@@ -33,12 +33,24 @@ public class Box extends Empty implements GameObject{
         // Movement
         velocity.x = 0;
         velocity.y = 0;
+
         for(GameObject object : gameObject){
             if (object.getCollider().overlaps(this)) {
-                velocity.x = object.getVelocity().x;
-                velocity.y = object.getVelocity().y;
+                Vector2 center = object.getCollider().getCenter(new Vector2(object.getX(), object.getY()));
+                Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
+                moveVector.nor();
+                velocity.x += moveVector.x;
+                velocity.y += moveVector.y;
+
             }
-        }   
+        }
+
+        if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+            velocity.y = 0;
+        } else {
+            velocity.x = 0;
+        }
+
         velocity.nor();
         move();
 

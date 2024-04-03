@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.lasercats.Client.Client;
@@ -38,6 +39,10 @@ public class LaserCats extends ApplicationAdapter {
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
 		createBoxes();
+		gameObjects.add(new Wall(600, 600, 128, 32));
+		gameObjects.add(new Wall(472, 600, 128, 32));
+		gameObjects.add(new Wall(728, 472, 32, 128));
+		gameObjects.add(new Wall(728, 344, 32, 128));
 		// gameObjects.add(new Box(400, 400, cat, otherCat));
 		renderQueue = new ArrayList<GameObject>(gameObjects);
 		client = new Client(gameObjects);
