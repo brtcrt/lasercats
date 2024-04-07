@@ -58,11 +58,20 @@ public class LaserCats extends ApplicationAdapter {
 		if (!menu.getGameModeButton().isChecked() && menu.getRoomCreateButton().isPressed()) {
 			// menu.getRoomCreateButton().setDisabled(true);
 			String roomName = menu.getRoomCreateField().getText();
-			client.createRoom(roomName);
+			if (menu.getRoomPasswordField().getText().isEmpty()) {
+				client.createRoom(roomName);
+			} else {
+				client.createRoom(roomName, menu.getRoomPasswordField().getText());
+			}
 			Gdx.app.log("New Room Request", roomName);
 		}
 		if (!menu.getGameModeButton().isChecked() && !menu.getRoomClicked().isEmpty()) {
-			client.joinRoom(menu.getRoomClicked());
+			Gdx.app.log("Room Clicked", menu.getRoomClicked().toString());
+			if (menu.getRoomClicked().hasPassword()) {
+				client.joinRoom(menu.getRoomClicked(), menu.getRoomPasswordField().getText());
+			} else {
+				client.joinRoom(menu.getRoomClicked());
+			}
 		}
 		if (menu.getGameModeButton().isChecked()) {
 			menu.getGameModeButton().setDisabled(true);

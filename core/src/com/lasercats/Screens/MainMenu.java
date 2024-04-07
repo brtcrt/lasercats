@@ -45,6 +45,7 @@ public class MainMenu {
 
     private Skin skin;
     private TextField roomCreateField;
+    private TextField roomPasswordField;
     private TextButton roomCreateButton;
 
     private TextField gameTitle;
@@ -80,6 +81,11 @@ public class MainMenu {
 
         skin = new Skin(Gdx.files.internal("flatearthui/flat-earth-ui.json"));
         roomCreateField = new TextField("", skin);
+
+        roomPasswordField = new TextField("", skin);
+        roomPasswordField.setPasswordMode(true);
+        roomPasswordField.setPasswordCharacter('*');
+        roomPasswordField.setMessageText("Enter password or leave empty");
 
         roomNameLabel = new Label("Currently in no Room", skin);
 
@@ -137,6 +143,8 @@ public class MainMenu {
         table.row();
         table.add(roomCreateField);
         table.add(roomCreateButton).align(Align.center);
+        table.row();
+        table.add(roomPasswordField);
 
 
         table.row();
@@ -157,7 +165,8 @@ public class MainMenu {
                 String id = room.getString("roomId");
                 String name = room.getString("roomName");
                 JSONArray players = room.getJSONArray("players");
-                this.rooms.add(new Room(id, name, players));
+                String passwordHash = room.getString("passwordHash");
+                this.rooms.add(new Room(id, name, players, passwordHash));
             } catch (JSONException e) {
                 System.out.println(e);
             }
@@ -211,6 +220,7 @@ public class MainMenu {
 
     public TextButton getRoomCreateButton() { return this.roomCreateButton; }
     public TextField getRoomCreateField() { return this.roomCreateField; }
+    public TextField getRoomPasswordField() { return this.roomPasswordField; }
 
     public Room getRoomClicked() {
         for (int i = 0; i < roomButtons.size(); i++) {
