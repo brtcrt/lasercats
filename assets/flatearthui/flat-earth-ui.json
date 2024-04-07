@@ -420,7 +420,8 @@ com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 		fontColor: white
 		background: textfield-c
 		cursor: white
-		selection: selection
+		selection: selection,
+		messageFontColor: white,
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {

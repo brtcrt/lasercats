@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -30,7 +32,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "https://lasercats.fly.dev";
+        this.uri = "http://localhost:8080"; // "https://lasercats.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
@@ -53,11 +55,46 @@ public class Client {
     public void createRoom(String roomName) {
         JSONObject data = new JSONObject();
         try {
+            if (!this.room.isEmpty()) {
+                data.put("currentRoom", this.room.getJSON());
+            }
             data.put("roomName", roomName);
         } catch (JSONException e) {
             System.out.println(e);
         }
         this.socket.emit("newRoomReq", data);
+    }
+
+    public void createRoom(String roomName, String password) {
+        JSONObject data = new JSONObject();
+        // Gdx.app.log("Hashed password", hashPassword(password));
+        try {
+            if (!this.room.isEmpty()) {
+                data.put("currentRoom", this.room.getJSON());
+            }
+            data.put("roomName", roomName);
+            data.put("passwordHash", hashPassword(password));
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+        this.socket.emit("newRoomReq", data);
+    }
+
+    private static String hashPassword(String p) {
+        try{
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(p.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (int i = 0; i < hash.length; i++) {
+                final String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1)
+                    hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch(Exception ex){
+            throw new RuntimeException(ex);
+        }
     }
 
     public void joinRoom(Room r) {
@@ -67,6 +104,21 @@ public class Client {
             data.put("roomName", r.getName());
             data.put("players", r.getPlayerIDs());
             data.put("currentRoom", this.room.getJSON());
+            data.put("passwordHash", "");
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
+        this.socket.emit("joinRoomReq", data);
+    }
+
+    public void joinRoom(Room r, String password) {
+        JSONObject data = new JSONObject();
+        try {
+            data.put("roomId", r.getId());
+            data.put("roomName", r.getName());
+            data.put("players", r.getPlayerIDs());
+            data.put("currentRoom", this.room.getJSON());
+            data.put("passwordHash", hashPassword(password));
         } catch (JSONException e) {
             System.out.println(e);
         }
