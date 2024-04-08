@@ -84,7 +84,7 @@ public class MainMenuScreen extends LaserCatsScreen {
     @Override
     public void render(float delta) {
         //Background can be something else. Feel free to change this.
-        ScreenUtils.clear(Color.RED);
+        ScreenUtils.clear(Color.ORANGE);
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();

@@ -96,7 +96,7 @@ public class LobbyScreen extends LaserCatsScreen {
     }
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.RED);
+        ScreenUtils.clear(Color.ORANGE);
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
