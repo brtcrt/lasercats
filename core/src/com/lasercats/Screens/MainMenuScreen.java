@@ -163,7 +163,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         //TODO change screens later.
         this.playButton.addListener(new ScreenListener(new LobbyScreen(game, this), game));
         this.levelEditorButton.addListener(new ScreenListener(null, game));
-        this.optionsButton.addListener(new ScreenListener(new OptionsScreen(game), game));
+        this.optionsButton.addListener(new ScreenListener(new OptionsScreen(game, this), game));
         this.tutorialButton.addListener(new ScreenListener(null, game));
 
     }

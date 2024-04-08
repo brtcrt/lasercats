@@ -57,11 +57,13 @@ public class OptionsScreen extends LaserCatsScreen {
     private Label furColorLabel;
     private SelectBox furColorDropdown;
     private String[] furColors;
+    private MainMenuScreen menu;
 
     private ImageButton goBackButton;
 
-    public OptionsScreen(Game game) {
+    public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
+        this.menu = menu;
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
         this.furColors = new String[] {"White", "Red", "Green", "Blue"};
@@ -98,7 +100,14 @@ public class OptionsScreen extends LaserCatsScreen {
         audioButton.addListener(new OptionsButtonListener(audioWindow));
         controlsButton.addListener(new OptionsButtonListener(controlsWindow));
         customizeCatWindow.addListener(new OptionsButtonListener(customizeCatWindow));
-
+        goBackButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (goBackButton.isPressed()) {
+                    game.setScreen(menu);
+                }
+            }
+        });
 
     }
     @Override
