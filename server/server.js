@@ -4,6 +4,7 @@
  * @property {String} roomId - Id of room
  * @property {String} roomName - Name of room
  * @property {[String]} players - List of player ids
+ * @property {String} passwordHash - Hash of the password
  */
 
 const express = require("express");
@@ -22,11 +23,14 @@ let rooms = [
     roomId: uuid.v4(),
     roomName: "a",
     players: [22222],
+    passwordHash: "",
   },
   {
     roomId: uuid.v4(),
     roomName: "b",
     players: [312323],
+    passwordHash:
+      "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", // hash of abc
   },
 ];
 
@@ -69,10 +73,26 @@ io.on("connection", (socket) => {
         payload: {},
       });
     } else {
+      // If already in a room. I wasn't checking for this before for some reason idk
+      if (args["currentRoom"]) {
+        const old_room = findRoom(rooms, args["currentRoom"]);
+        if (rooms[old_room].players.length < 2) {
+          // if old room only had current player, delete it
+          rooms.splice(old_room, 1);
+        } else {
+          // if not then remove the player from room["players"]
+          const player_index = rooms[old_room].players.indexOf(socket.id);
+          if (player_index > -1) {
+            // double check to see if player is in the room
+            rooms[old_room].players.splice(player_index, 1);
+          }
+        }
+      }
       const room = {
         roomId: uuid.v4(),
         roomName: roomName,
         players: [socket.id],
+        passwordHash: args["passwordHash"],
       };
       console.log(`Created room ${roomName}: ${JSON.stringify(room)}`);
       rooms.push(room);
@@ -97,6 +117,15 @@ io.on("connection", (socket) => {
     } else {
       // exists
       const r = rooms[index];
+      // check for password
+      if (args.passwordHash != r.passwordHash) {
+        socket.emit("joinRoomRes", {
+          code: 401, // http response code for "Unauthorized"
+          message: `Wrong password for room ${rooms[index].roomName}`,
+          payload: {},
+        });
+        return;
+      }
 
       if (r.players.length < 2) {
         // and has empty space

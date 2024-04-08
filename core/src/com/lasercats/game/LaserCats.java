@@ -32,8 +32,8 @@ public class LaserCats extends ApplicationAdapter {
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, 1024, 720);
-		this.cat = new Player(32, 32, 128, 80);
-		this.otherCat = new PlayerNonMain(-300, -300, 128, 80);
+		this.cat = new Player(32, 32, 128, 128);
+		this.otherCat = new PlayerNonMain(-300, -300, 128, 128);
 		gameObjects = new ArrayList<GameObject>();
 		gameObjects.add(cat);
 		gameObjects.add(otherCat);
@@ -58,11 +58,20 @@ public class LaserCats extends ApplicationAdapter {
 		if (!menu.getGameModeButton().isChecked() && menu.getRoomCreateButton().isPressed()) {
 			// menu.getRoomCreateButton().setDisabled(true);
 			String roomName = menu.getRoomCreateField().getText();
-			client.createRoom(roomName);
+			if (menu.getRoomPasswordField().getText().isEmpty()) {
+				client.createRoom(roomName);
+			} else {
+				client.createRoom(roomName, menu.getRoomPasswordField().getText());
+			}
 			Gdx.app.log("New Room Request", roomName);
 		}
 		if (!menu.getGameModeButton().isChecked() && !menu.getRoomClicked().isEmpty()) {
-			client.joinRoom(menu.getRoomClicked());
+			Gdx.app.log("Room Clicked", menu.getRoomClicked().toString());
+			if (menu.getRoomClicked().hasPassword()) {
+				client.joinRoom(menu.getRoomClicked(), menu.getRoomPasswordField().getText());
+			} else {
+				client.joinRoom(menu.getRoomClicked());
+			}
 		}
 		if (menu.getGameModeButton().isChecked()) {
 			menu.getGameModeButton().setDisabled(true);

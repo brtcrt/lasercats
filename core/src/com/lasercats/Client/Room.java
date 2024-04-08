@@ -4,15 +4,19 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.security.MessageDigest;
+
 public class Room {
     private String id;
     private String name;
     private String[] playerIDs;
     private JSONObject json;
+    private String passwordHash;
 
     public Room() {
         this.id = "";
         this.name = "";
+        this.passwordHash = "";
         this.playerIDs = new String[2];
         this.json = new JSONObject();
     }
@@ -22,6 +26,7 @@ public class Room {
             this.json = json;
             this.id = json.getString("roomId");
             this.name = json.getString("roomName");
+            this.passwordHash = json.getString("passwordHash");
             this.playerIDs = new String[2];
             JSONArray players = json.getJSONArray("players");
             for (int i = 0; i < players.length(); i++) {
@@ -46,10 +51,11 @@ public class Room {
         }
     }
 
-    public Room(String id, String name, JSONArray playerIDs) {
+    public Room(String id, String name, JSONArray playerIDs, String passwordHash) {
         this.id = id;
         this.name = name;
         this.playerIDs = new String[2];
+        this.passwordHash = passwordHash;
         try {
             for (int i = 0; i < playerIDs.length(); i++) {
                 this.playerIDs[i] = playerIDs.getString(i);
@@ -86,6 +92,14 @@ public class Room {
 
     public JSONObject getJSON() {
         return this.json;
+    }
+
+    public boolean hasPassword() {
+        return !this.passwordHash.isEmpty();
+    }
+
+    public String getPasswordHash() {
+        return this.passwordHash;
     }
 
     @Override

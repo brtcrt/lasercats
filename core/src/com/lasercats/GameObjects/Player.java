@@ -2,6 +2,7 @@ package com.lasercats.GameObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -21,19 +22,19 @@ public class Player extends Empty implements  GameObject {
     protected Animation<TextureRegion> idleAnimation;
     protected Animation<TextureRegion> walkAnimation;
     protected Animation<TextureRegion> currentAnimation;
+    protected Sound meow;
 
     protected final float walkSpeed = 150f;
     protected final float animationPeriod = 0.14f;
     private final static float WIDTH = 128 , HEIGHT = 128;
     protected float stateTime;
     public Vector2 direction;
-
     public int[] controlScheme;
 
 
 
     public Player (float x, float y, float width, float height) {
-        super(x, y, width, height);
+        super(x, y, width - 20, height - 52);
         animationSheet = new Texture(Gdx.files.internal("CatAnimationSheet.png"));
 
         TextureRegion[][] tmp = TextureRegion.split(animationSheet, 32, 32);
@@ -54,6 +55,8 @@ public class Player extends Empty implements  GameObject {
         stateTime = 0;
 
         controlScheme = new int[]{Input.Keys.D, Input.Keys.A, Input.Keys.W, Input.Keys.S};
+
+        meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
     }
 
     public void process()
@@ -75,6 +78,11 @@ public class Player extends Empty implements  GameObject {
         velocity.nor();
         move();
 
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M))
+        {
+            meow.play();
+        }
+
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
 
@@ -92,7 +100,7 @@ public class Player extends Empty implements  GameObject {
 
     public void render(SpriteBatch batch)
     {
-        batch.draw(sprite, x, y, WIDTH, HEIGHT);
+        batch.draw(sprite, x - 10, y , WIDTH, HEIGHT);
     }
 
     public void move()
@@ -142,6 +150,7 @@ public class Player extends Empty implements  GameObject {
     public void destroy()
     {
         animationSheet.dispose();
+        meow.dispose();
     }
 
 
