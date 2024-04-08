@@ -2,6 +2,7 @@ package com.lasercats.Screens;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -13,22 +14,20 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 
 public class OptionsScreen extends LaserCatsScreen {
 
-    private Table optionsTable;
     private TextButton audioButton;
     private TextButton controlsButton;
     private TextButton customizeCatButton;
 
-    private Window audioWindow;
-    private Window controlsWindow;
-    private Window customizeCatWindow;
+    private Table displayTable;
+    private Table buttonTable;
 
     private Slider sfxSlider;
     private Slider musicSlider;
@@ -61,11 +60,23 @@ public class OptionsScreen extends LaserCatsScreen {
 
     private ImageButton goBackButton;
 
+    private int[] keybinds;
+
     public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
         this.menu = menu;
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
+
+        this.keybinds = new int[7];
+        keybinds[0] = Input.Keys.W;
+        keybinds[1] = Input.Keys.S;
+        keybinds[2] = Input.Keys.D;
+        keybinds[3] = Input.Keys.A;
+        keybinds[4] = Input.Keys.SPACE;
+        keybinds[5] = Input.Keys.E;
+        keybinds[6] = Input.Keys.M;
+        
         this.furColors = new String[] {"White", "Red", "Green", "Blue"};
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
@@ -87,7 +98,7 @@ public class OptionsScreen extends LaserCatsScreen {
     }
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.RED);
+        ScreenUtils.clear(Color.ORANGE);
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
@@ -97,9 +108,9 @@ public class OptionsScreen extends LaserCatsScreen {
     }
     @Override
     public void setListeners() {
-        audioButton.addListener(new OptionsButtonListener(audioWindow));
-        controlsButton.addListener(new OptionsButtonListener(controlsWindow));
-        customizeCatWindow.addListener(new OptionsButtonListener(customizeCatWindow));
+        audioButton.addListener(new OptionsButtonListener());
+        controlsButton.addListener(new OptionsButtonListener());
+        customizeCatButton.addListener(new OptionsButtonListener());
         goBackButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -112,19 +123,20 @@ public class OptionsScreen extends LaserCatsScreen {
     }
     @Override
     public void createActors() {
-        optionsTable = new Table();
         audioButton = new TextButton("Audio", skin);
+        audioButton.setName("audio");
         controlsButton = new TextButton("Controls", skin);
+        controlsButton.setName("controls");
         customizeCatButton = new TextButton("Customize Cat", skin);
-
-        audioWindow = new Window("", skin);
-        controlsWindow = new Window("", skin);
-        customizeCatWindow = new Window("", skin);
+        customizeCatButton.setName("customize");
+        displayTable = new Table();
+        buttonTable = new Table();
 
         sfxSlider = new Slider(0, 100, 1, false, skin);
         musicSlider = new Slider(0, 100, 1, false, skin);
         sfxLabel = new Label("Sound Effects", skin);
         musicLabel = new Label("Music", skin);
+        musicLabel.setColor(Color.WHITE);
         sfxValue = new Label("", skin);
         musicValue = new Label("", skin);
 
@@ -153,96 +165,94 @@ public class OptionsScreen extends LaserCatsScreen {
     @Override
     public void positionActors() {
 
-        optionsTable.setSize((float) (root.getWidth()), (float) (root.getHeight()));
-        optionsTable.add(audioButton).expand().fill();
-        optionsTable.row();
-        optionsTable.add(controlsButton).expand().fill();
-        optionsTable.row();
-        optionsTable.add(customizeCatButton).expand().fill();
-
-        audioWindow.add(sfxLabel).expandX();
-        audioWindow.add(sfxSlider).expandX();
-        audioWindow.add(sfxValue).expandX();
-        audioWindow.row();
-        audioWindow.add(musicLabel).expandX();
-        audioWindow.add(musicSlider).expandX();
-        audioWindow.add(musicValue).expandX();
-
-        controlsWindow.add(moveUpLabel).expandX();
-        controlsWindow.add(moveUpKeybind).expandX();
-        controlsWindow.row();
-        controlsWindow.add(moveDownLabel).expandX();
-        controlsWindow.add(moveDownKeybind).expandX();
-        controlsWindow.row();
-        controlsWindow.add(moveRightLabel).expandX();
-        controlsWindow.add(moveRightKeybind).expandX();
-        controlsWindow.row();
-        controlsWindow.add(moveLeftLabel).expandX();
-        controlsWindow.add(moveLeftKeybind).expandX();
-        controlsWindow.row();
-        controlsWindow.add(shootLaserLabel).expandX();
-        controlsWindow.add(shootLaserKeybind).expandX();
-        controlsWindow.row();
-        controlsWindow.add(interactLabel).expandX();
-        controlsWindow.add(interactKeybind).expandX();
-        controlsWindow.row();
-        controlsWindow.add(meowLabel).expandX();
-        controlsWindow.add(meowKeybind).expandX();
-
-        customizeCatWindow.add(furColorLabel).expandX();
-        customizeCatWindow.add(furColorDropdown).expandX();
-
-        //No idea if this is right as well.
-        audioWindow.setVisible(false);
-        controlsWindow.setVisible(false);
-        customizeCatWindow.setVisible(false);
+        buttonTable.add(goBackButton).align(Align.topLeft).width(60).padBottom(120);
+        buttonTable.row();
+        buttonTable.add(audioButton).expand().fillY().width(200).align(Align.left);
+        buttonTable.row();
+        buttonTable.add(controlsButton).expand().fillY().width(200).align(Align.left);
+        buttonTable.row();
+        buttonTable.add(customizeCatButton).expand().fillY().width(200).align(Align.left);
+        root.add(buttonTable).expand().fill();
+        root.add(displayTable).expand().fill();
         
-        root.add(goBackButton).align(Align.topLeft).width(60).padBottom(120);
-        root.row();
-        root.add(optionsTable);
         stage.setRoot(root);
-        stage.setDebugAll(true);
+        //stage.setDebugAll(true);
+    }
+    private void positionAudioOptions() {
+        displayTable.clear();
+        displayTable.add(sfxLabel).expandX();
+        displayTable.add(sfxSlider).expandX();
+        displayTable.add(sfxValue).expandX();
+        displayTable.row();
+        displayTable.add(musicLabel).expandX();
+        displayTable.add(musicSlider).expandX();
+        displayTable.add(musicValue).expandX();
+    }
+    private void positionControlsOptions() {
+        displayTable.clear();
+        displayTable.add(moveUpLabel).expandX();
+        displayTable.add(moveUpKeybind).expandX();
+        displayTable.row();
+        displayTable.add(moveDownLabel).expandX();
+        displayTable.add(moveDownKeybind).expandX();
+        displayTable.row();
+        displayTable.add(moveRightLabel).expandX();
+        displayTable.add(moveRightKeybind).expandX();
+        displayTable.row();
+        displayTable.add(moveLeftLabel).expandX();
+        displayTable.add(moveLeftKeybind).expandX();
+        displayTable.row();
+        displayTable.add(shootLaserLabel).expandX();
+        displayTable.add(shootLaserKeybind).expandX();
+        displayTable.row();
+        displayTable.add(interactLabel).expandX();
+        displayTable.add(interactKeybind).expandX();
+        displayTable.row();
+        displayTable.add(meowLabel).expandX();
+        displayTable.add(meowKeybind).expandX();
+    }
+    private void positionCustomizeCatOptions() {
+        displayTable.clear();
+        displayTable.add(furColorLabel).expandX();
+        displayTable.add(furColorDropdown).expandX();
     }
     @Override
-    public void hide() {
-        
-    }
+    public void hide() {}
     @Override
     public void dispose() {
         
     }
     @Override
-    public void resume() {
-        
-    }
+    public void resume() {}
     public class OptionsButtonListener extends ChangeListener  {
-        private Window window;
-        public OptionsButtonListener(Window window) {
-            this.window = window;
-        }
         @Override
         public void changed(ChangeEvent event, Actor actor) {
-            resetWindows();
             if (((Button) actor).isPressed()) {
-                window.setVisible(true);
-                optionsTable.add(window);
+                Cell<Table> cell = root.getCell(displayTable);
+                if (actor.getName().equals("audio")) {
+                    positionAudioOptions();
+                }
+                else if (actor.getName().equals("controls")) {
+                    positionControlsOptions();
+                }
+                else if (actor.getName().equals("customize")) {
+                    positionCustomizeCatOptions();
+                }
+                cell.setActor(displayTable);
             }
-        }
-        private void resetWindows() {
-            //Just in case.
-            audioWindow.setVisible(false);
-            controlsWindow.setVisible(false);
-            customizeCatWindow.setVisible(false);
-
-            optionsTable.removeActor(audioWindow);
-            optionsTable.removeActor(controlsWindow);
-            optionsTable.removeActor(customizeCatWindow);
         }
     }
     public class KeybindListener extends ChangeListener {
         @Override
         public void changed(ChangeEvent event, Actor actor) {
-            
+            if (((Button) actor).isPressed()) {
+                if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
+                    return;
+                }
+                else {
+
+                }
+            }
         }
     }
 }
