@@ -1,11 +1,15 @@
 package com.lasercats.Screens;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -15,6 +19,10 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.lasercats.Client.Client;
+import com.lasercats.GameObjects.GameObject;
+import com.lasercats.GameObjects.Player;
+import com.lasercats.GameObjects.PlayerNonMain;
 
 public class MainMenuScreen extends LaserCatsScreen {
     
@@ -31,37 +39,53 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Texture catImageTwo;
     private Texture title;
 
+    private Client client;
+    //Includes just the players initially
+    private ArrayList<GameObject> initialGameObjects;
+    private Player player;
+    private PlayerNonMain otherPlayer;
+
     //A general note about screen implementation. Some of the code might be redundant here because of how libGDX'S classes internally handle things.
     //Feel free to remove the unnecessary parts.
     public MainMenuScreen(Game game) {
         super(game);
+        this.player = new Player(32, 32, 128, 80);
+		this.otherPlayer = new PlayerNonMain(-300, -300, 128, 80);
+        initialGameObjects = new ArrayList<GameObject>();
+        initialGameObjects.add(player);
+        initialGameObjects.add(otherPlayer);
+        client = new Client(initialGameObjects);
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
         this.stage = new Stage(genericViewport, batch);
-        Gdx.input.setInputProcessor(stage);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-
         //TODO Placeholder JSON. Change later.
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         this.createActors();
         this.createTextures();
+        positionActors();
+        setListeners();
     }
-    @Override
-    public void show() {
-        this.positionActors();
-        this.setListeners();
-    }
-    @Override
-    public void resize(int width, int height) {
-        this.genericViewport.update(width, height, true);
-        this.root.setHeight(height);
-        this.root.setWidth(width);
+        public class ScreenListener extends ChangeListener {
+        private Screen screen;
+        private Game game;
+        public ScreenListener(Screen screen, Game game) {
+            this.screen = screen;
+            this.game = game;
+        }
+        @Override
+        public void changed(ChangeEvent event, Actor actor) {
+            if (((Button) actor).isPressed()) {
+                game.setScreen(screen);
+            }
+        }
     }
     @Override
     public void render(float delta) {
         //Background can be something else. Feel free to change this.
-        ScreenUtils.clear(Color.ORANGE);
+        ScreenUtils.clear(Color.RED);
+        Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
         this.stage.act(delta);
@@ -70,11 +94,6 @@ public class MainMenuScreen extends LaserCatsScreen {
         //One interesting thing about using stage is that because all resources of the main menu are part of the stage, when we call stage.draw() it draws all the resources.
         //So no need for batch.begin(), batch.end()
         //In fact, stage.draw() internally calls this sequence.
-    }
-    @Override
-    public void hide() {
-        //The screen should dispose all of its resources when it is no longer the current screen.
-        this.dispose();
     }
     @Override
     public void dispose() {
@@ -89,7 +108,6 @@ public class MainMenuScreen extends LaserCatsScreen {
     public void resume() {}
     @Override
     public void pause() {}
-    
     @Override
     public void createActors() {
         //TODO Placeholder style names. Change later.
@@ -124,7 +142,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.row();
         this.root.add(playButton).width(200).height(50).expandX().colspan(3);
         this.root.row();
-        this.root.add(new Image(catImageOne)).expandX().align(Align.left);
+        this.root.add(new Image(catImageOne)).expandX().align(Align.left).padRight(120);
         this.root.add(new Image(catImageTwo)).expandX().align(Align.right);
         this.root.row();
         this.root.add(levelEditorButton).width(200).height(50).colspan(3).padBottom(100);
@@ -132,52 +150,24 @@ public class MainMenuScreen extends LaserCatsScreen {
         //this.stage.setDebugAll(true);
     }
     @Override
-    //Organization is very messy here. Feel free to seperate this part into different classes. 
     public void setListeners() {
         this.exitButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (exitButton.isChecked()) {
+                if (exitButton.isPressed()) {
                     //When the exit button is pressed, the screen should dispose all its sources and close the application.
                     Gdx.app.exit();
                 }
             }
         });
-        this.playButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (playButton.isChecked()) {
-                    //TODO Change to lobbyScreen.
-                    game.setScreen(null);
-                }
-            }
-        });
-        this.levelEditorButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (levelEditorButton.isChecked()) {
-                    //TODO Change to levelEditorScreen.
-                    game.setScreen(null);
-                }
-            }
-        });
-        this.optionsButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (optionsButton.isChecked()) {
-                    //TODO Change to optionsScreen.
-                    game.setScreen(null);
-                }
-            }
-        });
-        this.tutorialButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (tutorialButton.isChecked()) {
-                    //TODO Change to tutorialScreen.
-                    game.setScreen(null);
-                }
-            }
-        });
+        //TODO change screens later.
+        this.playButton.addListener(new ScreenListener(new LobbyScreen(game, this), game));
+        this.levelEditorButton.addListener(new ScreenListener(null, game));
+        this.optionsButton.addListener(new ScreenListener(new OptionsScreen(game), game));
+        this.tutorialButton.addListener(new ScreenListener(null, game));
+
+    }
+    public Client getClient() {
+        return this.client;
     }
 }

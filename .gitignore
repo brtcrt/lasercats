@@ -119,4 +119,3 @@ Thumbs.db
 ## fly.io
 /server/.dockerignore
 Dockerfile
-fly.toml
