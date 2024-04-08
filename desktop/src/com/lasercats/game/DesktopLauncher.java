@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("lasercats");
 		config.setWindowedMode(1024, 720);
-		new Lwjgl3Application(new LaserCats(), config);
+		new Lwjgl3Application(new LaserCats2(), config);
 	}
 }

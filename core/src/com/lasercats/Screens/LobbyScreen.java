@@ -28,8 +28,6 @@ import com.lasercats.Client.Room;
 
 public class LobbyScreen extends LaserCatsScreen {
     
-    //TODO Needs heavy debugging
-
     private ArrayList<TextButton> roomButtons;
     private VerticalGroup roomList;
     private ArrayList<Room> rooms;
@@ -162,11 +160,15 @@ public class LobbyScreen extends LaserCatsScreen {
         roomList = new VerticalGroup();
         goBackButton = new ImageButton(skin);
         gameModeDropBox = new SelectBox<String[]>(skin);
-        passwordField = new TextField("Set room password", skin);
+
+        passwordField = new TextField("Create password", skin);
+
         startGameButton = new TextButton("Start", skin);
         gameModeDropBox.setItems(gameModes);
         passwordEnterWindow = new Window("Enter password", skin);
         passwordEnterField = new TextField("", skin);
+        passwordEnterField.setPasswordMode(true);
+        passwordEnterField.setPasswordCharacter('*');
         roomList.setWidth(Gdx.graphics.getWidth() / 2f);
         roomList.setHeight(Gdx.graphics.getHeight() / 2f);
     }
@@ -184,12 +186,14 @@ public class LobbyScreen extends LaserCatsScreen {
                 String id = room.getString("roomId");
                 String name = room.getString("roomName");
                 JSONArray players = room.getJSONArray("players");
-                this.rooms.add(new Room(id, name, players));
+                String passwordHash = room.getString("passwordHash");
+                this.rooms.add(new Room(id, name, players, passwordHash));
             } catch (JSONException e) {
                 System.out.println(e);
             }
         }
     }
+
     private void updateRoomList() {
         getRooms();
 
@@ -202,7 +206,7 @@ public class LobbyScreen extends LaserCatsScreen {
 
         for (Room r : rooms) {
             TextButton roomButton = new TextButton(r.toString(), skin);
-            setRoomButtonListener(roomButton);
+            setRoomButtonListener(roomButton, r);
             if (!(r.getPlayerCount() < 2)) {
                 roomButton.setDisabled(true);
             }
@@ -210,6 +214,7 @@ public class LobbyScreen extends LaserCatsScreen {
             roomList.addActor(roomButton);
         }
     }
+
     private void updateCurrentRoom() {
         Room currentRoom = this.client.getRoom();
         if (currentRoom.isEmpty()) {
@@ -227,16 +232,20 @@ public class LobbyScreen extends LaserCatsScreen {
         }
         return new Room();
     }
-    //TODO need to update this implementation with passwords. Requires some work on the networking side as well.
-    private void setRoomButtonListener(TextButton button) {
+    private void setRoomButtonListener(TextButton button, Room room) {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (button.isChecked() && getRoomClicked().getPlayerCount() < 2 ) {
-                    passwordEnterWindow.setVisible(true);
-                    if (passwordEnterField.getText().equals(/*Room's password */) || /*Room's password*/.length() == 0) {
-                        client.joinRoom(getRoomClicked());
+                    if (room.hasPassword()) {
+                        passwordEnterWindow.setVisible(true);
+                        if (passwordEnterField.getText().equals(room.getPasswordHash())) {
+                            client.joinRoom(getRoomClicked(), room.getPasswordHash());
+                        }
                     }
+                    else {
+                        client.joinRoom(getRoomClicked());
+                    }   
                 }
             }
         });

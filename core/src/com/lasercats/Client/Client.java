@@ -32,7 +32,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "http://localhost:8080"; // "https://lasercats.fly.dev";
+        this.uri = "https://lasercats.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
@@ -128,7 +128,9 @@ public class Client {
     public Room getRoom() {
         return room;
     }
-
+    public ArrayList<GameObject> getGameObjects() {
+        return gameObjects;
+    }
     public void updateRooms() {
         this.socket.emit("getRooms");
     }
