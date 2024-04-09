@@ -3,6 +3,8 @@ package com.lasercats.Screens;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.lasercats.GameObjects.Player;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 
 public class OptionsScreen extends LaserCatsScreen {
@@ -44,7 +47,6 @@ public class OptionsScreen extends LaserCatsScreen {
     private Label interactLabel;
     private Label meowLabel;
 
-    //No idea if this is the right way to do this.
     private TextButton moveUpKeybind;
     private TextButton moveDownKeybind;
     private TextButton moveRightKeybind;
@@ -60,7 +62,10 @@ public class OptionsScreen extends LaserCatsScreen {
 
     private ImageButton goBackButton;
 
-    private int[] keybinds;
+    private static int[] keybinds;
+
+    private KeybindProcessor processor;
+    private InputMultiplexer multiplexer;
 
     public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
@@ -68,7 +73,7 @@ public class OptionsScreen extends LaserCatsScreen {
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
 
-        this.keybinds = new int[7];
+        keybinds = new int[7];
         keybinds[0] = Input.Keys.W;
         keybinds[1] = Input.Keys.S;
         keybinds[2] = Input.Keys.D;
@@ -76,9 +81,12 @@ public class OptionsScreen extends LaserCatsScreen {
         keybinds[4] = Input.Keys.SPACE;
         keybinds[5] = Input.Keys.E;
         keybinds[6] = Input.Keys.M;
+        processor = new KeybindProcessor();
+        multiplexer = new InputMultiplexer();
         
         this.furColors = new String[] {"White", "Red", "Green", "Blue"};
         this.stage = new Stage(genericViewport, batch);
+        multiplexer.addProcessor(stage);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         //TODO Placeholder JSON. Change later.
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
@@ -99,7 +107,7 @@ public class OptionsScreen extends LaserCatsScreen {
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.ORANGE);
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(multiplexer);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
         this.stage.act(delta);
@@ -119,7 +127,13 @@ public class OptionsScreen extends LaserCatsScreen {
                 }
             }
         });
-
+        moveUpKeybind.addListener(new KeybindListener(0, moveUpKeybind));
+        moveDownKeybind.addListener(new KeybindListener(1, moveDownKeybind));
+        moveRightKeybind.addListener(new KeybindListener(2, moveRightKeybind));
+        moveLeftKeybind.addListener(new KeybindListener(3, moveLeftKeybind));
+        shootLaserKeybind.addListener(new KeybindListener(4, shootLaserKeybind));
+        interactKeybind.addListener(new KeybindListener(5, interactKeybind));
+        meowKeybind.addListener(new KeybindListener(6, meowKeybind));
     }
     @Override
     public void createActors() {
@@ -174,7 +188,7 @@ public class OptionsScreen extends LaserCatsScreen {
         buttonTable.add(customizeCatButton).expand().fillY().width(200).align(Align.left);
         root.add(buttonTable).expand().fill();
         root.add(displayTable).expand().fill();
-        
+
         stage.setRoot(root);
         //stage.setDebugAll(true);
     }
@@ -215,6 +229,7 @@ public class OptionsScreen extends LaserCatsScreen {
         displayTable.clear();
         displayTable.add(furColorLabel).expandX();
         displayTable.add(furColorDropdown).expandX();
+        //TODO according to the selected item we need to change cat's asset.
     }
     @Override
     public void hide() {}
@@ -242,17 +257,55 @@ public class OptionsScreen extends LaserCatsScreen {
             }
         }
     }
+    public static int[] getKeybinds() {
+        return keybinds;
+    }
     public class KeybindListener extends ChangeListener {
+        private int index;
+        private TextButton button;
+        public KeybindListener (int index, TextButton button) {
+            this.index = index;
+            this.button = button;
+        }
         @Override
         public void changed(ChangeEvent event, Actor actor) {
             if (((Button) actor).isPressed()) {
-                if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
-                    return;
-                }
-                else {
-
-                }
+                multiplexer.removeProcessor(stage);
+                multiplexer.addProcessor(processor);
+                processor.setIndex(index);
+                processor.setButton(button);
             }
+        }
+    }
+    public class KeybindProcessor extends InputAdapter {
+        private int index;
+        private TextButton button;
+        public KeybindProcessor() {
+            this.index = 0;
+            this.button = null;
+        }
+        @Override
+        public boolean keyDown(int keycode) {
+            //TODO handle duplicate keybinds.
+            if (keycode != Input.Keys.ESCAPE) {
+               keybinds[index] = keycode;
+               button.setText(Input.Keys.toString(keycode));
+               Player.setControlScheme(keybinds);
+               multiplexer.removeProcessor(processor);
+               multiplexer.addProcessor(stage);
+               return true; 
+            }
+            else {
+                multiplexer.removeProcessor(processor);
+                multiplexer.addProcessor(stage);
+                return false;
+            }
+        }
+        public void setIndex(int index) {
+            this.index = index;
+        }
+        public void setButton(TextButton button) {
+            this.button = button;
         }
     }
 }
