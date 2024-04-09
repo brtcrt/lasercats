@@ -129,7 +129,12 @@ public class LobbyScreen extends LaserCatsScreen {
            public void changed(ChangeEvent event, Actor actor) {
                if (roomCreateButton.isPressed()) {
                 String roomName = roomCreateField.getText();
-                client.createRoom(roomName);
+                String password = passwordField.getText();
+                if (password.isEmpty()) {
+                    client.createRoom(roomName);
+                } else {
+                    client.createRoom(roomName, password);
+                }
                 Gdx.app.log("New Room Request", roomName);
                 updateRoomList();
                }
@@ -154,14 +159,18 @@ public class LobbyScreen extends LaserCatsScreen {
     @Override
     public void createActors() {
         roomButtons = new ArrayList<TextButton>();
-        roomCreateField = new TextField("Enter room name", skin);
+        roomCreateField = new TextField("", skin);
+        roomCreateField.setMessageText("Enter room name");
         roomNameLabel = new Label("Currently in no Room", skin);
         roomCreateButton = new TextButton("Create Room", skin);
         roomList = new VerticalGroup();
         goBackButton = new ImageButton(skin);
         gameModeDropBox = new SelectBox<String[]>(skin);
 
-        passwordField = new TextField("Create password", skin);
+        passwordField = new TextField("", skin);
+        passwordField.setMessageText("Create password");
+        passwordField.setPasswordMode(true);
+        passwordField.setPasswordCharacter('*');
 
         startGameButton = new TextButton("Start", skin);
         gameModeDropBox.setItems(gameModes);

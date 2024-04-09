@@ -59,6 +59,7 @@ public class Client {
                 data.put("currentRoom", this.room.getJSON());
             }
             data.put("roomName", roomName);
+            data.put("passwordHash", "");
         } catch (JSONException e) {
             System.out.println(e);
         }
