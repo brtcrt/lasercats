@@ -15,7 +15,7 @@ import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.Box;
 import com.lasercats.GameObjects.GameObject;
 
-public class LevelScreen extends LaserCatsScreen{
+public class LevelScreen extends LaserCatsScreen {
 
     private ArrayList<GameObject> gameObjects;
 	private ArrayList<GameObject> renderQueue;
@@ -25,7 +25,7 @@ public class LevelScreen extends LaserCatsScreen{
     public LevelScreen(Game game, Client client) {
         super(game);
         this.client = client;
-        this.genericViewport = new ExtendViewport(0, 0, camera);
+        this.genericViewport = new ExtendViewport(1024, 720, camera);
         this.genericViewport.apply();
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
@@ -35,14 +35,16 @@ public class LevelScreen extends LaserCatsScreen{
         gameObjects = client.getGameObjects();
         createBoxes();
         renderQueue = new ArrayList<GameObject>(gameObjects);
+		dataToServer = new JSONObject();
     }
     @Override
     public void render(float delta) {
+		
         Gdx.input.setInputProcessor(stage);
-        this.camera.update();
         this.stage.act(delta);
         this.batch.setProjectionMatrix(this.genericViewport.getCamera().combined);
         this.stage.draw();
+
         ArrayList<JSONObject> identifiers = new ArrayList<JSONObject>();
 			for (GameObject object : gameObjects)
 			{
@@ -56,7 +58,6 @@ public class LevelScreen extends LaserCatsScreen{
 			ScreenUtils.clear(1, 1, 1, 1);
 			camera.update();
 
-			batch.setProjectionMatrix(camera.combined);
 			batch.begin();
 
 			renderQueue = new ArrayList<GameObject>(gameObjects);
