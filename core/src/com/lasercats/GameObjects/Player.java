@@ -10,6 +10,8 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.lasercats.Screens.OptionsScreen;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,7 +31,7 @@ public class Player extends Empty implements  GameObject {
     private final static float WIDTH = 128 , HEIGHT = 128;
     protected float stateTime;
     public Vector2 direction;
-    public int[] controlScheme;
+    public static int[] controlScheme;
 
 
 
@@ -54,7 +56,7 @@ public class Player extends Empty implements  GameObject {
         direction = new Vector2();
         stateTime = 0;
 
-        controlScheme = new int[]{Input.Keys.D, Input.Keys.A, Input.Keys.W, Input.Keys.S};
+        controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
 
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
     }
@@ -65,20 +67,20 @@ public class Player extends Empty implements  GameObject {
         velocity.x = 0;
         velocity.y = 0;
         if (Gdx.input.isKeyPressed(controlScheme[0])) {
+            velocity.y = 1;
+        } if (Gdx.input.isKeyPressed(controlScheme[1])) {
+            velocity.y = -1;
+        } if (Gdx.input.isKeyPressed(controlScheme[2])) {
             direction.x = 1;
             velocity.x = 1;
-        } if (Gdx.input.isKeyPressed(controlScheme[1])) {
+        } if (Gdx.input.isKeyPressed(controlScheme[3])) {
             direction.x = -1;
             velocity.x = -1;
-        } if (Gdx.input.isKeyPressed(controlScheme[2])) {
-            velocity.y = 1;
-        } if (Gdx.input.isKeyPressed(controlScheme[3])) {
-            velocity.y = -1;
         }
         velocity.nor();
         move();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.M))
+        if (Gdx.input.isKeyJustPressed(controlScheme[6]))
         {
             meow.play();
         }
@@ -152,6 +154,8 @@ public class Player extends Empty implements  GameObject {
         animationSheet.dispose();
         meow.dispose();
     }
-
+    public static void setControlScheme(int[] keybinds) {
+        controlScheme = keybinds;
+    }
 
 }

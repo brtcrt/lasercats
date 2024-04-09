@@ -30,17 +30,25 @@ public abstract class LaserCatsScreen implements Screen {
     }
 
     //Methods inherited from the Screen interface.
-	public abstract void show();
+	public void show() {
+        this.root.setVisible(true);
+    }
 
     public abstract void render(float delta);
 
-    public abstract void resize(int width, int height); 
+    public void resize(int width, int height) {
+        this.genericViewport.update(width, height, true);
+        this.root.setHeight(height);
+        this.root.setWidth(width);
+    }
 
     public abstract void pause(); 
 
     public abstract void resume(); 
 
-    public abstract void hide(); 
+    public void hide() {
+        this.root.setVisible(false);
+    }
 
     public abstract void dispose(); 
 
