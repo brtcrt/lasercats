@@ -48,6 +48,7 @@ public class LobbyScreen extends LaserCatsScreen {
     private String[] gameModes;
 
     private Window passwordEnterWindow;
+    private TextButton passwordEnterButton;
     private TextField passwordEnterField;
 
     public LobbyScreen(Game game, MainMenuScreen menuScreen) {
@@ -72,7 +73,8 @@ public class LobbyScreen extends LaserCatsScreen {
     public void pause() {}
     @Override
     public void positionActors() {
-        passwordEnterWindow.add(passwordEnterField);
+        passwordEnterWindow.add(passwordEnterField).expandX();
+        passwordEnterWindow.add(passwordEnterButton).expandX();
         passwordEnterWindow.setVisible(false);
         this.root.add(goBackButton).expandX().align(Align.topLeft).width(60).height(60);
         this.root.row();
@@ -143,14 +145,14 @@ public class LobbyScreen extends LaserCatsScreen {
         startGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (startGameButton.isPressed() && client.getRoom().getPlayerCount() == 2) {
+                if (startGameButton.isPressed() /*&& client.getRoom().getPlayerCount() == 2*/) {
                     if (gameModeDropBox.getSelected().equals("Story Mode")) {
                         //TODO change to story mode related screen
-                        game.setScreen(null);
+                        game.setScreen(new LevelScreen(game, client));
                     }
                     else if (gameModeDropBox.getSelected().equals("Time Attack Mode")) {
                         //TODO change to time attack mode related screen
-                        game.setScreen(null);
+                        game.setScreen(new LevelScreen(game, client));
                     }
                 } 
             }
@@ -175,6 +177,7 @@ public class LobbyScreen extends LaserCatsScreen {
         startGameButton = new TextButton("Start", skin);
         gameModeDropBox.setItems(gameModes);
         passwordEnterWindow = new Window("Enter password", skin);
+        passwordEnterButton = new TextButton("Confirm", skin);
         passwordEnterField = new TextField("", skin);
         passwordEnterField.setPasswordMode(true);
         passwordEnterField.setPasswordCharacter('*');
@@ -245,12 +248,22 @@ public class LobbyScreen extends LaserCatsScreen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (button.isChecked() && getRoomClicked().getPlayerCount() < 2 ) {
+                //TODO We need another check here to make sure that nothing happens when the creator of the room clicks on the room button.
+                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 ) {
                     if (room.hasPassword()) {
                         passwordEnterWindow.setVisible(true);
-                        if (passwordEnterField.getText().equals(room.getPasswordHash())) {
-                            client.joinRoom(getRoomClicked(), room.getPasswordHash());
-                        }
+                        passwordEnterButton.addListener(new ChangeListener() {
+                            @Override
+                            public void changed(ChangeEvent event, Actor actor) {
+                                if (passwordEnterButton.isPressed()) {
+                                    String password = passwordEnterField.getText();
+                                    if (password.equals(room.getPasswordHash())) {
+                                        client.joinRoom(getRoomClicked(), room.getPasswordHash());
+                                        passwordEnterWindow.setVisible(false);
+                                    }
+                                }
+                            }
+                        });
                     }
                     else {
                         client.joinRoom(getRoomClicked());
