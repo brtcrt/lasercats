@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.Box;
 import com.lasercats.GameObjects.GameObject;
+import com.lasercats.GameObjects.Wall;
 
 public class LevelScreen extends LaserCatsScreen {
 
@@ -33,7 +34,13 @@ public class LevelScreen extends LaserCatsScreen {
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
+		//By the way we really shouldn't position objects with manually entered coordinates, this works terribly with different aspect ratios.
         createBoxes();
+		gameObjects.add(new Wall(600, 600, 128, 32));
+		gameObjects.add(new Wall(472, 600, 128, 32));
+		gameObjects.add(new Wall(728, 472, 32, 128));
+		gameObjects.add(new Wall(728, 344, 32, 128));
+
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
     }
