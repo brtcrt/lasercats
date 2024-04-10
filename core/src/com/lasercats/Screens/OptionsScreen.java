@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -67,6 +68,7 @@ public class OptionsScreen extends LaserCatsScreen {
 
     private static float sfxVolume = 1;
     private static float musicVolume = 1;
+    private FileHandle keybindsBin;
 
     public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
@@ -74,14 +76,13 @@ public class OptionsScreen extends LaserCatsScreen {
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
 
-        keybinds = new int[7];
-        keybinds[0] = Input.Keys.W;
-        keybinds[1] = Input.Keys.S;
-        keybinds[2] = Input.Keys.D;
-        keybinds[3] = Input.Keys.A;
-        keybinds[4] = Input.Keys.SPACE;
-        keybinds[5] = Input.Keys.E;
-        keybinds[6] = Input.Keys.M;
+//        keybinds[0] = Input.Keys.W;
+//        keybinds[1] = Input.Keys.S;
+//        keybinds[2] = Input.Keys.D;
+//        keybinds[3] = Input.Keys.A;
+//        keybinds[4] = Input.Keys.SPACE;
+//        keybinds[5] = Input.Keys.E;
+//        keybinds[6] = Input.Keys.M;
         processor = new KeybindProcessor();
         //Using a multiplexer for handling inputs via this way is really dumb btw
         //If you think about a better solution feel free to change this part
@@ -95,6 +96,7 @@ public class OptionsScreen extends LaserCatsScreen {
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         createActors();
+        loadKeybinds();
         setListeners();
         positionActors();
     }
@@ -310,6 +312,12 @@ public class OptionsScreen extends LaserCatsScreen {
                button.setText(Input.Keys.toString(keycode));
                //Update player's control scheme with the new keybinds
                Player.setControlScheme(keybinds);
+               // serialize to bytes
+                byte[] keybytes = new byte[keybinds.length];
+                for (int i = 0; i < keybinds.length; i++) {
+                    keybytes[i] = (byte) keybinds[i];
+                }
+                keybindsBin.writeBytes(keybytes, false);
             }
             //Make it so that the stage handles input after mapping of keybind
             multiplexer.removeProcessor(processor);
@@ -330,5 +338,27 @@ public class OptionsScreen extends LaserCatsScreen {
         private void setButton(TextButton button) {
             this.button = button;
         }
+    }
+
+    private void loadKeybinds() {
+        // load from binary data
+        keybindsBin = Gdx.files.local("keybinds.bin");
+        byte[] keybytes = keybindsBin.readBytes();
+
+
+        keybinds = new int[7];
+        for (int i = 0; i < keybinds.length; i++) {
+            keybinds[i] = (int) keybytes[i];
+        }
+        // This is fucking disgusting kill me ~brtcrt
+        moveUpKeybind.setText(Input.Keys.toString(keybinds[0]));
+        moveDownKeybind.setText(Input.Keys.toString(keybinds[1]));
+        moveRightKeybind.setText(Input.Keys.toString(keybinds[2]));
+        moveLeftKeybind.setText(Input.Keys.toString(keybinds[3]));
+        shootLaserKeybind.setText(Input.Keys.toString(keybinds[4]));
+        interactKeybind.setText(Input.Keys.toString(keybinds[5]));
+        meowKeybind.setText(Input.Keys.toString(keybinds[6]));
+        //Update player's control scheme with the loaded keybinds
+        Player.setControlScheme(keybinds);
     }
 }
