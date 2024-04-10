@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Wall extends Empty implements GameObject{
+public class Wall extends Empty implements PhysicsObject {
     private Texture wallImage;
     private Sprite sprite;
 
@@ -26,6 +26,11 @@ public class Wall extends Empty implements GameObject{
     }
 
     public void process(){
+
+    }
+
+    @Override
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
 
     }
 
@@ -56,6 +61,11 @@ public class Wall extends Empty implements GameObject{
         } catch (JSONException e) {
             System.out.println(e);
         }
+    }
+
+    @Override
+    public boolean isStatic() {
+        return true;
     }
 }
 

@@ -2,6 +2,7 @@ package com.lasercats.Screens;
 
 import java.util.ArrayList;
 
+import com.lasercats.GameObjects.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,13 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
-import com.lasercats.GameObjects.Box;
-import com.lasercats.GameObjects.GameObject;
-import com.lasercats.GameObjects.Wall;
 
 public class LevelScreen extends LaserCatsScreen {
 
     private ArrayList<GameObject> gameObjects;
+    private ArrayList<PhysicsObject> physicsObjects;
 	private ArrayList<GameObject> renderQueue;
 	private Client client;
 	private JSONObject dataToServer;
@@ -34,12 +33,13 @@ public class LevelScreen extends LaserCatsScreen {
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
+		// OK this is incredibly retarded. I'm actually going to kill myself. ~brtcrt
+        physicsObjects = new ArrayList<PhysicsObject>();
+		physicsObjects.add((Player)gameObjects.get(0));
+		physicsObjects.add((Player)gameObjects.get(1));
 		//By the way we really shouldn't position objects with manually entered coordinates, this works terribly with different aspect ratios.
         createBoxes();
-		gameObjects.add(new Wall(600, 600, 128, 32));
-		gameObjects.add(new Wall(472, 600, 128, 32));
-		gameObjects.add(new Wall(728, 472, 32, 128));
-		gameObjects.add(new Wall(728, 344, 32, 128));
+		createWalls();
 
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
@@ -53,28 +53,29 @@ public class LevelScreen extends LaserCatsScreen {
         this.stage.draw();
 
         ArrayList<JSONObject> identifiers = new ArrayList<JSONObject>();
-			for (GameObject object : gameObjects)
-			{
-				object.process();
-				identifiers.add(object.getIdentifiers());
-			}
+		calculatePhysics();
+		for (GameObject object : gameObjects)
+		{
+			object.process();
+			identifiers.add(object.getIdentifiers());
+		}
 
-			createDataJSON(identifiers);
-			client.sendUpdate(dataToServer);
+		createDataJSON(identifiers);
+		client.sendUpdate(dataToServer);
 
-			ScreenUtils.clear(1, 1, 1, 1);
-			camera.update();
+		ScreenUtils.clear(1, 1, 1, 1);
+		camera.update();
 
-			batch.begin();
+		batch.begin();
 
-			renderQueue = new ArrayList<GameObject>(gameObjects);
-			ySort();
+		renderQueue = new ArrayList<GameObject>(gameObjects);
+		ySort();
 
-			for (GameObject object : renderQueue)
-			{
-				object.render(batch);
-			}
-			batch.end();	
+		for (GameObject object : renderQueue)
+		{
+			object.render(batch);
+		}
+		batch.end();
     }
     @Override
     public void dispose() {
@@ -96,6 +97,14 @@ public class LevelScreen extends LaserCatsScreen {
     public void positionActors() {}
     @Override
     public void resume() {}
+
+	protected void calculatePhysics () {
+		// this is a dumb solution in O(n^2) but should be fine in our case.
+		for (PhysicsObject o : physicsObjects) {
+			o.calculatePhysics(physicsObjects);
+		}
+	}
+
     /**
 	 * For testing purposes. Remove later ~brtcrt
 	 */
@@ -114,7 +123,26 @@ public class LevelScreen extends LaserCatsScreen {
 				}
 			} while (!goodBox);
 			gameObjects.add(b);
+			physicsObjects.add(b);
 		}
+	}
+	/**
+	 * For testing purposes. Remove later ~brtcrt
+	 * Please help me.
+	 */
+	private void createWalls() {
+		Wall[] walls = {
+				new Wall(600, 600, 128, 32),
+				new Wall(472, 600, 128, 32),
+				new Wall(728, 600, 32, 32),
+				new Wall(728, 472, 32, 128),
+				new Wall(728, 344, 32, 128)
+		};
+		for (Wall w : walls) {
+			gameObjects.add(w);
+			physicsObjects.add(w);
+		}
+
 	}
 	private void ySort() {
 		renderQueue.sort((o1, o2) -> {

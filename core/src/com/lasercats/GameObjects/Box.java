@@ -14,7 +14,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class Box extends Empty implements GameObject{
+public class Box extends Empty implements PhysicsObject {
     private Texture boxImage;
     private Sprite sprite;
     private ArrayList<GameObject> gameObject;
@@ -30,11 +30,15 @@ public class Box extends Empty implements GameObject{
     }
 
     public void process(){
-        // Movement
+
+    }
+
+    @Override
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         velocity.x = 0;
         velocity.y = 0;
 
-        for(GameObject object : gameObject){
+        for(PhysicsObject object : objects){
             if (object.getCollider().overlaps(this)) {
                 Vector2 center = object.getCollider().getCenter(new Vector2(object.getX(), object.getY()));
                 Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
@@ -50,10 +54,8 @@ public class Box extends Empty implements GameObject{
         } else {
             velocity.x = 0;
         }
-
         velocity.nor();
         move();
-
     }
 
     public void render(SpriteBatch batch){
@@ -93,6 +95,11 @@ public class Box extends Empty implements GameObject{
     {
         x += velocity.x * moveSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * moveSpeed * Gdx.graphics.getDeltaTime();
+    }
+
+    @Override
+    public boolean isStatic() {
+        return false;
     }
 }
 

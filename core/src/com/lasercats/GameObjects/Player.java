@@ -16,8 +16,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import javax.sound.midi.Receiver;
+import java.util.ArrayList;
 
-public class Player extends Empty implements  GameObject {
+public class Player extends Empty implements PhysicsObject {
 
     protected Texture animationSheet;
     protected Sprite sprite;
@@ -68,34 +69,6 @@ public class Player extends Empty implements  GameObject {
 
     public void process()
     {
-        // Movement
-        if (isMainPlayer)
-        {
-            velocity.x = 0;
-            velocity.y = 0;
-            if (Gdx.input.isKeyPressed(controlScheme[2])) {
-                direction.x = 1;
-                velocity.x = 1;
-            } if (Gdx.input.isKeyPressed(controlScheme[3])) {
-                direction.x = -1;
-                velocity.x = -1;
-            } if (Gdx.input.isKeyPressed(controlScheme[0])) {
-                velocity.y = 1;
-            } if (Gdx.input.isKeyPressed(controlScheme[1])) {
-                velocity.y = -1;
-            }
-
-            sfxVolume = OptionsScreen.getSFXVolume();
-            
-            if (Gdx.input.isKeyJustPressed(controlScheme[6]))
-            {
-                meow.play(sfxVolume);
-            }
-        }
-        velocity.nor();
-        move();
-
-
 
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
@@ -170,4 +143,52 @@ public class Player extends Empty implements  GameObject {
         controlScheme = keybinds;
     }
 
+    @Override
+    public boolean isStatic() {
+        return false;
+    }
+    @Override
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
+        // Movement
+        if (isMainPlayer)
+        {
+            velocity.x = 0;
+            velocity.y = 0;
+            if (Gdx.input.isKeyPressed(controlScheme[2])) {
+                direction.x = 1;
+                velocity.x = 1;
+            } if (Gdx.input.isKeyPressed(controlScheme[3])) {
+                direction.x = -1;
+                velocity.x = -1;
+            } if (Gdx.input.isKeyPressed(controlScheme[0])) {
+                velocity.y = 1;
+            } if (Gdx.input.isKeyPressed(controlScheme[1])) {
+                velocity.y = -1;
+            }
+
+            sfxVolume = OptionsScreen.getSFXVolume();
+
+            if (Gdx.input.isKeyJustPressed(controlScheme[6]))
+            {
+                meow.play(sfxVolume);
+            }
+        }
+        for (PhysicsObject o : objects) {
+            if (o.getCollider().overlaps(this) && o.isStatic()) {
+                Vector2 center = o.getCollider().getCenter(new Vector2(o.getX(), o.getY()));
+                Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
+                moveVector.nor();
+                velocity.x += moveVector.x;
+                velocity.y += moveVector.y;
+            }
+        }
+        if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+            velocity.y = 0;
+        } else if (Math.abs(velocity.x) == Math.abs(velocity.y)) {
+        } else {
+            velocity.x = 0;
+        }
+        velocity.nor();
+        move();
+    }
 }
