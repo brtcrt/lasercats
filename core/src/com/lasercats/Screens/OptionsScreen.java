@@ -98,15 +98,10 @@ public class OptionsScreen extends LaserCatsScreen {
         setListeners();
         positionActors();
     }
-
     @Override
-    public void pause() {
-        
-    }
+    public void pause() {}
     @Override
-    public void show() {
-        
-    }
+    public void show() {}
     @Override
     public void render(float delta) {
         ScreenUtils.clear(Color.ORANGE);
@@ -137,8 +132,7 @@ public class OptionsScreen extends LaserCatsScreen {
         shootLaserKeybind.addListener(new KeybindListener(4, shootLaserKeybind));
         interactKeybind.addListener(new KeybindListener(5, interactKeybind));
         meowKeybind.addListener(new KeybindListener(6, meowKeybind));
-        //TODO according to the selected item we need to change cat's asset.
-        //TODO sliders also need listeners
+
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -151,6 +145,8 @@ public class OptionsScreen extends LaserCatsScreen {
                 musicVolume = musicSlider.getValue() / 100;
             }
         });
+
+        //TODO according to the selected item of the dropbox we need to change cat's asset.
     }
     @Override
     public void createActors() {
