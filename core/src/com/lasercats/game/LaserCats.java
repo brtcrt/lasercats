@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Shape2D;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -25,6 +26,7 @@ public class LaserCats extends ApplicationAdapter {
 	private MainMenu menu;
 	private Player cat; // TODO move this down to create() later probably ~brtcrt
 	private Player otherCat;
+	private Laser laser;
 	private long roomUpdateTime;
 	private JSONObject dataToServer;
 
@@ -43,6 +45,9 @@ public class LaserCats extends ApplicationAdapter {
 		gameObjects.add(new Wall(472, 600, 128, 32));
 		gameObjects.add(new Wall(728, 472, 32, 128));
 		gameObjects.add(new Wall(728, 344, 32, 128));
+
+		laser = new Laser(0,0, new Vector2(100,100));
+		gameObjects.add(laser);
 		// gameObjects.add(new Box(400, 400, cat, otherCat));
 		renderQueue = new ArrayList<GameObject>(gameObjects);
 		client = new Client(gameObjects);
@@ -69,7 +74,8 @@ public class LaserCats extends ApplicationAdapter {
 		if (!menu.getGameModeButton().isChecked() && !menu.getRoomClicked().isEmpty()) {
 			client.joinRoom(menu.getRoomClicked());
 		}
-		if (menu.getGameModeButton().isChecked()) {
+		boolean isMainStoryButtonPressed = menu.getGameModeButton().isChecked();
+		if (isMainStoryButtonPressed) {
 			menu.getGameModeButton().setDisabled(true);
 			ArrayList<JSONObject> identifiers = new ArrayList<JSONObject>();
 			for (GameObject object : gameObjects)
@@ -88,6 +94,7 @@ public class LaserCats extends ApplicationAdapter {
 			camera.update();
 
 			batch.setProjectionMatrix(camera.combined);
+			laser.setProjectionMatrix(camera.combined);
 			batch.begin();
 
 			renderQueue = new ArrayList<GameObject>(gameObjects);
