@@ -34,7 +34,7 @@ public class Player extends Empty implements  GameObject {
     public Vector2 direction;
     public static int[] controlScheme;
 
-
+    private float sfxVolume;
 
     public Player (float x, float y, float width, float height, boolean isMainPlayer) {
         super(x, y, width - 20, height - 52);
@@ -63,6 +63,7 @@ public class Player extends Empty implements  GameObject {
         controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
 
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
+        sfxVolume = 0;
     }
 
     public void process()
@@ -84,9 +85,11 @@ public class Player extends Empty implements  GameObject {
                 velocity.y = -1;
             }
 
+            sfxVolume = OptionsScreen.getSFXVolume();
+            
             if (Gdx.input.isKeyJustPressed(controlScheme[6]))
             {
-                meow.play();
+                meow.play(sfxVolume);
             }
         }
         velocity.nor();

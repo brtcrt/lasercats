@@ -36,8 +36,6 @@ public class OptionsScreen extends LaserCatsScreen {
     private Slider musicSlider;
     private Label sfxLabel;
     private Label musicLabel;
-    private Label sfxValue;
-    private Label musicValue;
 
     private Label moveUpLabel;
     private Label moveDownLabel;
@@ -67,6 +65,9 @@ public class OptionsScreen extends LaserCatsScreen {
     private KeybindProcessor processor;
     private InputMultiplexer multiplexer;
 
+    private static float sfxVolume = 1;
+    private static float musicVolume = 1;
+
     public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
         this.menu = menu;
@@ -82,8 +83,10 @@ public class OptionsScreen extends LaserCatsScreen {
         keybinds[5] = Input.Keys.E;
         keybinds[6] = Input.Keys.M;
         processor = new KeybindProcessor();
+        //Using a multiplexer for handling inputs via this way is really dumb btw
+        //If you think about a better solution feel free to change this part
         multiplexer = new InputMultiplexer();
-        
+
         this.furColors = new String[] {"White", "Red", "Green", "Blue"};
         this.stage = new Stage(genericViewport, batch);
         multiplexer.addProcessor(stage);
@@ -134,6 +137,20 @@ public class OptionsScreen extends LaserCatsScreen {
         shootLaserKeybind.addListener(new KeybindListener(4, shootLaserKeybind));
         interactKeybind.addListener(new KeybindListener(5, interactKeybind));
         meowKeybind.addListener(new KeybindListener(6, meowKeybind));
+        //TODO according to the selected item we need to change cat's asset.
+        //TODO sliders also need listeners
+        sfxSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                sfxVolume = sfxSlider.getValue() / 100;
+            }
+        });
+        musicSlider.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                musicVolume = musicSlider.getValue() / 100;
+            }
+        });
     }
     @Override
     public void createActors() {
@@ -151,8 +168,6 @@ public class OptionsScreen extends LaserCatsScreen {
         sfxLabel = new Label("Sound Effects", skin);
         musicLabel = new Label("Music", skin);
         musicLabel.setColor(Color.WHITE);
-        sfxValue = new Label("", skin);
-        musicValue = new Label("", skin);
 
         moveUpLabel = new Label("Move Up", skin);
         moveDownLabel = new Label("Move Down", skin);
@@ -178,7 +193,7 @@ public class OptionsScreen extends LaserCatsScreen {
     }
     @Override
     public void positionActors() {
-
+        //Once again feel free to change alignment and sizes
         buttonTable.add(goBackButton).align(Align.topLeft).width(60).padBottom(120);
         buttonTable.row();
         buttonTable.add(audioButton).expand().fillY().width(200).align(Align.left);
@@ -196,11 +211,9 @@ public class OptionsScreen extends LaserCatsScreen {
         displayTable.clear();
         displayTable.add(sfxLabel).expandX();
         displayTable.add(sfxSlider).expandX();
-        displayTable.add(sfxValue).expandX();
         displayTable.row();
         displayTable.add(musicLabel).expandX();
-        displayTable.add(musicSlider).expandX();
-        displayTable.add(musicValue).expandX();
+        displayTable.add(musicSlider).expandX();;
     }
     private void positionControlsOptions() {
         displayTable.clear();
@@ -229,13 +242,13 @@ public class OptionsScreen extends LaserCatsScreen {
         displayTable.clear();
         displayTable.add(furColorLabel).expandX();
         displayTable.add(furColorDropdown).expandX();
-        //TODO according to the selected item we need to change cat's asset.
     }
     @Override
     public void hide() {}
     @Override
     public void dispose() {
-        
+        batch.dispose();
+        stage.dispose();
     }
     @Override
     public void resume() {}
@@ -260,6 +273,12 @@ public class OptionsScreen extends LaserCatsScreen {
     public static int[] getKeybinds() {
         return keybinds;
     }
+    public static float getSFXVolume() {
+        return sfxVolume;
+    }
+    public static float getMusicVolume() {
+        return musicVolume;
+    }
     public class KeybindListener extends ChangeListener {
         private int index;
         private TextButton button;
@@ -270,6 +289,7 @@ public class OptionsScreen extends LaserCatsScreen {
         @Override
         public void changed(ChangeEvent event, Actor actor) {
             if (((Button) actor).isPressed()) {
+                //After the button is pressed, let the keybind processor handle inputs for a single key press
                 multiplexer.removeProcessor(stage);
                 multiplexer.addProcessor(processor);
                 processor.setIndex(index);
@@ -288,23 +308,30 @@ public class OptionsScreen extends LaserCatsScreen {
         public boolean keyDown(int keycode) {
             //TODO handle duplicate keybinds.
             if (keycode != Input.Keys.ESCAPE) {
+               //Change the keycode in the specified index with the keycode of the pressed key 
                keybinds[index] = keycode;
+               //Also change button's text
                button.setText(Input.Keys.toString(keycode));
+               //Update player's control scheme with the new keybinds
                Player.setControlScheme(keybinds);
-               multiplexer.removeProcessor(processor);
-               multiplexer.addProcessor(stage);
-               return true; 
             }
-            else {
-                multiplexer.removeProcessor(processor);
-                multiplexer.addProcessor(stage);
-                return false;
-            }
+            //Make it so that the stage handles input after mapping of keybind
+            multiplexer.removeProcessor(processor);
+            multiplexer.addProcessor(stage);
+            return true; 
         }
-        public void setIndex(int index) {
+        /**
+         * Helper method for specifiying the index to replace in the keybind array
+         * @param index
+         */
+        private void setIndex(int index) {
             this.index = index;
         }
-        public void setButton(TextButton button) {
+        /**
+         * Helper method for specifiying the button that should have its text replaced
+         * @param button
+         */
+        private void setButton(TextButton button) {
             this.button = button;
         }
     }
