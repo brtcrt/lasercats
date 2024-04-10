@@ -148,8 +148,7 @@ public class LobbyScreen extends LaserCatsScreen {
         startGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //Don't forget to change this for testing multiplayer
-                if (startGameButton.isPressed() /*&& client.getRoom().getPlayerCount() == 2*/) {
+                if (startGameButton.isPressed() && client.getRoom().getPlayerCount() == 2) {
                     if (gameModeDropBox.getSelected().equals("Story Mode")) {
                         //TODO change to story mode related screen
                         game.setScreen(new LevelScreen(game, client));
@@ -252,8 +251,7 @@ public class LobbyScreen extends LaserCatsScreen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //TODO We need another check here to make sure that nothing happens when the creator of the room clicks on the room button.
-                //This part is currently bugged I think.
+                //This part has some bugs I think
                 if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 ) {
                     if (room.hasPassword()) {
                         passwordEnterWindow.setVisible(true);
@@ -261,11 +259,10 @@ public class LobbyScreen extends LaserCatsScreen {
                             @Override
                             public void changed(ChangeEvent event, Actor actor) {
                                 if (passwordEnterButton.isPressed()) {
-                                    String password = passwordEnterField.getText();
-                                    if (password.equals(room.getPasswordHash())) {
+                                    if (Client.hashPassword(passwordEnterField.getText()).equals(room.getPasswordHash())) {
                                         client.joinRoom(getRoomClicked(), room.getPasswordHash());
                                         passwordEnterWindow.setVisible(false);
-                                    }
+                                    }   
                                 }
                             }
                         });

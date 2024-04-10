@@ -80,7 +80,7 @@ public class Client {
         this.socket.emit("newRoomReq", data);
     }
 
-    private static String hashPassword(String p) {
+    public static String hashPassword(String p) {
         try{
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(p.getBytes(StandardCharsets.UTF_8));
