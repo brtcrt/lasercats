@@ -52,15 +52,19 @@ public class LobbyScreen extends LaserCatsScreen {
     private TextField passwordEnterField;
 
     public LobbyScreen(Game game, MainMenuScreen menuScreen) {
+
         super(game);
         this.menuScreen = menuScreen;
         this.client = menuScreen.getClient();
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
+
         rooms = new ArrayList<Room>();
         gameModes = new String[] {"Story Mode", "Time Attack Mode"};
+
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
+
         //TODO Placeholder JSON. Change later.
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
@@ -73,9 +77,11 @@ public class LobbyScreen extends LaserCatsScreen {
     public void pause() {}
     @Override
     public void positionActors() {
+        //Once again, feel free to play around with alignment and sizes
         passwordEnterWindow.add(passwordEnterField).expandX();
         passwordEnterWindow.add(passwordEnterButton).expandX();
         passwordEnterWindow.setVisible(false);
+
         this.root.add(goBackButton).expandX().align(Align.topLeft).width(60).height(60);
         this.root.row();
         for (TextButton roomButton : roomButtons) {
@@ -115,9 +121,6 @@ public class LobbyScreen extends LaserCatsScreen {
     public void resume() {}
     @Override
     public void setListeners() {
-        // for (TextButton roomButton : roomButtons) {
-        //     setRoomButtonListener(roomButton);
-        // }
         goBackButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -145,6 +148,7 @@ public class LobbyScreen extends LaserCatsScreen {
         startGameButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
+                //Don't forget to change this for testing multiplayer
                 if (startGameButton.isPressed() /*&& client.getRoom().getPlayerCount() == 2*/) {
                     if (gameModeDropBox.getSelected().equals("Story Mode")) {
                         //TODO change to story mode related screen
@@ -249,6 +253,7 @@ public class LobbyScreen extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 //TODO We need another check here to make sure that nothing happens when the creator of the room clicks on the room button.
+                //This part is currently bugged I think.
                 if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 ) {
                     if (room.hasPassword()) {
                         passwordEnterWindow.setVisible(true);
