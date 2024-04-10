@@ -99,4 +99,9 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     public boolean isTriggered() {
         return isTriggered;
     }
+
+    @Override
+    public boolean canCollide() {
+        return false;
+    }
 }

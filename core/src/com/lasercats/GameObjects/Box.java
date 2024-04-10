@@ -21,7 +21,7 @@ public class Box extends Empty implements PhysicsObject {
     private final static float WIDTH = 128 , HEIGHT = 128;
 
     public Box(int x, int y){
-        super(x, y, WIDTH - 36, HEIGHT - 4);
+        super(x, y, WIDTH - HEIGHT / 4, HEIGHT - HEIGHT / 32);
         boxImage = new Texture(Gdx.files.internal("Box.png"));
         sprite = new Sprite(boxImage);
     }
@@ -36,7 +36,7 @@ public class Box extends Empty implements PhysicsObject {
         velocity.y = 0;
 
         for(PhysicsObject object : objects){
-            if (object.getCollider().overlaps(this) && !(object instanceof Detector)) {
+            if (object.getCollider().overlaps(this) && object.canCollide()) {
                 Vector2 center = object.getCollider().getCenter(new Vector2(object.getX(), object.getY()));
                 Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
                 moveVector.nor();
@@ -56,7 +56,7 @@ public class Box extends Empty implements PhysicsObject {
     }
 
     public void render(SpriteBatch batch){
-        batch.draw(sprite, x - 16, y , WIDTH, HEIGHT);
+        batch.draw(sprite, x - HEIGHT / 8, y , WIDTH, HEIGHT);
     }
 
     public void destroy(){
@@ -97,6 +97,11 @@ public class Box extends Empty implements PhysicsObject {
     @Override
     public boolean isStatic() {
         return false;
+    }
+
+    @Override
+    public boolean canCollide() {
+        return true;
     }
 }
 

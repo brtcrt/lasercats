@@ -11,6 +11,7 @@ public interface PhysicsObject extends GameObject{
     public Rectangle getCollider();
 
     public boolean isStatic();
+    public boolean canCollide();
 
     public void calculatePhysics(ArrayList<PhysicsObject> objects);
 

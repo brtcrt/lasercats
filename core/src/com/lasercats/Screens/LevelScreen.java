@@ -135,11 +135,13 @@ public class LevelScreen extends LaserCatsScreen {
 	 */
 	private void createWalls() {
 		Wall[] walls = {
-				new Wall(600, 600, 128, 32),
-				new Wall(472, 600, 128, 32),
-				new Wall(728, 600, 32, 32),
-				new Wall(728, 472, 32, 128),
-				new Wall(728, 344, 32, 128)
+				new Wall(600, 400, 64, 64, 2),
+				new Wall(664, 400, 64, 64, 2),
+				new Wall(408, 400, 64, 64, 2),
+				new Wall(344, 400, 64, 64, 2),
+				new Wall(728, 400, 32, 64, 3),
+				new Wall(728, 272, 32, 128, 5),
+				new Wall(728, 144, 32, 128, 5)
 		};
 		for (Wall w : walls) {
 			gameObjects.add(w);
@@ -152,10 +154,11 @@ public class LevelScreen extends LaserCatsScreen {
 	 * Also for testing purposes. Remove later ~brtcrt
 	 */
 	public void createPressurePlateTest() {
-		TestObject a = new TestObject(300, 300, 128, 128);
-		PressurePlate p = new PressurePlate(100, 600, 64, 64, a);
-		gameObjects.add(a);
+		Gate g = new Gate(472, 400, 128, 64);
+		PressurePlate p = new PressurePlate(200, 300, 64, 64, g);
+		gameObjects.add(g);
 		gameObjects.add(p);
+		physicsObjects.add(g);
 		physicsObjects.add(p);
 	}
 	private void ySort() {

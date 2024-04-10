@@ -15,14 +15,31 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Wall extends Empty implements PhysicsObject {
-    private Texture wallImage;
+    private TextureRegion[][] dungeonTextures;
+    private Texture map;
+    private TextureRegion[] textures;
     private Sprite sprite;
 
-    public Wall(float x, float y, float width, float height){
+    public Wall(float x, float y, float width, float height, int type){
         super(x, y, width, height);
+        map = new Texture(Gdx.files.internal("Dungeon_Tileset.png"));
+        dungeonTextures = TextureRegion.split(map, 16,16);
         velocity = new Vector2();
-        wallImage = new Texture(Gdx.files.internal("wall.png"));
-        sprite = new Sprite(wallImage);
+        textures = new TextureRegion[8];
+        textures[0] = dungeonTextures[0][0];
+        textures[1] = dungeonTextures[0][3];
+        textures[2] = dungeonTextures[0][5];
+        textures[3] = dungeonTextures[1][0];
+        textures[4] = dungeonTextures[1][5];
+        textures[5] = dungeonTextures[2][0];
+        textures[6] = dungeonTextures[2][3];
+        textures[7] = dungeonTextures[2][5];
+//        textures[0] =  new Texture(Gdx.files.internal("w1.png"));
+//        textures[1] =  new Texture(Gdx.files.internal("w2.png"));
+//        textures[2] =  new Texture(Gdx.files.internal("w3.png"));
+//        textures[3] =  new Texture(Gdx.files.internal("w4.png"));
+//        textures[4] =  new Texture(Gdx.files.internal("w5.png"));
+        sprite = new Sprite(textures[type - 1]);
     }
 
     public void process(){
@@ -39,7 +56,7 @@ public class Wall extends Empty implements PhysicsObject {
     }
 
     public void destroy(){
-        wallImage.dispose();
+        map.dispose();
     }
 
 
@@ -65,6 +82,11 @@ public class Wall extends Empty implements PhysicsObject {
 
     @Override
     public boolean isStatic() {
+        return true;
+    }
+
+    @Override
+    public boolean canCollide() {
         return true;
     }
 }

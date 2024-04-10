@@ -147,6 +147,12 @@ public class Player extends Empty implements PhysicsObject {
     public boolean isStatic() {
         return false;
     }
+
+    @Override
+    public boolean canCollide() {
+        return true;
+    }
+
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         // Movement
@@ -174,7 +180,7 @@ public class Player extends Empty implements PhysicsObject {
             }
         }
         for (PhysicsObject o : objects) {
-            if (o.getCollider().overlaps(this) && o.isStatic() && !(o instanceof Detector)) {
+            if (o.getCollider().overlaps(this) && o.isStatic() && o.canCollide()) {
                 Vector2 center = o.getCollider().getCenter(new Vector2(o.getX(), o.getY()));
                 Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
                 moveVector.nor();
