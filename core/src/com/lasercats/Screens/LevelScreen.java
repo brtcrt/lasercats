@@ -40,6 +40,7 @@ public class LevelScreen extends LaserCatsScreen {
 		//By the way we really shouldn't position objects with manually entered coordinates, this works terribly with different aspect ratios.
         createBoxes();
 		createWalls();
+		createPressurePlateTest();
 
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
@@ -101,7 +102,9 @@ public class LevelScreen extends LaserCatsScreen {
 	protected void calculatePhysics () {
 		// this is a dumb solution in O(n^2) but should be fine in our case.
 		for (PhysicsObject o : physicsObjects) {
-			o.calculatePhysics(physicsObjects);
+			ArrayList<PhysicsObject> passedObjects = new ArrayList<PhysicsObject>(physicsObjects);
+			passedObjects.remove(o);
+			o.calculatePhysics(passedObjects);
 		}
 	}
 
@@ -115,9 +118,9 @@ public class LevelScreen extends LaserCatsScreen {
 			boolean goodBox;
 			do {
 				goodBox = true;
-				b = new Box(40 + (int)Math.round(Math.random() * 600), 40 + (int)Math.round(Math.random() * 600), gameObjects);
-				for (GameObject g : gameObjects) {
-					if (g.getCollider().overlaps(b)) {
+				b = new Box(40 + (int)Math.round(Math.random() * 600), 40 + (int)Math.round(Math.random() * 600));
+				for (PhysicsObject o : physicsObjects) {
+					if (o.getCollider().overlaps(b)) {
 						goodBox = false;
 					}
 				}
@@ -143,6 +146,17 @@ public class LevelScreen extends LaserCatsScreen {
 			physicsObjects.add(w);
 		}
 
+	}
+
+	/**
+	 * Also for testing purposes. Remove later ~brtcrt
+	 */
+	public void createPressurePlateTest() {
+		TestObject a = new TestObject(300, 300, 128, 128);
+		PressurePlate p = new PressurePlate(100, 600, 64, 64, a);
+		gameObjects.add(a);
+		gameObjects.add(p);
+		physicsObjects.add(p);
 	}
 	private void ySort() {
 		renderQueue.sort((o1, o2) -> {

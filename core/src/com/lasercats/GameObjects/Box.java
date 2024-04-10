@@ -17,16 +17,13 @@ import java.util.ArrayList;
 public class Box extends Empty implements PhysicsObject {
     private Texture boxImage;
     private Sprite sprite;
-    private ArrayList<GameObject> gameObject;
     protected final float moveSpeed = 150f;
     private final static float WIDTH = 128 , HEIGHT = 128;
 
-    public Box(int x, int y, ArrayList<GameObject> gameObjects){
+    public Box(int x, int y){
         super(x, y, WIDTH - 36, HEIGHT - 4);
         boxImage = new Texture(Gdx.files.internal("Box.png"));
         sprite = new Sprite(boxImage);
-        // changed this to GameObject ArrayList so boxes can also interact with each other.
-        this.gameObject = gameObjects;
     }
 
     public void process(){
@@ -39,7 +36,7 @@ public class Box extends Empty implements PhysicsObject {
         velocity.y = 0;
 
         for(PhysicsObject object : objects){
-            if (object.getCollider().overlaps(this)) {
+            if (object.getCollider().overlaps(this) && !(object instanceof Detector)) {
                 Vector2 center = object.getCollider().getCenter(new Vector2(object.getX(), object.getY()));
                 Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
                 moveVector.nor();

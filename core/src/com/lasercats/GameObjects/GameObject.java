@@ -19,7 +19,4 @@ public interface GameObject {
 
     public float getX();
     public float getY();
-    public Vector2 getVelocity();
-
-    public Rectangle getCollider();
 }

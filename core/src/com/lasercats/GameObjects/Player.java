@@ -174,7 +174,7 @@ public class Player extends Empty implements PhysicsObject {
             }
         }
         for (PhysicsObject o : objects) {
-            if (o.getCollider().overlaps(this) && o.isStatic()) {
+            if (o.getCollider().overlaps(this) && o.isStatic() && !(o instanceof Detector)) {
                 Vector2 center = o.getCollider().getCenter(new Vector2(o.getX(), o.getY()));
                 Vector2 moveVector = this.getCenter(new Vector2(x, y)).sub(center);
                 moveVector.nor();
@@ -184,8 +184,7 @@ public class Player extends Empty implements PhysicsObject {
         }
         if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
             velocity.y = 0;
-        } else if (Math.abs(velocity.x) == Math.abs(velocity.y)) {
-        } else {
+        } else if (Math.abs(velocity.x) < Math.abs(velocity.y)) {
             velocity.x = 0;
         }
         velocity.nor();
