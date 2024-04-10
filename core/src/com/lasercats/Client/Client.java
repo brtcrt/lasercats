@@ -6,7 +6,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
 
-import com.lasercats.GameObjects.PlayerNonMain;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -24,7 +23,7 @@ public class Client {
     private final String uri;
     private Socket socket;
     private Player player;
-    private PlayerNonMain otherPlayer;
+    private Player otherPlayer;
     private ArrayList<GameObject> gameObjects;
     public JSONObject dataFromServer;
     private String clientID;
@@ -39,7 +38,7 @@ public class Client {
         this.gameObjects = gameObjects;
         // IF we ever change the indexes of the two player objects we are fucked btw... ~brtcrt
         this.player = (Player) gameObjects.get(0);
-        this.otherPlayer = (PlayerNonMain) gameObjects.get(1);
+        this.otherPlayer = (Player) gameObjects.get(1);
         this.rooms = new JSONArray();
     }
 

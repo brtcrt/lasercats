@@ -25,6 +25,7 @@ public class Player extends Empty implements  GameObject {
     protected Animation<TextureRegion> walkAnimation;
     protected Animation<TextureRegion> currentAnimation;
     protected Sound meow;
+    private boolean isMainPlayer;
 
     protected final float walkSpeed = 150f;
     protected final float animationPeriod = 0.14f;
@@ -35,8 +36,10 @@ public class Player extends Empty implements  GameObject {
 
 
 
-    public Player (float x, float y, float width, float height) {
+    public Player (float x, float y, float width, float height, boolean isMainPlayer) {
         super(x, y, width - 20, height - 52);
+        this.isMainPlayer = isMainPlayer;
+
         animationSheet = new Texture(Gdx.files.internal("CatAnimationSheet.png"));
 
         TextureRegion[][] tmp = TextureRegion.split(animationSheet, 32, 32);
@@ -56,6 +59,7 @@ public class Player extends Empty implements  GameObject {
         direction = new Vector2();
         stateTime = 0;
 
+
         controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
 
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
@@ -64,26 +68,31 @@ public class Player extends Empty implements  GameObject {
     public void process()
     {
         // Movement
-        velocity.x = 0;
-        velocity.y = 0;
-        if (Gdx.input.isKeyPressed(controlScheme[0])) {
-            velocity.y = 1;
-        } if (Gdx.input.isKeyPressed(controlScheme[1])) {
-            velocity.y = -1;
-        } if (Gdx.input.isKeyPressed(controlScheme[2])) {
-            direction.x = 1;
-            velocity.x = 1;
-        } if (Gdx.input.isKeyPressed(controlScheme[3])) {
-            direction.x = -1;
-            velocity.x = -1;
+        if (isMainPlayer)
+        {
+            velocity.x = 0;
+            velocity.y = 0;
+            if (Gdx.input.isKeyPressed(controlScheme[2])) {
+                direction.x = 1;
+                velocity.x = 1;
+            } if (Gdx.input.isKeyPressed(controlScheme[3])) {
+                direction.x = -1;
+                velocity.x = -1;
+            } if (Gdx.input.isKeyPressed(controlScheme[0])) {
+                velocity.y = 1;
+            } if (Gdx.input.isKeyPressed(controlScheme[1])) {
+                velocity.y = -1;
+            }
+
+            if (Gdx.input.isKeyJustPressed(controlScheme[6]))
+            {
+                meow.play();
+            }
         }
         velocity.nor();
         move();
 
-        if (Gdx.input.isKeyJustPressed(controlScheme[6]))
-        {
-            meow.play();
-        }
+
 
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();

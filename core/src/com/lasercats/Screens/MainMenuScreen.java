@@ -43,14 +43,14 @@ public class MainMenuScreen extends LaserCatsScreen {
     //Includes just the players initially
     private ArrayList<GameObject> initialGameObjects;
     private Player player;
-    private PlayerNonMain otherPlayer;
+    private Player otherPlayer;
 
     //A general note about screen implementation. Some of the code might be redundant here because of how libGDX'S classes internally handle things.
     //Feel free to remove the unnecessary parts.
     public MainMenuScreen(Game game) {
         super(game);
-        this.player = new Player(32, 32, 128, 80);
-		this.otherPlayer = new PlayerNonMain(-300, -300, 128, 80);
+        this.player = new Player(32, 32, 128, 80, true);
+		this.otherPlayer = new Player(-300, -300, 128, 80, false);
         initialGameObjects = new ArrayList<GameObject>();
         initialGameObjects.add(player);
         initialGameObjects.add(otherPlayer);
