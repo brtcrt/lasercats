@@ -220,6 +220,9 @@ public class LobbyScreen extends LaserCatsScreen {
         roomButtons.clear();
 
         for (Room r : rooms) {
+            if (r.getName().equals(client.getRoom().getName())) {
+                client.updateSelfRoom(r);
+            }
             TextButton roomButton = new TextButton(r.toString(), skin);
             setRoomButtonListener(roomButton, r);
             if (!(r.getPlayerCount() < 2)) {

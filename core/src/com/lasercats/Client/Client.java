@@ -97,6 +97,10 @@ public class Client {
         }
     }
 
+    public void updateSelfRoom(Room r) {
+        this.room = r;
+    }
+
     public void joinRoom(Room r) {
         JSONObject data = new JSONObject();
         try {
