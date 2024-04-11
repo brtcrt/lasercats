@@ -3,6 +3,7 @@ package com.lasercats.GameObjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -87,7 +88,9 @@ public class Player extends Empty implements PhysicsObject {
 
     public void render(SpriteBatch batch)
     {
+        batch.setColor(OptionsScreen.getSelectedColor());
         batch.draw(sprite, x - 10, y , WIDTH, HEIGHT);
+        batch.setColor(Color.WHITE);
     }
 
     public void move()
@@ -176,7 +179,7 @@ public class Player extends Empty implements PhysicsObject {
 
             if (Gdx.input.isKeyJustPressed(controlScheme[6]))
             {
-                meow.play(sfxVolume);
+                meow.play(sfxVolume / 100);
             }
         }
         for (PhysicsObject o : objects) {

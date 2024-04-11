@@ -57,18 +57,22 @@ public class OptionsScreen extends LaserCatsScreen {
     private Label furColorLabel;
     private SelectBox furColorDropdown;
     private String[] furColors;
+    private static String selectedColor;
+    private FileHandle colorBin;
+
     private MainMenuScreen menu;
 
     private ImageButton goBackButton;
 
     private static int[] keybinds;
+    private FileHandle keybindsBin;
 
     private KeybindProcessor processor;
     private InputMultiplexer multiplexer;
 
-    private static float sfxVolume = 1;
-    private static float musicVolume = 1;
-    private FileHandle keybindsBin;
+    private static float sfxVolume;
+    private static float musicVolume;
+    private FileHandle audioBin;
 
     public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
@@ -76,29 +80,25 @@ public class OptionsScreen extends LaserCatsScreen {
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
 
-//        keybinds[0] = Input.Keys.W;
-//        keybinds[1] = Input.Keys.S;
-//        keybinds[2] = Input.Keys.D;
-//        keybinds[3] = Input.Keys.A;
-//        keybinds[4] = Input.Keys.SPACE;
-//        keybinds[5] = Input.Keys.E;
-//        keybinds[6] = Input.Keys.M;
         processor = new KeybindProcessor();
         //Using a multiplexer for handling inputs via this way is really dumb btw
         //If you think about a better solution feel free to change this part
         multiplexer = new InputMultiplexer();
 
+        //We can change this part if you guys prefer to have a color changing system that has more options.
         this.furColors = new String[] {"White", "Red", "Green", "Blue"};
         this.stage = new Stage(genericViewport, batch);
         multiplexer.addProcessor(stage);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         //TODO Placeholder JSON. Change later.
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
-        this.root.setFillParent(true);
+        this.root.setFillParent(true);;
+        loadVolumeLevels();
         createActors();
-        loadKeybinds();
         setListeners();
         positionActors();
+        loadKeybinds();
+        loadColor();
     }
     @Override
     public void pause() {}
@@ -138,17 +138,30 @@ public class OptionsScreen extends LaserCatsScreen {
         sfxSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                sfxVolume = sfxSlider.getValue() / 100;
+                sfxVolume = sfxSlider.getValue();
+                byte[] volumeBytes = new byte[2];
+                volumeBytes[0] = (byte) sfxVolume;
+                volumeBytes[1] = (byte) musicVolume;
+                audioBin.writeBytes(volumeBytes, false);
             }
         });
         musicSlider.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                musicVolume = musicSlider.getValue() / 100;
+                musicVolume = musicSlider.getValue();
+                byte[] volumeBytes = new byte[2];
+                volumeBytes[0] = ((byte)sfxVolume);
+                volumeBytes[1] = ((byte)musicVolume);
+                audioBin.writeBytes(volumeBytes, false);
             }
         });
-
-        //TODO according to the selected item of the dropbox we need to change cat's asset.
+        furColorDropdown.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                selectedColor = (String) furColorDropdown.getSelected();
+                colorBin.writeString(selectedColor, false);        
+            }
+        });
     }
     @Override
     public void createActors() {
@@ -162,7 +175,9 @@ public class OptionsScreen extends LaserCatsScreen {
         buttonTable = new Table();
 
         sfxSlider = new Slider(0, 100, 1, false, skin);
+        sfxSlider.setValue(sfxVolume);
         musicSlider = new Slider(0, 100, 1, false, skin);
+        musicSlider.setValue(musicVolume);
         sfxLabel = new Label("Sound Effects", skin);
         musicLabel = new Label("Music", skin);
         musicLabel.setColor(Color.WHITE);
@@ -192,7 +207,7 @@ public class OptionsScreen extends LaserCatsScreen {
     @Override
     public void positionActors() {
         //Once again feel free to change alignment and sizes
-        buttonTable.add(goBackButton).align(Align.topLeft).width(60).padBottom(120);
+        buttonTable.add(goBackButton).align(Align.topLeft).width(60).height(60).padBottom(120);
         buttonTable.row();
         buttonTable.add(audioButton).expand().fillY().width(200).align(Align.left);
         buttonTable.row();
@@ -325,26 +340,40 @@ public class OptionsScreen extends LaserCatsScreen {
             return true; 
         }
         /**
-         * Helper method for specifiying the index to replace in the keybind array
+         * Helper method for specifying the index to replace in the keybind array
          * @param index
          */
         private void setIndex(int index) {
             this.index = index;
         }
         /**
-         * Helper method for specifiying the button that should have its text replaced
+         * Helper method for specifying the button that should have its text replaced
          * @param button
          */
         private void setButton(TextButton button) {
             this.button = button;
         }
     }
-
+    //Absolute garbage implementation, please change this.
+    public static Color getSelectedColor() {
+        if (selectedColor.equals("White")) {
+            return Color.WHITE;
+        }
+        else if (selectedColor.equals("Red")) {
+            return Color.RED;
+        }
+        else if (selectedColor.equals("Green")) {
+            return Color.GREEN;
+        }
+        else if (selectedColor.equals("Blue")) {
+            return Color.BLUE;
+        }
+        return null;
+    }
     private void loadKeybinds() {
         // load from binary data
-        keybindsBin = Gdx.files.local("keybinds.bin");
+        keybindsBin = Gdx.files.local("bins/keybinds.bin");
         byte[] keybytes = keybindsBin.readBytes();
-
 
         keybinds = new int[7];
         for (int i = 0; i < keybinds.length; i++) {
@@ -360,5 +389,16 @@ public class OptionsScreen extends LaserCatsScreen {
         meowKeybind.setText(Input.Keys.toString(keybinds[6]));
         //Update player's control scheme with the loaded keybinds
         Player.setControlScheme(keybinds);
+    }
+    private void loadColor() {
+        colorBin = Gdx.files.local("bins/color.bin");
+        selectedColor = colorBin.readString();
+        furColorDropdown.setSelected(selectedColor);
+    }
+    private void loadVolumeLevels() {
+        audioBin = Gdx.files.local("bins/volume.bin");
+        byte[] volumeBytes = audioBin.readBytes();
+        sfxVolume = (float) volumeBytes[0];
+        musicVolume = (float) volumeBytes[1];
     }
 }
