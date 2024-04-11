@@ -2,6 +2,8 @@ package com.lasercats.Screens;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.math.Vector2;
+import com.lasercats.GameObjects.Laser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +36,8 @@ public class LevelScreen extends LaserCatsScreen {
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
         createBoxes();
+		Laser l = new Laser(0,0, new Vector2(1,1), genericViewport, gameObjects);
+		gameObjects.add(l);
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
     }
