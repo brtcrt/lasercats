@@ -27,13 +27,13 @@ public class Wall extends Empty implements PhysicsObject {
         velocity = new Vector2();
         textures = new TextureRegion[8];
         textures[0] = dungeonTextures[0][0];
-        textures[1] = dungeonTextures[0][3];
+        textures[1] = dungeonTextures[0][1];
         textures[2] = dungeonTextures[0][5];
         textures[3] = dungeonTextures[1][0];
         textures[4] = dungeonTextures[1][5];
-        textures[5] = dungeonTextures[2][0];
-        textures[6] = dungeonTextures[2][3];
-        textures[7] = dungeonTextures[2][5];
+        textures[5] = dungeonTextures[4][0];
+        textures[6] = dungeonTextures[4][3];
+        textures[7] = dungeonTextures[4][5];
 //        textures[0] =  new Texture(Gdx.files.internal("w1.png"));
 //        textures[1] =  new Texture(Gdx.files.internal("w2.png"));
 //        textures[2] =  new Texture(Gdx.files.internal("w3.png"));

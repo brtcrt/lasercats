@@ -3,6 +3,8 @@ package com.lasercats.Screens;
 import java.util.ArrayList;
 
 import com.lasercats.GameObjects.*;
+import com.lasercats.Tiles.FloorTile;
+import com.lasercats.Tiles.Tile;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +20,7 @@ public class LevelScreen extends LaserCatsScreen {
 
     private ArrayList<GameObject> gameObjects;
     private ArrayList<PhysicsObject> physicsObjects;
+	private ArrayList<Tile> tiles;
 	private ArrayList<GameObject> renderQueue;
 	private Client client;
 	private JSONObject dataToServer;
@@ -37,13 +40,12 @@ public class LevelScreen extends LaserCatsScreen {
         physicsObjects = new ArrayList<PhysicsObject>();
 		physicsObjects.add((Player)gameObjects.get(0));
 		physicsObjects.add((Player)gameObjects.get(1));
-		//By the way we really shouldn't position objects with manually entered coordinates, this works terribly with different aspect ratios.
-        createBoxes();
-		createWalls();
-		createPressurePlateTest();
-
+		// Create the empty tiles ArrayList here and fill it up later
+		tiles = new ArrayList<Tile>();
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
+
+		createTestLevel();
     }
     @Override
     public void render(float delta) {
@@ -65,6 +67,9 @@ public class LevelScreen extends LaserCatsScreen {
 		client.sendUpdate(dataToServer);
 
 		ScreenUtils.clear(1, 1, 1, 1);
+		// Ok wtf this might be the single worst piece of code I have ever written. jk I fucked up harder before. ~brtcrt
+		camera.position.x = gameObjects.get(0).getX();
+		camera.position.y = gameObjects.get(0).getY();
 		camera.update();
 
 		batch.begin();
@@ -72,9 +77,13 @@ public class LevelScreen extends LaserCatsScreen {
 		renderQueue = new ArrayList<GameObject>(gameObjects);
 		ySort();
 
-		for (GameObject object : renderQueue)
+		for (Tile tile : tiles)
 		{
-			object.render(batch);
+			tile.render(batch);
+		}
+
+		for (GameObject o : renderQueue) {
+			o.render(batch);
 		}
 		batch.end();
     }
@@ -101,9 +110,10 @@ public class LevelScreen extends LaserCatsScreen {
 
 	protected void calculatePhysics () {
 		// this is a dumb solution in O(n^2) but should be fine in our case.
-		for (PhysicsObject o : physicsObjects) {
+		for (int i = 0; i < physicsObjects.size(); i++) {
+			PhysicsObject o = physicsObjects.get(i);
 			ArrayList<PhysicsObject> passedObjects = new ArrayList<PhysicsObject>(physicsObjects);
-			passedObjects.remove(o);
+			passedObjects.remove(i);
 			o.calculatePhysics(passedObjects);
 		}
 	}
@@ -112,7 +122,7 @@ public class LevelScreen extends LaserCatsScreen {
 	 * For testing purposes. Remove later ~brtcrt
 	 */
 	private void createBoxes() {
-		final int BOX_COUNT = 3;
+		final int BOX_COUNT = 2;
 		for (int i = 0; i < BOX_COUNT; i++) {
 			Box b;
 			boolean goodBox;
@@ -134,32 +144,86 @@ public class LevelScreen extends LaserCatsScreen {
 	 * Please help me.
 	 */
 	private void createWalls() {
-		Wall[] walls = {
-				new Wall(600, 400, 64, 64, 2),
-				new Wall(664, 400, 64, 64, 2),
-				new Wall(408, 400, 64, 64, 2),
-				new Wall(344, 400, 64, 64, 2),
-				new Wall(728, 400, 32, 64, 3),
-				new Wall(728, 272, 32, 128, 5),
-				new Wall(728, 144, 32, 128, 5)
-		};
-		for (Wall w : walls) {
-			gameObjects.add(w);
-			physicsObjects.add(w);
+		//By the way we really shouldn't position objects with manually entered coordinates, this works terribly with different aspect ratios. ~Doruk
+		// Yeah I guess, but I don't really care atm ~brtcrt
+		ArrayList<Wall> walls = new ArrayList<Wall>();
+		final int startX = -640;
+		final int startY = -640;
+		walls.add(new Wall(startX, -startY, 64, 64, 1));
+		walls.add(new Wall(-startX, -startY, 64, 64, 3));
+		walls.add(new Wall(startX, startY, 64, 64, 6));
+		walls.add(new Wall(-startX, startY, 64, 64, 8));
+		for (int i = 1; i < 20; i++) {
+			walls.add(new Wall(startX + i * 64, startY, 64,64, 7));
+			walls.add(new Wall(startX + i * 64, -startY, 64,64, 2));
 		}
+		for (int i = 1; i < 20; i++) {
+			walls.add(new Wall(startX, startY + i * 64, 64,64, 4));
+			walls.add(new Wall(-startX , startY + i * 64, 64,64, 5));
+		}
+		// Make room for the door
+		// honestly this should remove a wall from both the top and the bottom
+		// but it doesn't for some reason??
+		walls.remove(25);
+		walls.remove(26);
+		walls.remove(28);
+		walls.remove(29);
+
+		// Make a box for the pressure plate
+		walls.add(new Wall(startX + 64, -startY - 196, 64, 64, 7));
+		walls.add(new Wall(startX + 256, -startY - 196, 64, 64, 7));
+		walls.add(new Wall(startX + 320, -startY - 64, 64, 64, 5));
+		walls.add(new Wall(startX + 320, -startY - 128, 64, 64, 5));
+		walls.add(new Wall(startX + 320, -startY - 196, 64, 64, 8));
+
+		gameObjects.addAll(walls);
+		physicsObjects.addAll(walls);
 
 	}
 
 	/**
 	 * Also for testing purposes. Remove later ~brtcrt
 	 */
-	public void createPressurePlateTest() {
-		Gate g = new Gate(472, 400, 128, 64);
-		PressurePlate p = new PressurePlate(200, 300, 64, 64, g);
-		gameObjects.add(g);
-		gameObjects.add(p);
-		physicsObjects.add(g);
-		physicsObjects.add(p);
+	public void createLevelElements() {
+		ArrayList<PressurePlate> pps = new ArrayList<>();
+		ArrayList<Gate> gates = new ArrayList<>();
+		Gate g = new Gate(64, 640, 128, 64);
+		PressurePlate p = new PressurePlate(-500, 550, 64, 64, g);
+		gates.add(g);
+		pps.add(p);
+
+		g = new Gate(256, -640, 128, 64);
+		p = new PressurePlate(800, 800, 64, 64, g);
+		gates.add(g);
+		pps.add(p);
+
+		g = new Gate(-640 + 128, 640 - 196, 128, 64);
+		p = new PressurePlate(-500, -400, 64, 64, g);
+		gates.add(g);
+		pps.add(p);
+
+		gameObjects.addAll(gates);
+		gameObjects.addAll(pps);
+		physicsObjects.addAll(gates);
+		physicsObjects.addAll(pps);
+		createBoxes();
+	}
+
+	public void fillTiles() {
+		// For testing purposes I'll just fill a portion of the level with FloorTiles here ~brtcrt
+		final int startX = -1280;
+		final int startY = -1280;
+		for (int i = 0; i < 40; i++) {
+			for (int j = 0; j < 40; j++) {
+				tiles.add(new FloorTile(startX + 64 * i, startY + 64 * j, 64, 64, ((int)Math.round(Math.random() * 11)) + 1));
+			}
+		}
+	}
+
+	public void createTestLevel() {
+		createWalls();
+		createLevelElements();
+		fillTiles();
 	}
 	private void ySort() {
 		renderQueue.sort((o1, o2) -> {
