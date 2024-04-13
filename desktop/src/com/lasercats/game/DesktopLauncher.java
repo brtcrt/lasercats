@@ -1,5 +1,6 @@
 package com.lasercats.game;
 
+import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.lasercats.game.LaserCats;
@@ -10,7 +11,7 @@ public class DesktopLauncher {
 		Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
 		config.setForegroundFPS(60);
 		config.setTitle("lasercats");
-		config.setWindowedMode(1024, 720);
+		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
 		new Lwjgl3Application(new LaserCats(), config);
 	}
 }

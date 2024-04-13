@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
@@ -34,10 +35,13 @@ public class MainMenuScreen extends LaserCatsScreen {
 
     private Table buttonTable;
 
-    private Texture laserPointer;
+    private Texture laserPointerOne;
+    private Texture laserPointerTwo;
     private Texture catImageOne;
     private Texture catImageTwo;
     private Texture title;
+    private Texture background;
+    private Sprite backgroundSprite;
 
     private Client client;
     //Includes just the players initially
@@ -84,12 +88,16 @@ public class MainMenuScreen extends LaserCatsScreen {
     @Override
     public void render(float delta) {
         //Background can be something else. Feel free to change this.
-        ScreenUtils.clear(Color.ORANGE);
+        ScreenUtils.clear(Color.BROWN);
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
         this.stage.act(delta);
         this.batch.setProjectionMatrix(this.genericViewport.getCamera().combined);
+        batch.begin();
+        backgroundSprite.setCenter(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2);
+        backgroundSprite.draw(batch);
+        batch.end();
         this.stage.draw();
         //One interesting thing about using stage is that because all resources of the main menu are part of the stage, when we call stage.draw() it draws all the resources.
         //So no need for batch.begin(), batch.end()
@@ -97,7 +105,7 @@ public class MainMenuScreen extends LaserCatsScreen {
     }
     @Override
     public void dispose() {
-        this.laserPointer.dispose();
+        this.laserPointerOne.dispose();
         this.catImageOne.dispose();
         this.catImageTwo.dispose();
         this.batch.dispose();
@@ -123,10 +131,14 @@ public class MainMenuScreen extends LaserCatsScreen {
     }
     public void createTextures() {
         //TODO Find and set assets later. Work with placeholders for testing purposes.
-        this.laserPointer = new Texture(Gdx.files.internal("Cat.png"));
-        this.catImageOne = new Texture(Gdx.files.internal("Cat.png"));
-        this.catImageTwo = new Texture(Gdx.files.internal("Cat.png"));
+        this.laserPointerOne = new Texture(Gdx.files.internal("laser_pointer-1.png"));
+        laserPointerTwo = new Texture(Gdx.files.internal("laser_pointer-2.png"));
+        this.catImageOne = new Texture(Gdx.files.internal("cat2-big.png"));
+        this.catImageTwo = new Texture(Gdx.files.internal("cat-big.png"));
         this.title = new Texture(Gdx.files.internal("Cat.png"));
+        background = new Texture(Gdx.files.internal("TitleScreenBackground.jpg"));
+        backgroundSprite = new Sprite(background);
+        backgroundSprite.scale((float) 0.25);
     }
     @Override
     public void positionActors() {
@@ -136,10 +148,12 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.add(buttonTable).align(Align.topLeft).expand();
         this.root.add(exitButton).align(Align.topRight).width(60).height(60).expand().colspan(2);
         this.root.row();
-        this.root.add(new Image(laserPointer)).colspan(3).padBottom(20);
+        this.root.add(new Image(laserPointerOne)).colspan(3);
         this.root.row();
         this.root.add(new Image(title)).padBottom(175).colspan(3);
         this.root.row();
+        root.add(new Image(laserPointerTwo)).colspan(3);
+        root.row();
         this.root.add(playButton).width(200).height(50).expandX().colspan(3);
         this.root.row();
         this.root.add(new Image(catImageOne)).expandX().align(Align.left).padRight(120);
