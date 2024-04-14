@@ -1,7 +1,6 @@
 package com.lasercats.Screens;
 
 import java.util.ArrayList;
-
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -136,9 +135,6 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.playButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(playButtonTexture)));
         this.levelEditorButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(levelEditorButtonTexture)));
         this.buttonTable = new Table();
-        this.root.setOrigin(0, 0);
-        this.root.setHeight(Gdx.graphics.getHeight());
-        this.root.setWidth(Gdx.graphics.getWidth());
     }
     public void createTextures() {
         this.laserPointerOne = new Texture(Gdx.files.internal("laser_pointer-1-long.png"));

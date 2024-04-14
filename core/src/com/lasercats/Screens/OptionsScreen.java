@@ -7,10 +7,12 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.ButtonGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
@@ -18,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -26,9 +29,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 
 public class OptionsScreen extends LaserCatsScreen {
 
-    private TextButton audioButton;
-    private TextButton controlsButton;
-    private TextButton customizeCatButton;
+    private ButtonGroup buttonGroup;
+    private Button audioButton;
+    private Button controlsButton;
+    private Button customizeCatButton;
+
+    private Texture audioButtonTexture;
+    private Texture audioButtonTextureDown;
+    private Texture controlsButtonTexture;
+    private Texture controlsButtonTextureDown;
+    private Texture customizeCatButtonTexture;
+    private Texture customizeCatButtonTextureDown;
 
     private Table displayTable;
     private Table buttonTable;
@@ -62,7 +73,8 @@ public class OptionsScreen extends LaserCatsScreen {
 
     private MainMenuScreen menu;
 
-    private ImageButton goBackButton;
+    private Button goBackButton;
+    private Texture goBackTexture;
 
     private static int[] keybinds;
     private FileHandle keybindsBin;
@@ -90,9 +102,9 @@ public class OptionsScreen extends LaserCatsScreen {
         this.stage = new Stage(genericViewport, batch);
         multiplexer.addProcessor(stage);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-        //TODO Placeholder JSON. Change later.
         this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);;
+        createTextures();
         loadVolumeLevels();
         createActors();
         setListeners();
@@ -106,7 +118,7 @@ public class OptionsScreen extends LaserCatsScreen {
     public void show() {}
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.ORANGE);
+        ScreenUtils.clear(Color.LIGHT_GRAY);
         Gdx.input.setInputProcessor(multiplexer);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
@@ -165,11 +177,11 @@ public class OptionsScreen extends LaserCatsScreen {
     }
     @Override
     public void createActors() {
-        audioButton = new TextButton("Audio", skin);
+        audioButton = new Button(new TextureRegionDrawable(new TextureRegion(audioButtonTexture)), new TextureRegionDrawable(new TextureRegion(audioButtonTextureDown)), new TextureRegionDrawable(new TextureRegion(audioButtonTextureDown)));
         audioButton.setName("audio");
-        controlsButton = new TextButton("Controls", skin);
+        controlsButton = new Button(new TextureRegionDrawable(new TextureRegion(controlsButtonTexture)), new TextureRegionDrawable(new TextureRegion(controlsButtonTextureDown)), new TextureRegionDrawable(new TextureRegion(controlsButtonTextureDown)));
         controlsButton.setName("controls");
-        customizeCatButton = new TextButton("Customize Cat", skin);
+        customizeCatButton = new Button(new TextureRegionDrawable(new TextureRegion(customizeCatButtonTexture)), new TextureRegionDrawable(new TextureRegion(customizeCatButtonTextureDown)), new TextureRegionDrawable(new TextureRegion(customizeCatButtonTextureDown)));
         customizeCatButton.setName("customize");
         displayTable = new Table();
         buttonTable = new Table();
@@ -202,19 +214,21 @@ public class OptionsScreen extends LaserCatsScreen {
         furColorDropdown = new SelectBox<String>(skin);
         furColorDropdown.setItems(furColors);
 
-        goBackButton = new ImageButton(skin);
+        goBackButton = new Button(new TextureRegionDrawable(new TextureRegion(goBackTexture)));
+
+        buttonGroup = new ButtonGroup<>(audioButton, controlsButton, customizeCatButton);
     }
     @Override
     public void positionActors() {
         //Once again feel free to change alignment and sizes
-        buttonTable.add(goBackButton).align(Align.topLeft).width(60).height(60).padBottom(120);
+        buttonTable.add(goBackButton).height((float) ((Gdx.graphics.getHeight() * 0.3 / 3.3))).align(Align.left).growX();
         buttonTable.row();
-        buttonTable.add(audioButton).expand().fillY().width(200).align(Align.left);
+        buttonTable.add(audioButton).height((float) (Gdx.graphics.getHeight() / 3.3)).growX();
         buttonTable.row();
-        buttonTable.add(controlsButton).expand().fillY().width(200).align(Align.left);
+        buttonTable.add(controlsButton).height((float) (Gdx.graphics.getHeight() / 3.3)).growX();
         buttonTable.row();
-        buttonTable.add(customizeCatButton).expand().fillY().width(200).align(Align.left);
-        root.add(buttonTable).expand().fill();
+        buttonTable.add(customizeCatButton).height((float) (Gdx.graphics.getHeight() / 3.3)).growX();
+        root.add(buttonTable);
         root.add(displayTable).expand().fill();
 
         stage.setRoot(root);
@@ -256,19 +270,38 @@ public class OptionsScreen extends LaserCatsScreen {
         displayTable.add(furColorLabel).expandX();
         displayTable.add(furColorDropdown).expandX();
     }
+    private void createTextures() {
+        audioButtonTexture = new Texture(Gdx.files.internal("AudioButtonUnpressed.png"));
+        audioButtonTextureDown = new Texture(Gdx.files.internal("AudioButtonPressed.png"));
+
+        controlsButtonTexture = new Texture(Gdx.files.internal("ControlsButtonUnpressed.png"));
+        controlsButtonTextureDown = new Texture(Gdx.files.internal("ControlsButtonPressed.png"));
+
+        customizeCatButtonTexture = new Texture(Gdx.files.internal("CustomizeCatButtonUnpressed.png"));
+        customizeCatButtonTextureDown = new Texture(Gdx.files.internal("CustomizeCatButtonPressed.png"));
+
+        goBackTexture = new Texture(Gdx.files.internal("GoBackIcon.jpg"));
+    }
     @Override
     public void hide() {}
     @Override
     public void dispose() {
         batch.dispose();
         stage.dispose();
+        audioButtonTexture.dispose();
+        controlsButtonTexture.dispose();
+        customizeCatButtonTexture.dispose();
+        audioButtonTextureDown.dispose();
+        controlsButtonTextureDown.dispose();
+        customizeCatButtonTextureDown.dispose();
+        goBackTexture.dispose();
     }
     @Override
     public void resume() {}
     public class OptionsButtonListener extends ChangeListener  {
         @Override
         public void changed(ChangeEvent event, Actor actor) {
-            if (((Button) actor).isPressed()) {
+            if (((Button) actor).isChecked()) {
                 Cell<Table> cell = root.getCell(displayTable);
                 if (actor.getName().equals("audio")) {
                     positionAudioOptions();
