@@ -24,6 +24,7 @@ public class LevelScreen extends LaserCatsScreen {
 	private ArrayList<GameObject> renderQueue;
 	private Client client;
 	private JSONObject dataToServer;
+	private GameObject[][] gameObjectMatrix;
 
     public LevelScreen(Game game, Client client) {
         super(game);
@@ -147,34 +148,30 @@ public class LevelScreen extends LaserCatsScreen {
 		//By the way we really shouldn't position objects with manually entered coordinates, this works terribly with different aspect ratios. ~Doruk
 		// Yeah I guess, but I don't really care atm ~brtcrt
 		ArrayList<Wall> walls = new ArrayList<Wall>();
+
 		final int startX = -640;
-		final int startY = -640;
-		walls.add(new Wall(startX, -startY, 64, 64, 1));
-		walls.add(new Wall(-startX, -startY, 64, 64, 3));
-		walls.add(new Wall(startX, startY, 64, 64, 6));
-		walls.add(new Wall(-startX, startY, 64, 64, 8));
-		for (int i = 1; i < 20; i++) {
-			walls.add(new Wall(startX + i * 64, startY, 64,64, 7));
-			walls.add(new Wall(startX + i * 64, -startY, 64,64, 2));
-		}
-		for (int i = 1; i < 20; i++) {
-			walls.add(new Wall(startX, startY + i * 64, 64,64, 4));
-			walls.add(new Wall(-startX , startY + i * 64, 64,64, 5));
-		}
-		// Make room for the door
-		// honestly this should remove a wall from both the top and the bottom
-		// but it doesn't for some reason??
-		walls.remove(25);
-		walls.remove(26);
-		walls.remove(28);
-		walls.remove(29);
+		final int startY = 640;
+
+		gameObjectMatrix = generateRectangleWall(startX, startY, 21, 21);
 
 		// Make a box for the pressure plate
-		walls.add(new Wall(startX + 64, -startY - 196, 64, 64, 7));
-		walls.add(new Wall(startX + 256, -startY - 196, 64, 64, 7));
-		walls.add(new Wall(startX + 320, -startY - 64, 64, 64, 5));
-		walls.add(new Wall(startX + 320, -startY - 128, 64, 64, 5));
-		walls.add(new Wall(startX + 320, -startY - 196, 64, 64, 8));
+		GameObject[][] smallerBox = generateRectangleWall(startX, startY, 6, 4);
+
+		gameObjectMatrix = mergeMatrices(smallerBox, gameObjectMatrix);
+
+		// Leave empty spots for the gates
+		gameObjectMatrix[0][11] = null;
+		gameObjectMatrix[0][12] = null;
+		gameObjectMatrix[20][14] = null;
+		gameObjectMatrix[20][15] = null;
+		gameObjectMatrix[3][2] = null;
+		gameObjectMatrix[3][3] = null;
+
+		ArrayList<GameObject> linear = linearizeMatrix(gameObjectMatrix);
+
+		for (GameObject o : linear) {
+			walls.add((Wall) o);
+		}
 
 		gameObjects.addAll(walls);
 		physicsObjects.addAll(walls);
@@ -237,5 +234,79 @@ public class LevelScreen extends LaserCatsScreen {
 		} catch (JSONException e) {
 			System.out.println(e);
 		}
+	}
+
+	/**
+	 *
+	 * @param x top left corner x
+	 * @param y top left corner y
+	 * @param w width of rectangle
+	 * @param h height of rectangle
+	 * @return Matrix of walls and null objects
+	 */
+	private GameObject[][] generateRectangleWall(float x, float y, int w, int h) {
+		GameObject[][] matrix = new GameObject[h][w];
+
+		final float wallWidth = 64;
+		final float wallHeight = 64;
+
+		// place the corner pieces
+		matrix[0][0] = new Wall(x, y, wallWidth, wallHeight, 1);
+		matrix[0][w - 1] = new Wall(x + wallWidth * (w - 1), y, wallWidth, wallHeight, 3);
+		matrix[h - 1][0] = new Wall(x, y - wallHeight * (h - 1), wallWidth, wallHeight, 6);
+		matrix[h - 1][w - 1] = new Wall(x + wallWidth * (w - 1), y - wallHeight * (h - 1), wallWidth, wallHeight, 8);
+
+
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (matrix[i][j] == null) {
+					if (i == 0) {
+						matrix[i][j] = new Wall(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight, 2);
+					}
+					if (i == h - 1) {
+						matrix[i][j] = new Wall(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight, 7);
+					}
+					if (j == 0) {
+						matrix[i][j] = new Wall(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight, 4);
+					}
+					if (j == w - 1) {
+						matrix[i][j] = new Wall(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight, 5);
+					}
+				}
+			}
+		}
+		return matrix;
+	}
+
+	private GameObject[][] mergeMatrices(GameObject[][] a, GameObject[][] b) {
+		// if two objects collide, the objects of a will be replaced
+		GameObject[][] matrix = new GameObject[Math.max(a.length, b.length)][Math.max(a[0].length, b[0].length)];
+		for (int i = 0; i < a.length; i++) {
+			for (int j = 0; j < a[0].length; j++) {
+				if (a[i][j] != null) {
+					matrix[i][j] = a[i][j];
+				}
+			}
+		}
+		for (int i = 0; i < b.length; i++) {
+			for (int j = 0; j < b[0].length; j++) {
+				if (b[i][j] != null) {
+					matrix[i][j] = b[i][j];
+				}
+			}
+		}
+		return matrix;
+	}
+
+	private ArrayList<GameObject> linearizeMatrix(GameObject[][] m) {
+		ArrayList<GameObject> linear = new ArrayList<GameObject>();
+		for (int i = 0; i < m.length; i++) {
+			for (int j = 0; j < m[0].length; j++) {
+				if (m[i][j] != null) {
+					linear.add(m[i][j]);
+				}
+			}
+		}
+		return linear;
 	}
 }
