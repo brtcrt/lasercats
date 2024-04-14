@@ -9,14 +9,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.lasercats.Screens.OptionsScreen;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import javax.sound.midi.Receiver;
+import java.sql.Time;
 import java.util.ArrayList;
 
 public class Player extends Empty implements PhysicsObject {
@@ -25,12 +25,20 @@ public class Player extends Empty implements PhysicsObject {
     protected Sprite sprite;
     protected Animation<TextureRegion> idleAnimation;
     protected Animation<TextureRegion> walkAnimation;
+    protected Animation<TextureRegion> transitionAnimation;
+    protected Animation<TextureRegion> sleepAnimation;
     protected Animation<TextureRegion> currentAnimation;
+    private boolean inTransition;
+    private long transitionBeginTime;
+    private float transitionState;
+    protected boolean isSleeping;
+    protected long lastInputTime;
     protected Sound meow;
     private boolean isMainPlayer;
 
     protected final float walkSpeed = 150f;
-    protected final float animationPeriod = 0.14f;
+    protected final float idlePeriod = 0.5f;
+    protected final float walkPeriod = 0.14f;
     private final static float WIDTH = 128 , HEIGHT = 128;
     protected float stateTime;
     public Vector2 direction;
@@ -41,12 +49,18 @@ public class Player extends Empty implements PhysicsObject {
     public Player (float x, float y, float width, float height, boolean isMainPlayer) {
         super(x, y, width - 20, height - 52);
         this.isMainPlayer = isMainPlayer;
+        this.isSleeping = true;
+        this.inTransition = false;
+        lastInputTime = TimeUtils.nanoTime();
 
         animationSheet = new Texture(Gdx.files.internal("CatAnimationSheet.png"));
 
         TextureRegion[][] tmp = TextureRegion.split(animationSheet, 32, 32);
         TextureRegion[] idleFrames = new TextureRegion[2];
         TextureRegion[] walkFrames = new TextureRegion[2];
+        TextureRegion[] sleepFrames = new TextureRegion[2];
+        TextureRegion[] transitionFrames = new TextureRegion[4];
+        TextureRegion[] reverseTransitionFrames = new TextureRegion[4];
 
         walkFrames[0] = tmp[1][0];
         walkFrames[1] = tmp[1][1];
@@ -54,12 +68,29 @@ public class Player extends Empty implements PhysicsObject {
         idleFrames[0] = tmp[0][0];
         idleFrames[1] = tmp[0][1];
 
-        idleAnimation = new Animation<TextureRegion>(animationPeriod, idleFrames);
-        walkAnimation = new Animation<TextureRegion>(animationPeriod, walkFrames);
-        currentAnimation = idleAnimation;
+        sleepFrames[0] = tmp[2][3];
+        sleepFrames[1] = tmp[3][3];
+
+
+        // walking to sleeping
+        transitionFrames[0] = tmp[2][0];
+        transitionFrames[1] = tmp[2][1];
+        transitionFrames[2] = tmp[2][2];
+        transitionFrames[3] = tmp[2][3];
+
+        idleAnimation = new Animation<TextureRegion>(idlePeriod, idleFrames);
+        idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        walkAnimation = new Animation<TextureRegion>(walkPeriod, walkFrames);
+        walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        transitionAnimation = new Animation<TextureRegion>(idlePeriod, transitionFrames);
+        sleepAnimation = new Animation<TextureRegion>(idlePeriod, sleepFrames);
+        sleepAnimation.setPlayMode(Animation.PlayMode.LOOP);
+        currentAnimation = sleepAnimation;
 
         direction = new Vector2();
         stateTime = 0;
+
+        transitionState = 0;
 
 
         controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
@@ -74,12 +105,43 @@ public class Player extends Empty implements PhysicsObject {
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
 
-        if (is_walking()) {
+        if (isSleeping) {
+            currentAnimation = sleepAnimation;
+        } else if (is_walking()) {
             currentAnimation = walkAnimation;
         } else {
             currentAnimation = idleAnimation;
         }
-        sprite = new Sprite(currentAnimation.getKeyFrame(stateTime, true));
+
+        if (TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(lastInputTime)) > 5000 && !isSleeping && !inTransition) {
+            isSleeping = true;
+            inTransition = true;
+            transitionBeginTime = TimeUtils.nanoTime();
+            transitionState = 0;
+        }
+
+        if (TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(lastInputTime)) < 5000 && isSleeping && !inTransition) {
+            isSleeping = false;
+            inTransition = true;
+            transitionBeginTime = TimeUtils.nanoTime();
+            transitionState = 0;
+        }
+
+        sprite = new Sprite(currentAnimation.getKeyFrame(stateTime));
+
+        if (inTransition) {
+            if (isSleeping) {
+                transitionAnimation.setPlayMode(Animation.PlayMode.NORMAL);
+                currentAnimation = transitionAnimation;
+            } else {
+                transitionAnimation.setPlayMode(Animation.PlayMode.REVERSED);
+                currentAnimation = transitionAnimation;
+            }
+            inTransition = TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(transitionBeginTime)) < currentAnimation.getAnimationDuration()* 1000;
+            sprite = new Sprite(currentAnimation.getKeyFrame(transitionState));
+            transitionState += Gdx.graphics.getDeltaTime();
+        }
+
 
         if(direction.x > 0) {
             sprite.flip(true, false);
@@ -95,6 +157,10 @@ public class Player extends Empty implements PhysicsObject {
 
     public void move()
     {
+        if (!velocity.isZero()) {
+            lastInputTime = TimeUtils.nanoTime();
+        }
+        if (inTransition) return;
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
     }
