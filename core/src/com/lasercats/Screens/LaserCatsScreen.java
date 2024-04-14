@@ -36,6 +36,7 @@ public abstract class LaserCatsScreen implements Screen {
 
     public abstract void render(float delta);
 
+    //This will no longer be used by the way, since we will never resize the window.
     public void resize(int width, int height) {
         this.genericViewport.update(width, height, true);
         this.root.setHeight(height);

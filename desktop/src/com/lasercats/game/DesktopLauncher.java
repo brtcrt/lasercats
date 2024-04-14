@@ -12,6 +12,7 @@ public class DesktopLauncher {
 		config.setForegroundFPS(60);
 		config.setTitle("lasercats");
 		config.setFullscreenMode(Lwjgl3ApplicationConfiguration.getDisplayMode());
+		//config.setWindowedMode(1024, 720);
 		new Lwjgl3Application(new LaserCats(), config);
 	}
 }
