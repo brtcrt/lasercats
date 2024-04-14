@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.GameObject;
@@ -35,8 +33,6 @@ public class MainMenuScreen extends LaserCatsScreen {
 
     private Table buttonTable;
 
-    //I decided against using cat images in the title screen because 32x32 cat image looks horrible in higher resolutions.
-    //If we find another cat image we can use that.
     private Texture laserPointerOne;
     private Texture laserPointerTwo;
     private Texture title;
@@ -47,6 +43,8 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Texture exitButtonTexture;
     private Texture playButtonTexture;
     private Texture levelEditorButtonTexture;
+    private Texture catImageOne;
+    private Texture catImageTwo;
 
     private Client client;
     //Includes just the players initially
@@ -96,7 +94,6 @@ public class MainMenuScreen extends LaserCatsScreen {
     @Override
     public void render(float delta) {
         //Background can be something else. Feel free to change this.
-        ScreenUtils.clear(Color.LIGHT_GRAY);
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
@@ -115,6 +112,8 @@ public class MainMenuScreen extends LaserCatsScreen {
     public void dispose() {
         this.laserPointerOne.dispose();
         laserPointerTwo.dispose();
+        catImageOne.dispose();
+        catImageTwo.dispose();
         optionsTexture.dispose();
         exitButtonTexture.dispose();
         tutorialTexture.dispose();
@@ -142,9 +141,8 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.setWidth(Gdx.graphics.getWidth());
     }
     public void createTextures() {
-        //I think the assets could be heavily improved however I am going to be honest I didn't want to spend a few hours for finding assets.
-        this.laserPointerOne = new Texture(Gdx.files.internal("laser_pointer-1.png"));
-        laserPointerTwo = new Texture(Gdx.files.internal("laser_pointer-2.png"));
+        this.laserPointerOne = new Texture(Gdx.files.internal("laser_pointer-1-long.png"));
+        laserPointerTwo = new Texture(Gdx.files.internal("laser_pointer-2-long.png"));
         this.title = new Texture(Gdx.files.internal("Title.png"));
         background = new Texture(Gdx.files.internal("TitleScreenBackground.jpg"));
         backgroundSprite = new Sprite(background);
@@ -154,6 +152,10 @@ public class MainMenuScreen extends LaserCatsScreen {
         exitButtonTexture = new Texture(Gdx.files.internal("ExitButtonIcon.png"));
         playButtonTexture = new Texture(Gdx.files.internal("PlayButton.png"));
         levelEditorButtonTexture = new Texture(Gdx.files.internal("LevelEditor.png"));
+        //This is the best I can do in terms of picture quality.
+        catImageOne = new Texture(Gdx.files.internal("cat-256x256-Flipped.png"));
+        catImageTwo = new Texture(Gdx.files.internal("cat-256x256.png"));
+
     }
     @Override
     public void positionActors() {
@@ -163,15 +165,17 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.add(buttonTable).align(Align.topLeft).expand();
         this.root.add(exitButton).align(Align.topRight).width(WIDTH / 32).height(HEIGHT / 18).expand().colspan(2).padTop(HEIGHT / 18).padRight(WIDTH / 32);
         this.root.row();
-        this.root.add(new Image(laserPointerOne)).colspan(3).height((int) (HEIGHT / 3.4));
+        this.root.add(new Image(laserPointerOne)).colspan(3);
         this.root.row();
-        this.root.add(new Image(title)).colspan(3).height(HEIGHT / 7).width(WIDTH / 4);
+        this.root.add(new Image(title)).colspan(3).height(HEIGHT / 7).width((WIDTH / 4));
         this.root.row();
-        root.add(new Image(laserPointerTwo)).colspan(3).height((int) (HEIGHT / 3.4));
+        root.add(new Image(laserPointerTwo)).colspan(3);
         root.row();
-        this.root.add(playButton).width(WIDTH / 6).height(HEIGHT / 15).expandX().colspan(3);
+        root.add(new Image(catImageOne)).expandX();
+        this.root.add(playButton).width(WIDTH / 6).expandX().height(HEIGHT / 8).padTop(HEIGHT / 8);
+        root.add(new Image(catImageTwo)).expandX();
         this.root.row();
-        this.root.add(levelEditorButton).width(WIDTH / 6).height(HEIGHT / 8).expandX().colspan(3).padBottom(HEIGHT / 36);
+        this.root.add(levelEditorButton).width(WIDTH / 6).height(HEIGHT / 5).align(Align.center).colspan(3).padLeft(WIDTH / 40);
         this.stage.setRoot(root);
         //this.stage.setDebugAll(true);
     }
