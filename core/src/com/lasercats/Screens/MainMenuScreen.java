@@ -5,7 +5,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -36,7 +35,6 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Texture laserPointerTwo;
     private Texture title;
     private Texture background;
-    private Sprite backgroundSprite;
     private Texture optionsTexture;
     private Texture tutorialTexture;
     private Texture exitButtonTexture;
@@ -51,9 +49,8 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Player player;
     private Player otherPlayer;
 
-    //Since the game is played in fullscreen, these values will never change
-    private final static int WIDTH = Gdx.graphics.getWidth();
-    private final static int HEIGHT = Gdx.graphics.getHeight();
+    private  static int width = Gdx.graphics.getWidth();
+    private  static int height = Gdx.graphics.getHeight();
 
     //A general note about screen implementation. Some of the code might be redundant here because of how libGDX'S classes internally handle things.
     //Feel free to remove the unnecessary parts.
@@ -98,10 +95,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         delta = Gdx.graphics.getDeltaTime();
         this.stage.act(delta);
         this.batch.setProjectionMatrix(this.genericViewport.getCamera().combined);
-        batch.begin();
-        backgroundSprite.setCenter(WIDTH / 2, HEIGHT / 2);
-        backgroundSprite.draw(batch);
-        batch.end();
+        genericViewport.apply();
         this.stage.draw();
         //One interesting thing about using stage is that because all resources of the main menu are part of the stage, when we call stage.draw() it draws all the resources.
         //So no need for batch.begin(), batch.end()
@@ -141,8 +135,6 @@ public class MainMenuScreen extends LaserCatsScreen {
         laserPointerTwo = new Texture(Gdx.files.internal("laser_pointer-2-long.png"));
         this.title = new Texture(Gdx.files.internal("Title.png"));
         background = new Texture(Gdx.files.internal("TitleScreenBackground.jpg"));
-        backgroundSprite = new Sprite(background);
-        backgroundSprite.scale((float) 0.25);
         optionsTexture = new Texture(Gdx.files.internal("OptionsIcon.png"));
         tutorialTexture = new Texture(Gdx.files.internal("TutorialIcon.png"));
         exitButtonTexture = new Texture(Gdx.files.internal("ExitButtonIcon.png"));
@@ -156,23 +148,25 @@ public class MainMenuScreen extends LaserCatsScreen {
     @Override
     public void positionActors() {
         //Feel free to play around with alignment and cell sizes.
-        this.buttonTable.add(optionsButton).align(Align.topLeft).padLeft(WIDTH / 32).width(WIDTH / 32).height(HEIGHT / 18).padTop(HEIGHT / 18).expand();
-        this.buttonTable.add(tutorialButton).align(Align.topRight).width(WIDTH / 16).height(HEIGHT / 9).padLeft(WIDTH / 32).expand().padTop(HEIGHT / 36);
+        this.buttonTable.add(optionsButton).align(Align.topLeft).padLeft(width / 32).width(width / 32).height(height / 18).padTop(height / 18).expand();
+        this.buttonTable.add(tutorialButton).align(Align.topRight).width(width / 16).height(height / 9).padLeft(width / 32).expand().padTop(height / 36);
         this.root.add(buttonTable).align(Align.topLeft).expand();
-        this.root.add(exitButton).align(Align.topRight).width(WIDTH / 32).height(HEIGHT / 18).expand().colspan(2).padTop(HEIGHT / 18).padRight(WIDTH / 32);
+        this.root.add(exitButton).align(Align.topRight).width(width / 32).height(height / 18).expand().colspan(2).padTop(height / 18).padRight(width / 32);
         this.root.row();
         this.root.add(new Image(laserPointerOne)).colspan(3);
         this.root.row();
-        this.root.add(new Image(title)).colspan(3).height(HEIGHT / 7).width((WIDTH / 4));
+        this.root.add(new Image(title)).colspan(3).height(height / 7).width((width / 4));
         this.root.row();
         root.add(new Image(laserPointerTwo)).colspan(3);
         root.row();
         root.add(new Image(catImageOne)).expandX();
-        this.root.add(playButton).width(WIDTH / 6).expandX().height(HEIGHT / 8).padTop(HEIGHT / 8);
+        this.root.add(playButton).expandX().height(height / 8).padTop(height / 8);
         root.add(new Image(catImageTwo)).expandX();
         this.root.row();
-        this.root.add(levelEditorButton).width(WIDTH / 6).height(HEIGHT / 5).align(Align.center).colspan(3).padLeft(WIDTH / 40);
+        //The level editor button's alignment might be slightly off on certain aspect ratios.
+        this.root.add(levelEditorButton).width(width / 3).height(height / 5).colspan(3);
         this.stage.setRoot(root);
+        root.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
         //this.stage.setDebugAll(true);
     }
     @Override

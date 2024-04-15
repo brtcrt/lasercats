@@ -1,6 +1,7 @@
 package com.lasercats.Screens;
 
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -36,7 +37,6 @@ public abstract class LaserCatsScreen implements Screen {
 
     public abstract void render(float delta);
 
-    //This will no longer be used by the way, since we will never resize the window.
     public void resize(int width, int height) {
         this.genericViewport.update(width, height, true);
         this.root.setHeight(height);
