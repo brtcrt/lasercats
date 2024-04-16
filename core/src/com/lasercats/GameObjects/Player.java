@@ -159,7 +159,6 @@ public class Player extends Empty implements PhysicsObject {
         if(isMeow){
             meow.play(sfxVolume / 100);
         }
-        isMeow = false;
     }
 
     public void render(SpriteBatch batch)
@@ -191,6 +190,7 @@ public class Player extends Empty implements PhysicsObject {
             json.put("x", x);
             json.put("y", y);
             json.put("meow", isMeow);
+            isMeow = false;
         } catch (JSONException e) {
             System.out.println(e);
         }
