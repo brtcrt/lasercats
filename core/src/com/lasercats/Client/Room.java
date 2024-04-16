@@ -37,29 +37,20 @@ public class Room {
         }
     }
 
-    public Room(String id, String name, String[] playerIDs) {
-        this.id = id;
-        this.name = name;
-        this.playerIDs = playerIDs;
-        this.json = new JSONObject();
-        try {
-            this.json.put("roomId", id);
-            this.json.put("roomName", name);
-            this.json.put("players", playerIDs);
-        } catch (JSONException e) {
-            System.out.println(e);
-        }
-    }
-
     public Room(String id, String name, JSONArray playerIDs, String passwordHash) {
         this.id = id;
         this.name = name;
         this.playerIDs = new String[2];
         this.passwordHash = passwordHash;
+        this.json = new JSONObject();
         try {
             for (int i = 0; i < playerIDs.length(); i++) {
                 this.playerIDs[i] = playerIDs.getString(i);
             }
+            this.json.put("roomId", id);
+            this.json.put("roomName", name);
+            this.json.put("players", playerIDs);
+            this.json.put("passwordHash", passwordHash);
         } catch (JSONException e) {
             System.out.println(e);
         }
