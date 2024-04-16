@@ -83,7 +83,7 @@ public class Player extends Empty implements PhysicsObject {
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
         walkAnimation = new Animation<TextureRegion>(walkPeriod, walkFrames);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
-        transitionAnimation = new Animation<TextureRegion>(idlePeriod, transitionFrames);
+        transitionAnimation = new Animation<TextureRegion>(0.2f, transitionFrames);
         sleepAnimation = new Animation<TextureRegion>(idlePeriod, sleepFrames);
         sleepAnimation.setPlayMode(Animation.PlayMode.LOOP);
         currentAnimation = sleepAnimation;
