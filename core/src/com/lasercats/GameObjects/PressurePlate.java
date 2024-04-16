@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class PressurePlate extends Empty implements GameObject, Detector, PhysicsObject {
     private Texture image;
+    private Texture imagePressed;
     private Sprite sprite;
     private ArrayList<Activatable> activatables;
     private boolean isTriggered;
@@ -19,18 +20,15 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     public PressurePlate(float x, float y, float width, float height, ArrayList<Activatable> activatables){
         super(x, y, width, height);
         velocity = new Vector2();
-        image = new Texture(Gdx.files.internal("plate.png"));
+        image = new Texture(Gdx.files.internal("Button.png"));
+        imagePressed = new Texture(Gdx.files.internal("ButtonClick.png"));
         sprite = new Sprite(image);
         isTriggered = false;
         setActivatables(activatables);
     }
 
     public PressurePlate(float x, float y, float width, float height, Activatable a){
-        super(x, y, width, height);
-        velocity = new Vector2();
-        image = new Texture(Gdx.files.internal("plate.png"));
-        sprite = new Sprite(image);
-        isTriggered = false;
+        this(x,y,width,height, new ArrayList<Activatable>());
         ArrayList<Activatable> arr = new ArrayList<Activatable>();
         arr.add(a);
         setActivatables(arr);
@@ -39,8 +37,10 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     public void process(){
         for (Activatable a : activatables) {
             if (isTriggered) {
+                sprite = new Sprite(imagePressed);
                 a.activate();
             } else {
+                sprite = new Sprite(image);
                 a.deactivate();
             }
         }
