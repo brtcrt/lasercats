@@ -35,6 +35,7 @@ public class Player extends Empty implements PhysicsObject {
     protected long lastInputTime;
     protected Sound meow;
     private boolean isMainPlayer;
+    private boolean isMeow = false;
 
     protected final float walkSpeed = 150f;
     protected final float idlePeriod = 0.5f;
@@ -146,6 +147,19 @@ public class Player extends Empty implements PhysicsObject {
         if(direction.x > 0) {
             sprite.flip(true, false);
         }
+
+
+        sfxVolume = OptionsScreen.getSFXVolume();
+
+        if (Gdx.input.isKeyJustPressed(controlScheme[6]))
+        {
+            isMeow = true;
+        }
+
+        if(isMeow){
+            meow.play(sfxVolume / 100);
+        }
+        isMeow = false;
     }
 
     public void render(SpriteBatch batch)
@@ -176,6 +190,7 @@ public class Player extends Empty implements PhysicsObject {
             json.put("velocity.y", velocity.y);
             json.put("x", x);
             json.put("y", y);
+            json.put("meow", isMeow);
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -191,6 +206,7 @@ public class Player extends Empty implements PhysicsObject {
             velocity.y = (float)json.getDouble("velocity.y");
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            isMeow = (boolean)json.getBoolean("meow");
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -241,12 +257,6 @@ public class Player extends Empty implements PhysicsObject {
                 velocity.y = -1;
             }
 
-            sfxVolume = OptionsScreen.getSFXVolume();
-
-            if (Gdx.input.isKeyJustPressed(controlScheme[6]))
-            {
-                meow.play(sfxVolume / 100);
-            }
         }
         for (PhysicsObject o : objects) {
             if (o.getCollider().overlaps(this) && o.isStatic() && o.canCollide()) {
