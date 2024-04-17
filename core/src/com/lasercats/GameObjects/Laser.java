@@ -17,22 +17,27 @@ public class Laser implements GameObject {
 
     final private static int MAX_REFLECTIONS = 10;
     private int x1, y1;
-    private Vector2 velocity, initialDirection, finalDirection;
-    private ArrayList<Vector2> vertices;
-    private static ShapeRenderer debugRenderer = new ShapeRenderer();
+
+    private Vector2 velocity, initialDirection;
+    protected ArrayList<Vector2> vertices;
+    private ShapeRenderer debugRenderer = new ShapeRenderer();
     private Viewport viewport;
     private ArrayList<PhysicsObject> physicsObjects;
 
-    public Laser(int x, int y, Vector2 direction, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
+    private ArrayList<PhysicsObject> ignoreAlways;
+    private ArrayList<PhysicsObject> ignoreOnFirstReflection;
+
+    public Laser(float x, float y, Vector2 direction, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
     {
         this.initialDirection = direction;
         this.initialDirection.nor();
         this.viewport = viewport;
-        velocity = new Vector2(x1, y1);
         Gdx.gl.glLineWidth(10);
         vertices = new ArrayList<>();
-        vertices.add(new Vector2(10,10));
+        vertices.add(new Vector2(x,y));
         this.physicsObjects = physicsObjects;
+        this.ignoreAlways = new ArrayList<>();
+        this.ignoreOnFirstReflection = new ArrayList<>();
     }
 
 
@@ -41,7 +46,7 @@ public class Laser implements GameObject {
         Vector2 firstVertex = vertices.get(0);
         vertices.clear();
         vertices.add(firstVertex);
-        finalDirection = new Vector2(initialDirection);
+        Vector2 finalDirection = new Vector2(initialDirection);
 
         int reflections = 0;
 
@@ -50,25 +55,22 @@ public class Laser implements GameObject {
 
 
         boolean finishedTraveling = false;
-        boolean justReflected = false;
-        boolean firstLoop = true;
 
-        Vector2 lastStationaryVertex = null;
-        Vector2 movingEndVertex = null;
+        Vector2 start = null;
+        Vector2 end = null;
         while (!finishedTraveling) {
 
-            if (justReflected || firstLoop) {
-                justReflected = false;
-                lastStationaryVertex = vertices.get(vertices.size() - 1);
-                movingEndVertex = new Vector2(lastStationaryVertex);
-                vertices.add(movingEndVertex);
-            }
+            start = vertices.get(vertices.size() - 1);
+            end = new Vector2(start).mulAdd(finalDirection, 100_000);
+            vertices.add(end);
 
-            // if incrementing the position is here, the last stationary vertex collides with the polygon
-            // do not put   movingEndVertex.x/y += finalDirection.x/y; here
-
+            Vector2 closestIntersectionInDirection = new Vector2();
+            float distanceOfClosestIntersectionInDirection = Float.POSITIVE_INFINITY;
+            Vector2 normalOfClosestIntersectionInDirection = new Vector2();
 
             for (PhysicsObject object : physicsObjects) {
+                if (reflections == 0 && ignoreOnFirstReflection.contains(object)) continue;
+                if (ignoreAlways.contains(object)) continue;
 
                 Rectangle collider = object.getCollider();
                 Polygon colliderPolygon = new Polygon(new float[]{
@@ -78,7 +80,7 @@ public class Laser implements GameObject {
                         collider.width, 0,});
                 colliderPolygon.setPosition(collider.x, collider.y);
 
-                if (!Intersector.intersectSegmentPolygon(movingEndVertex, lastStationaryVertex, colliderPolygon)) continue;
+                if (!Intersector.intersectLinePolygon(start, end, colliderPolygon)) continue;
 
                 float[] colliderVertices = colliderPolygon.getTransformedVertices();
                 for (int i = 0; i < colliderVertices.length; i += 2) {
@@ -87,36 +89,54 @@ public class Laser implements GameObject {
                             colliderVertices[(i + 3) % colliderVertices.length]);
 
                     Vector2 intersection = new Vector2();
-                    boolean intersects = Intersector.intersectSegments(vertex1, vertex2, movingEndVertex, lastStationaryVertex, intersection);
+                    boolean intersects = Intersector.intersectSegments(vertex1, vertex2, start, end, intersection);
                     if (!intersects) continue;
 
-                    movingEndVertex.set(intersection);
+                    if (intersection.equals(start)) continue;
 
-                    Vector2 normal = new Vector2( vertex2.y - vertex1.y, vertex2.x - vertex1.x);
-                    reflect(normal);
 
-                    reflections++;
-                    justReflected = true;
-                    break;
+                    float distanceToIntersection = start.dst(intersection);
+
+                    if (distanceToIntersection < distanceOfClosestIntersectionInDirection) {
+                        distanceOfClosestIntersectionInDirection = distanceToIntersection;
+                        closestIntersectionInDirection.set(intersection);
+                        normalOfClosestIntersectionInDirection.set(vertex2.y - vertex1.y, vertex2.x - vertex1.x);
+                    }
+
                 }
-                if (justReflected) break;
             }
 
-            movingEndVertex.x += finalDirection.x;
-            movingEndVertex.y += finalDirection.y;
+            end.set(closestIntersectionInDirection);
+            finalDirection = reflect(finalDirection, normalOfClosestIntersectionInDirection);
 
-            if (!viewportBox.contains(movingEndVertex) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
+            reflections++;
 
-            firstLoop = false;
+            if (!viewportBox.contains(end) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
         }
     }
 
-    private void reflect(Vector2 normal)
+    protected void addObjectToIgnore(PhysicsObject physicsObject, boolean firstReflection)
+    {
+        if (firstReflection) ignoreOnFirstReflection.add(physicsObject);
+        else ignoreAlways.add(physicsObject);
+    }
+
+    public void rotateLeft()
+    {
+        this.initialDirection.rotateDeg(45);
+    }
+    public void rotateRight()
+    {
+        this.initialDirection.rotateDeg(-45);
+    }
+
+    private Vector2 reflect(Vector2 direction, Vector2 normal)
     {
         normal.nor();
-        finalDirection.x = finalDirection.x - 2*(finalDirection.x * normal.x + finalDirection.y * normal.y) * normal.x;
-        finalDirection.y = finalDirection.y - 2*(finalDirection.x * normal.x + finalDirection.y * normal.y) * normal.y;
-        finalDirection.nor();
+        direction.x = direction.x - 2*(direction.x * normal.x + direction.y * normal.y) * normal.x;
+        direction.y = direction.y - 2*(direction.x * normal.x + direction.y * normal.y) * normal.y;
+        direction.nor();
+        return direction;
         // finalDirection keeps its magnitude
     }
 

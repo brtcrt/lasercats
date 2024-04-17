@@ -37,6 +37,8 @@ public class Player extends Empty implements PhysicsObject {
     private boolean isMainPlayer;
     private boolean isMeow = false;
 
+    private Laser laser;
+
     protected final float walkSpeed = 150f;
     protected final float idlePeriod = 0.5f;
     protected final float walkPeriod = 0.14f;
@@ -96,8 +98,14 @@ public class Player extends Empty implements PhysicsObject {
 
         controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
 
+
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
         sfxVolume = 0;
+    }
+
+    public void addLaser(CatLaser laser)
+    {
+        this.laser = laser;
     }
 
     public void process()
@@ -158,6 +166,11 @@ public class Player extends Empty implements PhysicsObject {
 
         if(isMeow){
             meow.play(sfxVolume / 100);
+        }
+
+        if (Gdx.input.isKeyJustPressed(controlScheme[5]))
+        {
+            if (isMainPlayer) laser.rotateRight();
         }
     }
 
