@@ -14,14 +14,16 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Laser implements GameObject {
+
+    final private static int MAX_REFLECTIONS = 10;
     private int x1, y1;
     private Vector2 velocity, initialDirection, finalDirection;
     private ArrayList<Vector2> vertices;
     private static ShapeRenderer debugRenderer = new ShapeRenderer();
     private Viewport viewport;
-    private ArrayList<GameObject> gameObjects;
+    private ArrayList<PhysicsObject> physicsObjects;
 
-    public Laser(int x, int y, Vector2 direction, Viewport viewport, ArrayList<GameObject> gameObjects)
+    public Laser(int x, int y, Vector2 direction, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
     {
         this.initialDirection = direction;
         this.initialDirection.nor();
@@ -30,7 +32,7 @@ public class Laser implements GameObject {
         Gdx.gl.glLineWidth(10);
         vertices = new ArrayList<>();
         vertices.add(new Vector2(10,10));
-        this.gameObjects = gameObjects;
+        this.physicsObjects = physicsObjects;
     }
 
 
@@ -43,8 +45,8 @@ public class Laser implements GameObject {
 
         int reflections = 0;
 
-        Rectangle viewportBox = new Rectangle(viewport.getScreenX(), viewport.getScreenY(),
-                viewport.getScreenWidth(), viewport.getScreenHeight());
+        Rectangle viewportBox = new Rectangle(-600, -600,
+                3000, 3000);
 
 
         boolean finishedTraveling = false;
@@ -66,7 +68,7 @@ public class Laser implements GameObject {
             // do not put   movingEndVertex.x/y += finalDirection.x/y; here
 
 
-            for (GameObject object : gameObjects) {
+            for (PhysicsObject object : physicsObjects) {
 
                 Rectangle collider = object.getCollider();
                 Polygon colliderPolygon = new Polygon(new float[]{
@@ -103,7 +105,7 @@ public class Laser implements GameObject {
             movingEndVertex.x += finalDirection.x;
             movingEndVertex.y += finalDirection.y;
 
-            if (!viewportBox.contains(movingEndVertex) || reflections > 10) finishedTraveling = true;
+            if (!viewportBox.contains(movingEndVertex) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
 
             firstLoop = false;
         }
@@ -116,7 +118,6 @@ public class Laser implements GameObject {
         finalDirection.y = finalDirection.y - 2*(finalDirection.x * normal.x + finalDirection.y * normal.y) * normal.y;
         finalDirection.nor();
         // finalDirection keeps its magnitude
-        System.out.println(finalDirection);
     }
 
     @Override
