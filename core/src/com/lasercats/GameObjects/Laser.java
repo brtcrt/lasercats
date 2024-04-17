@@ -1,18 +1,17 @@
 package com.lasercats.GameObjects;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
+import com.badlogic.gdx.math.Intersector;
+
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Vector;
 
 public class Laser implements GameObject {
     private int x1, y1;
@@ -24,15 +23,13 @@ public class Laser implements GameObject {
 
     public Laser(int x, int y, Vector2 direction, Viewport viewport, ArrayList<GameObject> gameObjects)
     {
-        x1 = 0;
-        y1 = 0;
         this.initialDirection = direction;
         this.initialDirection.nor();
         this.viewport = viewport;
         velocity = new Vector2(x1, y1);
-        Gdx.gl.glLineWidth(3);
+        Gdx.gl.glLineWidth(10);
         vertices = new ArrayList<>();
-        vertices.add(new Vector2(0,0));
+        vertices.add(new Vector2(10,10));
         this.gameObjects = gameObjects;
     }
 
@@ -46,85 +43,80 @@ public class Laser implements GameObject {
 
         int reflections = 0;
 
-        boolean finishedTravelling = false;
-        while (!finishedTravelling) {
-            if (reflections > 10)
-            {
-                finishedTravelling = true;
-                break;
+        Rectangle viewportBox = new Rectangle(viewport.getScreenX(), viewport.getScreenY(),
+                viewport.getScreenWidth(), viewport.getScreenHeight());
+
+
+        boolean finishedTraveling = false;
+        boolean justReflected = false;
+        boolean firstLoop = true;
+
+        Vector2 lastStationaryVertex = null;
+        Vector2 movingEndVertex = null;
+        while (!finishedTraveling) {
+
+            if (justReflected || firstLoop) {
+                justReflected = false;
+                lastStationaryVertex = vertices.get(vertices.size() - 1);
+                movingEndVertex = new Vector2(lastStationaryVertex);
+                vertices.add(movingEndVertex);
             }
 
-            Vector2 endpoint = new Vector2(vertices.get(vertices.size() - 1));
-            Vector2 lastStationaryVertex = vertices.get(vertices.size() - 1);
-            vertices.add(endpoint);
+            // if incrementing the position is here, the last stationary vertex collides with the polygon
+            // do not put   movingEndVertex.x/y += finalDirection.x/y; here
 
-            boolean hasReflected = false;
-            while (!hasReflected) {
-                endpoint.x += finalDirection.x;
-                endpoint.y += finalDirection.y;
 
-                Rectangle viewportBox = new Rectangle(viewport.getScreenX(), viewport.getScreenY(), viewport.getScreenWidth(), viewport.getScreenHeight());
-                if (!viewportBox.contains(endpoint)) {
-                    finishedTravelling = true;
+            for (GameObject object : gameObjects) {
+
+                Rectangle collider = object.getCollider();
+                Polygon colliderPolygon = new Polygon(new float[]{
+                        0, 0,
+                        0, collider.height,
+                        collider.width, collider.height,
+                        collider.width, 0,});
+                colliderPolygon.setPosition(collider.x, collider.y);
+
+                if (!Intersector.intersectSegmentPolygon(movingEndVertex, lastStationaryVertex, colliderPolygon)) continue;
+
+                float[] colliderVertices = colliderPolygon.getTransformedVertices();
+                for (int i = 0; i < colliderVertices.length; i += 2) {
+                    Vector2 vertex1 = new Vector2(colliderVertices[i], colliderVertices[i + 1]);
+                    Vector2 vertex2 = new Vector2(colliderVertices[(i + 2) % colliderVertices.length],
+                            colliderVertices[(i + 3) % colliderVertices.length]);
+
+                    Vector2 intersection = new Vector2();
+                    boolean intersects = Intersector.intersectSegments(vertex1, vertex2, movingEndVertex, lastStationaryVertex, intersection);
+                    if (!intersects) continue;
+
+                    movingEndVertex.set(intersection);
+
+                    Vector2 normal = new Vector2( vertex2.y - vertex1.y, vertex2.x - vertex1.x);
+                    reflect(normal);
+
+                    reflections++;
+                    justReflected = true;
                     break;
                 }
-
-                for (GameObject object : gameObjects) {
-
-                    Rectangle collider = object.getCollider();
-                    Polygon colliderPolygon = new Polygon(new float[] {
-                            0,0,
-                            0, collider.height,
-                            collider.width, collider.height,
-                            collider.width, 0,});
-                    colliderPolygon.setPosition(collider.x, collider.y);
-
-                    if (Intersector.intersectSegmentPolygon(endpoint, lastStationaryVertex, colliderPolygon))
-                    {
-                        Vector2 closestVertex1 = new Vector2();
-                        Vector2 closestVertex2 = new Vector2();
-                        float shortestDistance = Float.POSITIVE_INFINITY;
-
-                        float[] colliderVertices = colliderPolygon.getTransformedVertices();
-                        for (int i = 0; i < colliderVertices.length; i+=2) {
-                            Vector2 intersection = new Vector2();
-                            boolean intersects = Intersector.intersectSegments(colliderVertices[i], colliderVertices[i + 1],
-                                    colliderVertices[(i + 2) % colliderVertices.length], colliderVertices[(i + 3) % colliderVertices.length],
-                                    endpoint.x, endpoint.y, lastStationaryVertex.x, lastStationaryVertex.y, intersection);
-                            if (intersects) {
-                                vertices.get(vertices.size() - 1).set(intersection);
-
-                                endpoint = new Vector2(intersection);
-
-                                Vector2 normal = new Vector2(closestVertex1.y - closestVertex2.y, closestVertex1.x - closestVertex2.x);
-                                reflect(intersection, normal);
-                                reflections++;
-                                hasReflected = true;
-                            }
-//                            float distance = Intersector.distanceSegmentPoint(vertex1, vertex2, endpoint);
-//                            if (distance < shortestDistance) {
-//                                closestVertex1 = vertex1;
-//                                closestVertex2 = vertex2;
-//                            }
-//                        }
-//
-//                        Vector2 intersection = new Vector2(); // intersectLines changes this value
-//                        Intersector.intersectLines(closestVertex1, closestVertex2, endpoint,
-//                                lastStationaryVertex, intersection);
-
-                        }
-                    }
-                }
+                if (justReflected) break;
             }
+
+            movingEndVertex.x += finalDirection.x;
+            movingEndVertex.y += finalDirection.y;
+
+            if (!viewportBox.contains(movingEndVertex) || reflections > 10) finishedTraveling = true;
+
+            firstLoop = false;
         }
     }
 
-    private void reflect(Vector2 position, Vector2 normal)
+    private void reflect(Vector2 normal)
     {
         normal.nor();
-        vertices.add(position);
         finalDirection.x = finalDirection.x - 2*(finalDirection.x * normal.x + finalDirection.y * normal.y) * normal.x;
         finalDirection.y = finalDirection.y - 2*(finalDirection.x * normal.x + finalDirection.y * normal.y) * normal.y;
+        finalDirection.nor();
+        // finalDirection keeps its magnitude
+        System.out.println(finalDirection);
     }
 
     @Override
@@ -145,7 +137,6 @@ public class Laser implements GameObject {
     @Override
     public void render(SpriteBatch batch) {
         batch.end();
-        Gdx.gl.glLineWidth(2);
         debugRenderer.setProjectionMatrix(viewport.getCamera().combined);
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
