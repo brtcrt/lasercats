@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.lasercats.GameObjects.*;
 import com.lasercats.Tiles.FloorTile;
 import com.lasercats.Tiles.Tile;
+import com.badlogic.gdx.math.Vector2;
+import com.lasercats.GameObjects.Laser;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,6 +17,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
+import com.lasercats.GameObjects.Box;
+import com.lasercats.GameObjects.GameObject;
 
 public class LevelScreen extends LaserCatsScreen {
 
