@@ -231,6 +231,7 @@ public class LevelScreen extends LaserCatsScreen {
 	private void ySort() {
 		renderQueue.sort((o1, o2) -> {
 			if(o1 instanceof PressurePlate){return -1;}
+			if(o1 instanceof CatLaser)return -1;
 			return -1 * Float.compare(o1.getY(), o2.getY());
 		});
 	}
