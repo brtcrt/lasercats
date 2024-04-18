@@ -16,7 +16,6 @@ import com.lasercats.Screens.OptionsScreen;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class Player extends Empty implements PhysicsObject {

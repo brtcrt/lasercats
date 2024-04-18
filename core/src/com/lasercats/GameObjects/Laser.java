@@ -58,6 +58,7 @@ public class Laser implements GameObject {
 
         Vector2 start = null;
         Vector2 end = null;
+        PhysicsObject lastCollidedObject = physicsObjects.get(0);
         while (!finishedTraveling) {
 
             start = vertices.get(vertices.size() - 1);
@@ -98,6 +99,7 @@ public class Laser implements GameObject {
                     float distanceToIntersection = start.dst(intersection);
 
                     if (distanceToIntersection < distanceOfClosestIntersectionInDirection) {
+                        lastCollidedObject = object;
                         distanceOfClosestIntersectionInDirection = distanceToIntersection;
                         closestIntersectionInDirection.set(intersection);
                         normalOfClosestIntersectionInDirection.set(vertex2.y - vertex1.y, vertex2.x - vertex1.x);
@@ -108,9 +110,8 @@ public class Laser implements GameObject {
 
             end.set(closestIntersectionInDirection);
             finalDirection = reflect(finalDirection, normalOfClosestIntersectionInDirection);
-
             reflections++;
-
+            if (!(lastCollidedObject instanceof Mirror)) finishedTraveling = true;
             if (!viewportBox.contains(end) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
         }
     }

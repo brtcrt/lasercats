@@ -54,7 +54,9 @@ public class Client {
     public void createRoom(String roomName) {
         JSONObject data = new JSONObject();
         try {
-            data.put("currentRoom", this.room.getJSON());
+            if (!this.room.isEmpty()) {
+                data.put("currentRoom", this.room.getJSON());
+            }
             data.put("roomName", roomName);
             data.put("passwordHash", "");
         } catch (JSONException e) {
@@ -67,7 +69,9 @@ public class Client {
         JSONObject data = new JSONObject();
         // Gdx.app.log("Hashed password", hashPassword(password));
         try {
-            data.put("currentRoom", this.room.getJSON());
+            if (!this.room.isEmpty()) {
+                data.put("currentRoom", this.room.getJSON());
+            }
             data.put("roomName", roomName);
             data.put("passwordHash", hashPassword(password));
         } catch (JSONException e) {

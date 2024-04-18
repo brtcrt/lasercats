@@ -190,6 +190,7 @@ public class LevelScreen extends LaserCatsScreen {
 	public void createLevelElements() {
 		ArrayList<PressurePlate> pps = new ArrayList<>();
 		ArrayList<Gate> gates = new ArrayList<>();
+		ArrayList<Mirror> mirrors = new ArrayList<>();
 		Gate g = new Gate(64, 640, 128, 64);
 		PressurePlate p = new PressurePlate(-500, 550, 64, 64, g);
 		gates.add(g);
@@ -205,10 +206,14 @@ public class LevelScreen extends LaserCatsScreen {
 		gates.add(g);
 		pps.add(p);
 
+		mirrors.add(new Mirror(200, 200, 64, 64, 1));
+
 		gameObjects.addAll(gates);
 		gameObjects.addAll(pps);
+		gameObjects.addAll(mirrors);
 		physicsObjects.addAll(gates);
 		physicsObjects.addAll(pps);
+		physicsObjects.addAll(mirrors);
 		createBoxes();
 	}
 
