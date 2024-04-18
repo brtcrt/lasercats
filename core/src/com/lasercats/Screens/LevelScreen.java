@@ -206,7 +206,7 @@ public class LevelScreen extends LaserCatsScreen {
 		gates.add(g);
 		pps.add(p);
 
-		mirrors.add(new Mirror(200, 200, 64, 64, 1));
+		mirrors.add(new Mirror(200, 200, 64, 128));
 
 		gameObjects.addAll(gates);
 		gameObjects.addAll(pps);
