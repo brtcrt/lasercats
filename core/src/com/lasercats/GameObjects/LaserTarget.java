@@ -2,32 +2,42 @@ package com.lasercats.GameObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class PressurePlate extends Empty implements GameObject, Detector, PhysicsObject {
+public class LaserTarget extends Empty implements GameObject, Detector, PhysicsObject {
     private Texture image;
-    private Texture imagePressed;
     private Sprite sprite;
     private ArrayList<Activatable> activatables;
+    private TextureRegion offFrame;
+    private Animation<TextureRegion> onAnimation;
+    private float state;
     private boolean isTriggered;
 
-    public PressurePlate(float x, float y, float width, float height, ArrayList<Activatable> activatables){
+    public LaserTarget(float x, float y, float width, float height, ArrayList<Activatable> activatables){
         super(x, y, width, height);
         velocity = new Vector2();
-        image = new Texture(Gdx.files.internal("Button.png"));
-        imagePressed = new Texture(Gdx.files.internal("ButtonClick.png"));
+        image = new Texture(Gdx.files.internal("LaserTargetSheet2.png")); // I hand-drew this fucking monstrosity kill me ~brtcrt
+        TextureRegion[][] tmp = TextureRegion.split(image, 32, 32);
+        TextureRegion[] offFrames = tmp[0];
+        TextureRegion[] onFrames = tmp[1];
+        offFrame = offFrames[0];
+        onAnimation = new Animation<TextureRegion>(0.4f, onFrames);
+        onAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
         sprite = new Sprite(image);
         isTriggered = false;
+        state = 0;
         setActivatables(activatables);
     }
 
-    public PressurePlate(float x, float y, float width, float height, Activatable a){
+    public LaserTarget(float x, float y, float width, float height, Activatable a){
         this(x,y,width,height, new ArrayList<Activatable>());
         ArrayList<Activatable> arr = new ArrayList<Activatable>();
         arr.add(a);
@@ -35,12 +45,13 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     }
 
     public void process(){
+        state += Gdx.graphics.getDeltaTime();
         for (Activatable a : activatables) {
             if (isTriggered) {
-                sprite = new Sprite(imagePressed);
+                sprite = new Sprite(onAnimation.getKeyFrame(state, true));
                 a.activate();
             } else {
-                sprite = new Sprite(image);
+                sprite = new Sprite(offFrame);
                 a.deactivate();
             }
         }
@@ -53,12 +64,7 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
 
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
-        isTriggered = false;
-        for (PhysicsObject o : objects) {
-            if (o.getCollider().overlaps(this)) {
-                this.isTriggered = true;
-            }
-        }
+        reset();
     }
 
     @Override
@@ -71,7 +77,6 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     }
 
     public void destroy(){
-        imagePressed.dispose();
         image.dispose();
     }
 
@@ -104,5 +109,11 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     @Override
     public boolean canCollide() {
         return false;
+    }
+    public void trigger() {
+        this.isTriggered = true;
+    }
+    public void reset() {
+        this.isTriggered = false;
     }
 }

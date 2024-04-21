@@ -113,6 +113,10 @@ public class Laser implements GameObject {
             reflections++;
             if (!(lastCollidedObject instanceof Mirror)) finishedTraveling = true;
             if (!viewportBox.contains(end) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
+            if (lastCollidedObject instanceof LaserTarget) {
+                LaserTarget target = (LaserTarget) lastCollidedObject;
+                target.trigger();
+            }
         }
     }
 
