@@ -150,6 +150,9 @@ public class Client {
             System.out.println(e);
         }
     }
+    public String getID(){
+        return clientID;
+    }
 
     private void configSocketEvents() {
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
