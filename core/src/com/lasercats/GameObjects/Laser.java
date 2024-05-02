@@ -169,9 +169,10 @@ public class Laser implements GameObject {
             vertices.clear();
             for(int i = 0; i < a.length(); i++){
                 String s = a.getString(i);
-                s.replaceAll("(", "");
-                s.replaceAll(")", "");
+                s = s.replace("(", "");
+                s = s.replace(")", "");
                 String [] xy = s.split(",");
+                System.out.println(xy[0]);
                 vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
             }
         } 

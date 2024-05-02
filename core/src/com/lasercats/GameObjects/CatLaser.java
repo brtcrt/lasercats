@@ -26,7 +26,6 @@ public class CatLaser extends Laser{
                     vertices.get(0).y));
         }
 
-
         super.process();
     }
 
