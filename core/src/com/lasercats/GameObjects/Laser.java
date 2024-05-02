@@ -155,6 +155,7 @@ public class Laser implements GameObject {
         JSONObject json = new JSONObject();
         try {
             json.put("vertices", vertices);
+            json.put("initialDirection",initialDirection);
         } 
         catch (JSONException e) {
             System.out.println(e);
@@ -175,6 +176,11 @@ public class Laser implements GameObject {
                 System.out.println(xy[0]);
                 vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
             }
+            String dir = json.getString("initialDirection");
+            dir = dir.replace("(", "");
+            dir = dir.replace(")", "");
+            String[] split = dir.split(",");
+            this.initialDirection = new Vector2(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
         } 
         catch (JSONException e) {
             System.out.println(e);
