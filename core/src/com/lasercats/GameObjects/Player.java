@@ -33,8 +33,10 @@ public class Player extends Empty implements PhysicsObject {
     protected boolean isSleeping;
     protected long lastInputTime;
     protected Sound meow;
+    protected Sound meowOrange;
     private boolean isMainPlayer;
     private boolean isMeow = false;
+    private boolean isMeowOrange = false;
     private boolean isReflective = false;
 
     private Laser laser;
@@ -100,6 +102,7 @@ public class Player extends Empty implements PhysicsObject {
 
 
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
+        meowOrange = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow(turuncu).mp3"));
         sfxVolume = 0;
     }
 
@@ -162,10 +165,22 @@ public class Player extends Empty implements PhysicsObject {
         if (Gdx.input.isKeyJustPressed(controlScheme[6]))
         {
             isMeow = true;
+            int rand = (int)Math.round(Math.random() * 3);
+            if(rand == 1){
+                isMeowOrange = true;
+            }
+            else{
+                isMeowOrange = false;
+            }
         }
 
         if(isMeow){
-            meow.play(sfxVolume / 100);
+            if(!isMeowOrange){
+                meow.play(sfxVolume / 100);
+            }
+            else{
+                meowOrange.play(sfxVolume / 100);
+            }
         }
 
         if (Gdx.input.isKeyJustPressed(controlScheme[5]))
@@ -203,6 +218,7 @@ public class Player extends Empty implements PhysicsObject {
             json.put("x", x);
             json.put("y", y);
             json.put("meow", isMeow);
+            json.put("meowOrange", isMeowOrange);
             isMeow = false;
         } catch (JSONException e) {
             System.out.println(e);
@@ -220,6 +236,7 @@ public class Player extends Empty implements PhysicsObject {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
             isMeow = (boolean)json.getBoolean("meow");
+            isMeowOrange = (boolean)json.getBoolean("meowOrange");
         } catch (JSONException e) {
             System.out.println(e);
         }
