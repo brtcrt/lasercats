@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.Intersector;
-
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -152,12 +152,32 @@ public class Laser implements GameObject {
 
     @Override
     public JSONObject getIdentifiers() {
-        return null;
+        JSONObject json = new JSONObject();
+        try {
+            json.put("vertices", vertices);
+        } 
+        catch (JSONException e) {
+            System.out.println(e);
+        }
+        return json;
     }
 
     @Override
     public void setIdentifiers(JSONObject json) {
-
+        try {
+            JSONArray a = json.getJSONArray("vertices");
+            vertices.clear();
+            for(int i = 0; i < a.length(); i++){
+                String s = a.getString(i);
+                s.replaceAll("(", "");
+                s.replaceAll(")", "");
+                String [] xy = s.split(",");
+                vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
+            }
+        } 
+        catch (JSONException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
