@@ -35,6 +35,7 @@ public class Player extends Empty implements PhysicsObject {
     protected Sound meow;
     private boolean isMainPlayer;
     private boolean isMeow = false;
+    private boolean isReflective = false;
 
     private Laser laser;
 
@@ -286,5 +287,13 @@ public class Player extends Empty implements PhysicsObject {
         }
         velocity.nor();
         move();
+    }
+
+    public boolean getIsReflective(){
+        return this.isReflective;
+    }
+
+    public void setIsReflective(boolean b){
+        this.isReflective = b;
     }
 }

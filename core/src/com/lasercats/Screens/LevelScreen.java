@@ -47,12 +47,16 @@ public class LevelScreen extends LaserCatsScreen {
 		physicsObjects.add((Player)gameObjects.get(1));
 		String creatorID = client.getRoom().getPlayerIDs()[0];
 		Player lasercat;
+		int reflectable;
 		if(this.client.getID().equals(creatorID)){
 			lasercat = (Player) gameObjects.get(0);
+			reflectable = 1;
 		}
 		else{
 			lasercat = (Player) gameObjects.get(1);
+			reflectable = 0;
 		}
+		((Player) gameObjects.get(reflectable)).setIsReflective(true);
 		Laser cl = new CatLaser(lasercat, genericViewport, physicsObjects);
 		gameObjects.add(cl);
 		// Create the empty tiles ArrayList here and fill it up later

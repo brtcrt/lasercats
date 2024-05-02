@@ -111,7 +111,7 @@ public class Laser implements GameObject {
             end.set(closestIntersectionInDirection);
             finalDirection = reflect(finalDirection, normalOfClosestIntersectionInDirection);
             reflections++;
-            if (!(lastCollidedObject instanceof Mirror)) finishedTraveling = true;
+            if (!(lastCollidedObject instanceof Mirror) || !(lastCollidedObject instanceof Player && ((Player)lastCollidedObject).getIsReflective())) finishedTraveling = true;
             if (!viewportBox.contains(end) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
             if (lastCollidedObject instanceof LaserTarget) {
                 LaserTarget target = (LaserTarget) lastCollidedObject;
