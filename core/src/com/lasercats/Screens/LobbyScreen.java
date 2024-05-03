@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
@@ -39,7 +38,7 @@ public class LobbyScreen extends LaserCatsScreen {
     private TextField roomCreateField;
     private TextButton roomCreateButton;
     private TextField passwordField;
-    private SelectBox gameModeDropBox;
+    private SelectBox<String> gameModeDropBox;
     private TextButton startGameButton;
 
     private MainMenuScreen menuScreen;
@@ -64,9 +63,6 @@ public class LobbyScreen extends LaserCatsScreen {
 
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-
-        //TODO Placeholder JSON. Change later.
-        this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
 
         createActors();
@@ -170,7 +166,7 @@ public class LobbyScreen extends LaserCatsScreen {
         roomCreateButton = new TextButton("Create Room", skin);
         roomList = new VerticalGroup();
         goBackButton = new ImageButton(skin);
-        gameModeDropBox = new SelectBox<String[]>(skin);
+        gameModeDropBox = new SelectBox<String>(skin);
 
         passwordField = new TextField("", skin);
         passwordField.setMessageText("Create password");

@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -49,8 +48,8 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Player player;
     private Player otherPlayer;
 
-    private  static int width = Gdx.graphics.getWidth();
-    private  static int height = Gdx.graphics.getHeight();
+    private static int width = Gdx.graphics.getWidth();
+    private static int height = Gdx.graphics.getHeight();
 
     //A general note about screen implementation. Some of the code might be redundant here because of how libGDX'S classes internally handle things.
     //Feel free to remove the unnecessary parts.
@@ -66,7 +65,6 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.genericViewport.apply();
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-        this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         this.createTextures();
         this.createActors();
@@ -155,15 +153,14 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.row();
         this.root.add(new Image(laserPointerOne)).colspan(3);
         this.root.row();
-        this.root.add(new Image(title)).colspan(3).height(height / 7).width((width / 4));
+        this.root.add(new Image(title)).colspan(3).height(height / 7).width((width / 3));
         this.root.row();
         root.add(new Image(laserPointerTwo)).colspan(3);
         root.row();
-        root.add(new Image(catImageOne)).expandX();
-        this.root.add(playButton).expandX().height(height / 8).padTop(height / 8);
-        root.add(new Image(catImageTwo)).expandX();
+        root.add(new Image(catImageOne)).expandX().align(Align.left).width((float) (width / 4.8));
+        this.root.add(playButton).expandX().height(height / 8);
+        root.add(new Image(catImageTwo)).expandX().align(Align.right).width((float) (width / 4.8));
         this.root.row();
-        //The level editor button's alignment might be slightly off on certain aspect ratios.
         this.root.add(levelEditorButton).width(width / 3).height(height / 5).colspan(3);
         this.stage.setRoot(root);
         root.setBackground(new TextureRegionDrawable(new TextureRegion(background)));

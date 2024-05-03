@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.lasercats.GameObjects.*;
 import com.lasercats.Tiles.FloorTile;
 import com.lasercats.Tiles.Tile;
-import com.badlogic.gdx.math.Vector2;
 import com.lasercats.GameObjects.Laser;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
@@ -37,8 +35,6 @@ public class LevelScreen extends LaserCatsScreen {
         this.genericViewport.apply();
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-        //TODO Placeholder JSON. Change later.
-        this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
 		// OK this is incredibly retarded. I'm actually going to kill myself. ~brtcrt

@@ -27,6 +27,7 @@ public abstract class LaserCatsScreen implements Screen {
        this.camera = new OrthographicCamera();
        this.batch = new SpriteBatch(); 
        this.root = new Table();
+       skin = new Skin(Gdx.files.internal("level-plane/skin/level-plane-ui.json"));
        this.game = game;
     }
 
