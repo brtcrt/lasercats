@@ -151,6 +151,10 @@ public class Client {
         }
     }
 
+    public String getID(){
+        return clientID;
+    }
+
     private void configSocketEvents() {
         socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
             @Override

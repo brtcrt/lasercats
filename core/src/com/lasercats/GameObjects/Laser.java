@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
-import com.badlogic.gdx.math.Intersector;
-
-
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -111,7 +111,7 @@ public class Laser implements GameObject {
             end.set(closestIntersectionInDirection);
             finalDirection = reflect(finalDirection, normalOfClosestIntersectionInDirection);
             reflections++;
-            if (!(lastCollidedObject instanceof Mirror)) finishedTraveling = true;
+            if (!((lastCollidedObject instanceof Mirror) || (lastCollidedObject instanceof Player && ((Player)lastCollidedObject).getIsReflective()))) finishedTraveling = true;
             if (!viewportBox.contains(end) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
             if (lastCollidedObject instanceof LaserTarget) {
                 LaserTarget target = (LaserTarget) lastCollidedObject;
@@ -152,12 +152,39 @@ public class Laser implements GameObject {
 
     @Override
     public JSONObject getIdentifiers() {
-        return null;
+        JSONObject json = new JSONObject();
+        try {
+            json.put("vertices", vertices);
+            json.put("initialDirection",initialDirection);
+        } 
+        catch (JSONException e) {
+            System.out.println(e);
+        }
+        return json;
     }
 
     @Override
     public void setIdentifiers(JSONObject json) {
-
+        try {
+            JSONArray a = json.getJSONArray("vertices");
+            vertices.clear();
+            for(int i = 0; i < a.length(); i++){
+                String s = a.getString(i);
+                s = s.replace("(", "");
+                s = s.replace(")", "");
+                String [] xy = s.split(",");
+                System.out.println(xy[0]);
+                vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
+            }
+            String dir = json.getString("initialDirection");
+            dir = dir.replace("(", "");
+            dir = dir.replace(")", "");
+            String[] split = dir.split(",");
+            this.initialDirection = new Vector2(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
+        } 
+        catch (JSONException e) {
+            System.out.println(e);
+        }
     }
 
     @Override
