@@ -61,4 +61,5 @@ public abstract class LaserCatsScreen implements Screen {
 
     public abstract void setListeners(); 
 
+    public abstract void createTextures();
 }

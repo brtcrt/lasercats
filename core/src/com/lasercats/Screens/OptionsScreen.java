@@ -74,8 +74,7 @@ public class OptionsScreen extends LaserCatsScreen {
     private FileHandle audioBin;
 
     private Texture background;
-    private Texture goBackTexture;
-    
+
     private static final float FONT_SCALING = 2;
     private static final float LABEL_FONT_SCALING = 3;
     private static final float SELECTBOX_SCALING = 1.2f;
@@ -242,7 +241,7 @@ public class OptionsScreen extends LaserCatsScreen {
         stage.setRoot(root);
         //stage.setDebugAll(true);
     }
-    //In terms of the font of actors of the display table, they look fine on 1024 x 720, but look small on higher resolutions.
+    //In terms of the font of actors of the display table, they look fine on 1024 x 720 on base scaling, but look small on higher resolutions.
     //These labels especially look blurry in higher font scaling though.
     private void positionAudioOptions() {
         displayTable.clear();
@@ -280,7 +279,8 @@ public class OptionsScreen extends LaserCatsScreen {
         displayTable.add(furColorLabel).expandX().align(Align.left).fill();
         displayTable.add(furColorDropdown).expandX().align(Align.left).fillY();
     }
-    private void createTextures() {
+    @Override
+    public void createTextures() {
         background = new Texture(Gdx.files.internal("TitleScreenBackground.jpg"));
     }
     @Override
@@ -290,7 +290,6 @@ public class OptionsScreen extends LaserCatsScreen {
         batch.dispose();
         stage.dispose();
         background.dispose();
-        goBackTexture.dispose();
     }
     @Override
     public void resume() {}

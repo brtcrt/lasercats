@@ -128,6 +128,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.levelEditorButton = new ImageButton(new TextureRegionDrawable(new TextureRegion(levelEditorButtonTexture)));
         this.buttonTable = new Table();
     }
+    @Override
     public void createTextures() {
         this.laserPointerOne = new Texture(Gdx.files.internal("laser_pointer-1-long.png"));
         laserPointerTwo = new Texture(Gdx.files.internal("laser_pointer-2-long.png"));

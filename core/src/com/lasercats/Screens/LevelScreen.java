@@ -120,6 +120,8 @@ public class LevelScreen extends LaserCatsScreen {
     public void setListeners() {}
     @Override
     public void positionActors() {}
+	@Override
+	public void createTextures() {}
     @Override
     public void resume() {}
 
