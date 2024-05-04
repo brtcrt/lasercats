@@ -207,7 +207,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	}
 	scrollbar-knob-small-1: {
 		name: scrollbar-knob-small
-		color: color1
+		color: dark75
 	}
 	scrollbar-knob-small-2: {
 		name: scrollbar-knob-small
@@ -219,7 +219,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	}
 	textfield-1: {
 		name: textfield
-		color: color1
+		color: white
 	}
 	textfield-2: {
 		name: textfield
@@ -727,9 +727,9 @@ com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {
 		font: subtitle
-		fontColor: color1
+		fontColor: white
 		background: textfield-1
-		cursor: color-1
+		cursor: white
 		selection: color-1-h
 	}
 	c2: {
