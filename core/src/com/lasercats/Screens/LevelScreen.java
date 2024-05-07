@@ -169,6 +169,7 @@ public class LevelScreen extends LaserCatsScreen {
 		final int startY = 640;
 
 		gameObjectMatrix = generateRectangleWall(startX, startY, 21, 21);
+		GameObject[][] glassMatrix = generateRectangleGlass(-264, -136, 3, 3);
 
 		// Make a box for the pressure plate
 		GameObject[][] smallerBox = generateRectangleWall(startX, startY, 6, 4);
@@ -184,9 +185,14 @@ public class LevelScreen extends LaserCatsScreen {
 		gameObjectMatrix[3][3] = null;
 
 		ArrayList<GameObject> linear = linearizeMatrix(gameObjectMatrix);
+		ArrayList<GameObject> linearGlass = linearizeMatrix(glassMatrix);
 
 		for (GameObject o : linear) {
 			walls.add((Wall) o);
+		}
+		for (GameObject o : linearGlass) {
+			gameObjects.add((Glass) o);
+			physicsObjects.add((Glass) o);
 		}
 
 		gameObjects.addAll(walls);
@@ -251,7 +257,8 @@ public class LevelScreen extends LaserCatsScreen {
 	private void ySort() {
 		renderQueue.sort((o1, o2) -> {
 			if(o1 instanceof PressurePlate){return -1;}
-			if(o1 instanceof CatLaser)return -1;
+			if(o1 instanceof Glass) return -1;
+			// if(o1 instanceof CatLaser)return -1;
 			return -1 * Float.compare(o1.getY(), o2.getY());
 		});
 	}
@@ -299,6 +306,47 @@ public class LevelScreen extends LaserCatsScreen {
 					}
 					if (j == w - 1) {
 						matrix[i][j] = new Wall(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight, 5);
+					}
+				}
+			}
+		}
+		return matrix;
+	}
+	/**
+	 *
+	 * @param x top left corner x
+	 * @param y top left corner y
+	 * @param w width of rectangle
+	 * @param h height of rectangle
+	 * @return Matrix of walls and null objects
+	 */
+	private GameObject[][] generateRectangleGlass(float x, float y, int w, int h) {
+		GameObject[][] matrix = new GameObject[h][w];
+
+		final float wallWidth = 64;
+		final float wallHeight = 64;
+
+		// place the corner pieces
+		matrix[0][0] = new Glass(x, y, wallWidth, wallHeight);
+		matrix[0][w - 1] = new Glass(x + wallWidth * (w - 1), y, wallWidth, wallHeight);
+		matrix[h - 1][0] = new Glass(x, y - wallHeight * (h - 1), wallWidth, wallHeight);
+		matrix[h - 1][w - 1] = new Glass(x + wallWidth * (w - 1), y - wallHeight * (h - 1), wallWidth, wallHeight);
+
+
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (matrix[i][j] == null) {
+					if (i == 0) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
+					}
+					if (i == h - 1) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
+					}
+					if (j == 0) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
+					}
+					if (j == w - 1) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
 					}
 				}
 			}
