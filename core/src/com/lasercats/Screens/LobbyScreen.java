@@ -289,7 +289,7 @@ public class LobbyScreen extends LaserCatsScreen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 ) {
+                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 && !getRoomClicked().equals(client.getRoom())) {
                     if (room.hasPassword()) {
                         passwordEnterWindow.setVisible(true);
                         setPasswordEnterButtonListener(room);
