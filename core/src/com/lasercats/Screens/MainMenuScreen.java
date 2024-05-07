@@ -167,7 +167,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.add(levelEditorButton).width(width / 3).height(height / 5).colspan(3);
         this.stage.setRoot(root);
         root.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
-        //this.stage.setDebugAll(true);
+//        this.stage.setDebugAll(true);
     }
     @Override
     public void setListeners() {
@@ -182,7 +182,7 @@ public class MainMenuScreen extends LaserCatsScreen {
         });
         //TODO change screens later.
         this.playButton.addListener(new ScreenListener(new LobbyScreen(game, this), game));
-        this.levelEditorButton.addListener(new ScreenListener(null, game));
+        this.levelEditorButton.addListener(new ScreenListener(new LevelEditor(game, this), game));
         this.optionsButton.addListener(new ScreenListener(new OptionsScreen(game, this), game));
         this.tutorialButton.addListener(new ScreenListener(new TutorialScreen(game, this), game));
 

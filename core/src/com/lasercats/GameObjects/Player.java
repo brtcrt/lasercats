@@ -287,4 +287,5 @@ public class Player extends Empty implements PhysicsObject {
         velocity.nor();
         move();
     }
+
 }
