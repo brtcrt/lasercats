@@ -71,7 +71,7 @@ public class Laser implements GameObject {
 
             for (PhysicsObject object : physicsObjects) {
                 if (reflections == 0 && ignoreOnFirstReflection.contains(object)) continue;
-                if (ignoreAlways.contains(object)) continue;
+                if (ignoreAlways.contains(object) || object instanceof PressurePlate || object instanceof Glass) continue;
 
                 Rectangle collider = object.getCollider();
                 Polygon colliderPolygon = new Polygon(new float[]{
