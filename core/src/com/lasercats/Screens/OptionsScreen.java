@@ -7,19 +7,19 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lasercats.GameObjects.Player;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
@@ -29,6 +29,7 @@ public class OptionsScreen extends LaserCatsScreen {
     private TextButton audioButton;
     private TextButton controlsButton;
     private TextButton customizeCatButton;
+    private TextButton goBackButton;
 
     private Table displayTable;
     private Table buttonTable;
@@ -55,14 +56,12 @@ public class OptionsScreen extends LaserCatsScreen {
     private TextButton meowKeybind;
 
     private Label furColorLabel;
-    private SelectBox furColorDropdown;
+    private SelectBox<String> furColorDropdown;
     private String[] furColors;
     private static String selectedColor;
     private FileHandle colorBin;
 
     private MainMenuScreen menu;
-
-    private ImageButton goBackButton;
 
     private static int[] keybinds;
     private FileHandle keybindsBin;
@@ -73,6 +72,12 @@ public class OptionsScreen extends LaserCatsScreen {
     private static float sfxVolume;
     private static float musicVolume;
     private FileHandle audioBin;
+
+    private Texture background;
+
+    private static final float FONT_SCALING = 2;
+    private static final float LABEL_FONT_SCALING = 3;
+    private static final float SELECTBOX_SCALING = 1.2f;
 
     public OptionsScreen(Game game, MainMenuScreen menu) {
         super(game);
@@ -90,9 +95,8 @@ public class OptionsScreen extends LaserCatsScreen {
         this.stage = new Stage(genericViewport, batch);
         multiplexer.addProcessor(stage);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-        //TODO Placeholder JSON. Change later.
-        this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
-        this.root.setFillParent(true);;
+        this.root.setFillParent(true);
+        createTextures();
         loadVolumeLevels();
         createActors();
         setListeners();
@@ -106,7 +110,6 @@ public class OptionsScreen extends LaserCatsScreen {
     public void show() {}
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.ORANGE);
         Gdx.input.setInputProcessor(multiplexer);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
@@ -165,12 +168,20 @@ public class OptionsScreen extends LaserCatsScreen {
     }
     @Override
     public void createActors() {
+        //The downside of scaling the font size is that the writing gets blurry, especially in higher scaling.
+        //But otherwise the font size is way too small
+        //This is the best comprimise I could find
         audioButton = new TextButton("Audio", skin);
         audioButton.setName("audio");
+        audioButton.getLabel().setFontScale(FONT_SCALING);
         controlsButton = new TextButton("Controls", skin);
         controlsButton.setName("controls");
+        controlsButton.getLabel().setFontScale(FONT_SCALING);
         customizeCatButton = new TextButton("Customize Cat", skin);
         customizeCatButton.setName("customize");
+        customizeCatButton.getLabel().setFontScale(FONT_SCALING);
+        goBackButton = new TextButton("Back", skin, "dark");
+        goBackButton.getLabel().setFontScale(FONT_SCALING);
         displayTable = new Table();
         buttonTable = new Table();
 
@@ -178,17 +189,25 @@ public class OptionsScreen extends LaserCatsScreen {
         sfxSlider.setValue(sfxVolume);
         musicSlider = new Slider(0, 100, 1, false, skin);
         musicSlider.setValue(musicVolume);
-        sfxLabel = new Label("Sound Effects", skin);
-        musicLabel = new Label("Music", skin);
-        musicLabel.setColor(Color.WHITE);
+        sfxLabel = new Label("Sound Effects", skin, "font", Color.WHITE);
+        sfxLabel.setFontScale(LABEL_FONT_SCALING);
+        musicLabel = new Label("Music", skin, "font", Color.WHITE);
+        musicLabel.setFontScale(LABEL_FONT_SCALING);
 
-        moveUpLabel = new Label("Move Up", skin);
-        moveDownLabel = new Label("Move Down", skin);
-        moveRightLabel = new Label("Move Right", skin);
-        moveLeftLabel = new Label("Move Left", skin);
-        shootLaserLabel = new Label("Shoot Laser", skin);
-        interactLabel = new Label("Interact", skin);
-        meowLabel = new Label("Meow", skin);
+        moveUpLabel = new Label("Move Up", skin, "font", Color.WHITE);
+        moveUpLabel.setFontScale(LABEL_FONT_SCALING);
+        moveDownLabel = new Label("Move Down", skin, "font", Color.WHITE);
+        moveDownLabel.setFontScale(LABEL_FONT_SCALING);
+        moveRightLabel = new Label("Move Right", skin, "font", Color.WHITE);
+        moveRightLabel.setFontScale(LABEL_FONT_SCALING);
+        moveLeftLabel = new Label("Move Left", skin, "font", Color.WHITE);
+        moveLeftLabel.setFontScale(LABEL_FONT_SCALING);
+        shootLaserLabel = new Label("Shoot Laser", skin, "font", Color.WHITE);
+        shootLaserLabel.setFontScale(LABEL_FONT_SCALING);
+        interactLabel = new Label("Interact", skin, "font", Color.WHITE);
+        interactLabel.setFontScale(LABEL_FONT_SCALING);
+        meowLabel = new Label("Meow", skin, "font", Color.WHITE);
+        meowLabel.setFontScale(LABEL_FONT_SCALING);
 
         moveUpKeybind = new TextButton("W", skin);
         moveDownKeybind = new TextButton("S", skin);
@@ -198,63 +217,71 @@ public class OptionsScreen extends LaserCatsScreen {
         interactKeybind = new TextButton("E", skin);
         meowKeybind = new TextButton("M", skin);
 
-        furColorLabel = new Label("Fur Color", skin);
+        furColorLabel = new Label("Fur Color", skin, "font", Color.WHITE);
+        furColorLabel.setFontScale(LABEL_FONT_SCALING);
         furColorDropdown = new SelectBox<String>(skin);
         furColorDropdown.setItems(furColors);
-
-        goBackButton = new ImageButton(skin);
+        furColorDropdown.setAlignment(Align.center);
+        furColorDropdown.getStyle().listStyle.font.getData().scale(SELECTBOX_SCALING);     
     }
     @Override
     public void positionActors() {
         //Once again feel free to change alignment and sizes
-        buttonTable.add(goBackButton).align(Align.topLeft).width(60).height(60).padBottom(120);
+        buttonTable.add(audioButton).height(Gdx.graphics.getHeight() * 7 / 24).align(Align.left).width(Gdx.graphics.getWidth() / 3).expand();
         buttonTable.row();
-        buttonTable.add(audioButton).expand().fillY().width(200).align(Align.left);
+        buttonTable.add(controlsButton).height(Gdx.graphics.getHeight() * 7 / 24).align(Align.left).width(Gdx.graphics.getWidth() / 3).expand();
         buttonTable.row();
-        buttonTable.add(controlsButton).expand().fillY().width(200).align(Align.left);
-        buttonTable.row();
-        buttonTable.add(customizeCatButton).expand().fillY().width(200).align(Align.left);
+        buttonTable.add(customizeCatButton).height(Gdx.graphics.getHeight() * 7 / 24).align(Align.left).width(Gdx.graphics.getWidth() / 3).expand();
+        root.add(goBackButton).align(Align.topLeft).height(Gdx.graphics.getHeight() / 8).expand().width(Gdx.graphics.getWidth() / 3);     
+        root.row();
         root.add(buttonTable).expand().fill();
-        root.add(displayTable).expand().fill();
+        root.add(displayTable).expand().align(Align.left).fill();
+        root.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
 
         stage.setRoot(root);
         //stage.setDebugAll(true);
     }
+    //In terms of the font of actors of the display table, they look fine on 1024 x 720 on base scaling, but look small on higher resolutions.
+    //These labels especially look blurry in higher font scaling though.
     private void positionAudioOptions() {
         displayTable.clear();
-        displayTable.add(sfxLabel).expandX();
-        displayTable.add(sfxSlider).expandX();
+        displayTable.add(sfxLabel).expandX().align(Align.left);
+        displayTable.add(sfxSlider).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(musicLabel).expandX();
-        displayTable.add(musicSlider).expandX();;
+        displayTable.add(musicLabel).expandX().align(Align.left);
+        displayTable.add(musicSlider).expandX().align(Align.left);
     }
     private void positionControlsOptions() {
         displayTable.clear();
-        displayTable.add(moveUpLabel).expandX();
-        displayTable.add(moveUpKeybind).expandX();
+        displayTable.add(moveUpLabel).expandX().align(Align.left);
+        displayTable.add(moveUpKeybind).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(moveDownLabel).expandX();
-        displayTable.add(moveDownKeybind).expandX();
+        displayTable.add(moveDownLabel).expandX().align(Align.left);
+        displayTable.add(moveDownKeybind).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(moveRightLabel).expandX();
-        displayTable.add(moveRightKeybind).expandX();
+        displayTable.add(moveRightLabel).expandX().align(Align.left);
+        displayTable.add(moveRightKeybind).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(moveLeftLabel).expandX();
-        displayTable.add(moveLeftKeybind).expandX();
+        displayTable.add(moveLeftLabel).expandX().align(Align.left);
+        displayTable.add(moveLeftKeybind).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(shootLaserLabel).expandX();
-        displayTable.add(shootLaserKeybind).expandX();
+        displayTable.add(shootLaserLabel).expandX().align(Align.left);
+        displayTable.add(shootLaserKeybind).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(interactLabel).expandX();
-        displayTable.add(interactKeybind).expandX();
+        displayTable.add(interactLabel).expandX().align(Align.left);
+        displayTable.add(interactKeybind).expandX().align(Align.left);
         displayTable.row();
-        displayTable.add(meowLabel).expandX();
-        displayTable.add(meowKeybind).expandX();
+        displayTable.add(meowLabel).expandX().align(Align.left);
+        displayTable.add(meowKeybind).expandX().align(Align.left);
     }
     private void positionCustomizeCatOptions() {
         displayTable.clear();
-        displayTable.add(furColorLabel).expandX();
-        displayTable.add(furColorDropdown).expandX();
+        displayTable.add(furColorLabel).expandX().align(Align.left).fill();
+        displayTable.add(furColorDropdown).expandX().align(Align.left).fillY();
+    }
+    @Override
+    public void createTextures() {
+        background = new Texture(Gdx.files.internal("TitleScreenBackground.jpg"));
     }
     @Override
     public void hide() {}
@@ -262,6 +289,7 @@ public class OptionsScreen extends LaserCatsScreen {
     public void dispose() {
         batch.dispose();
         stage.dispose();
+        background.dispose();
     }
     @Override
     public void resume() {}
@@ -319,9 +347,15 @@ public class OptionsScreen extends LaserCatsScreen {
         }
         @Override
         public boolean keyDown(int keycode) {
-            //TODO handle duplicate keybinds.
             if (keycode != Input.Keys.ESCAPE) {
                //Change the keycode in the specified index with the keycode of the pressed key 
+               for (int i = 0; i < keybinds.length; i++) {
+                    if (keybinds[i] == keycode) {
+                        multiplexer.removeProcessor(processor);
+                        multiplexer.addProcessor(stage);
+                        return false; 
+                    }
+               }
                keybinds[index] = keycode;
                //Also change button's text
                button.setText(Input.Keys.toString(keycode));
@@ -400,5 +434,12 @@ public class OptionsScreen extends LaserCatsScreen {
         byte[] volumeBytes = audioBin.readBytes();
         sfxVolume = (float) volumeBytes[0];
         musicVolume = (float) volumeBytes[1];
+    }
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        buttonTable.clear();
+        root.clear();
+        positionActors();
     }
 }

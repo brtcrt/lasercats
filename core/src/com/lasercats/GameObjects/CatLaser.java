@@ -17,15 +17,14 @@ public class CatLaser extends Laser{
 
     @Override
     public void process() {
-
-        vertices.get(0).set(new Vector2(player.x + player.width - player.width/12,
+        vertices.clear();
+        vertices.add(new Vector2(player.x + player.width - player.width/12,
                     player.y + player.height + player.height));
         if (player.direction.x < 0)
         {
-            vertices.get(0).set(new Vector2(player.x + player.width/12,
+            vertices.set(0, new Vector2(player.x + player.width/12,
                     vertices.get(0).y));
         }
-
 
         super.process();
     }

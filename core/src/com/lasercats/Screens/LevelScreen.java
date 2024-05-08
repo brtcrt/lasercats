@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import com.lasercats.GameObjects.*;
 import com.lasercats.Tiles.FloorTile;
 import com.lasercats.Tiles.Tile;
-import com.badlogic.gdx.math.Vector2;
 import com.lasercats.GameObjects.Laser;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,7 +12,6 @@ import org.json.JSONObject;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
@@ -37,15 +35,25 @@ public class LevelScreen extends LaserCatsScreen {
         this.genericViewport.apply();
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-        //TODO Placeholder JSON. Change later.
-        this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
 		// OK this is incredibly retarded. I'm actually going to kill myself. ~brtcrt
         physicsObjects = new ArrayList<PhysicsObject>();
 		physicsObjects.add((Player)gameObjects.get(0));
 		physicsObjects.add((Player)gameObjects.get(1));
-		Laser cl = new CatLaser((Player)gameObjects.get(0), genericViewport, physicsObjects);
+		String creatorID = client.getRoom().getPlayerIDs()[0];
+		Player lasercat;
+		int reflectable;
+		if(this.client.getID().equals(creatorID)){
+			lasercat = (Player) gameObjects.get(0);
+			reflectable = 1;
+		}
+		else{
+			lasercat = (Player) gameObjects.get(1);
+			reflectable = 0;
+		}
+		((Player) gameObjects.get(reflectable)).setIsReflective(true);
+		Laser cl = new CatLaser(lasercat, genericViewport, physicsObjects);
 		gameObjects.add(cl);
 		// Create the empty tiles ArrayList here and fill it up later
 		tiles = new ArrayList<Tile>();
@@ -112,6 +120,8 @@ public class LevelScreen extends LaserCatsScreen {
     public void setListeners() {}
     @Override
     public void positionActors() {}
+	@Override
+	public void createTextures() {}
     @Override
     public void resume() {}
 
@@ -159,6 +169,7 @@ public class LevelScreen extends LaserCatsScreen {
 		final int startY = 640;
 
 		gameObjectMatrix = generateRectangleWall(startX, startY, 21, 21);
+		GameObject[][] glassMatrix = generateRectangleGlass(-264, -136, 3, 3);
 
 		// Make a box for the pressure plate
 		GameObject[][] smallerBox = generateRectangleWall(startX, startY, 6, 4);
@@ -174,9 +185,14 @@ public class LevelScreen extends LaserCatsScreen {
 		gameObjectMatrix[3][3] = null;
 
 		ArrayList<GameObject> linear = linearizeMatrix(gameObjectMatrix);
+		ArrayList<GameObject> linearGlass = linearizeMatrix(glassMatrix);
 
 		for (GameObject o : linear) {
 			walls.add((Wall) o);
+		}
+		for (GameObject o : linearGlass) {
+			gameObjects.add((Glass) o);
+			physicsObjects.add((Glass) o);
 		}
 
 		gameObjects.addAll(walls);
@@ -241,7 +257,8 @@ public class LevelScreen extends LaserCatsScreen {
 	private void ySort() {
 		renderQueue.sort((o1, o2) -> {
 			if(o1 instanceof PressurePlate){return -1;}
-			if(o1 instanceof CatLaser)return -1;
+			if(o1 instanceof Glass) return -1;
+			// if(o1 instanceof CatLaser)return -1;
 			return -1 * Float.compare(o1.getY(), o2.getY());
 		});
 	}
@@ -289,6 +306,47 @@ public class LevelScreen extends LaserCatsScreen {
 					}
 					if (j == w - 1) {
 						matrix[i][j] = new Wall(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight, 5);
+					}
+				}
+			}
+		}
+		return matrix;
+	}
+	/**
+	 *
+	 * @param x top left corner x
+	 * @param y top left corner y
+	 * @param w width of rectangle
+	 * @param h height of rectangle
+	 * @return Matrix of walls and null objects
+	 */
+	private GameObject[][] generateRectangleGlass(float x, float y, int w, int h) {
+		GameObject[][] matrix = new GameObject[h][w];
+
+		final float wallWidth = 64;
+		final float wallHeight = 64;
+
+		// place the corner pieces
+		matrix[0][0] = new Glass(x, y, wallWidth, wallHeight);
+		matrix[0][w - 1] = new Glass(x + wallWidth * (w - 1), y, wallWidth, wallHeight);
+		matrix[h - 1][0] = new Glass(x, y - wallHeight * (h - 1), wallWidth, wallHeight);
+		matrix[h - 1][w - 1] = new Glass(x + wallWidth * (w - 1), y - wallHeight * (h - 1), wallWidth, wallHeight);
+
+
+		for (int i = 0; i < h; i++) {
+			for (int j = 0; j < w; j++) {
+				if (matrix[i][j] == null) {
+					if (i == 0) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
+					}
+					if (i == h - 1) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
+					}
+					if (j == 0) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
+					}
+					if (j == w - 1) {
+						matrix[i][j] = new Glass(x + j * wallWidth, y - i * wallHeight, wallWidth,wallHeight);
 					}
 				}
 			}

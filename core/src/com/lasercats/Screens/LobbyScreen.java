@@ -1,58 +1,67 @@
 package com.lasercats.Screens;
 
 import java.util.ArrayList;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.Client.Room;
 
 public class LobbyScreen extends LaserCatsScreen {
-    
+    //TODO there are numerous bugs related to room creation and passwords here. We need to fix them ASAP.
+
     private ArrayList<TextButton> roomButtons;
     private VerticalGroup roomList;
+    private Table roomTable;
+    private Label roomListLabel;
     private ArrayList<Room> rooms;
     private long roomUpdateTime;
 
-    private ImageButton goBackButton;
+    private TextButton goBackButton;
 
+    private Label newLobbyLabel;
     private Label roomNameLabel;
+    private Label passwordLabel;
     private TextField roomCreateField;
     private TextButton roomCreateButton;
     private TextField passwordField;
-    private SelectBox gameModeDropBox;
+    private Table roomCreationTable;
+    private Pixmap tableBackgroundColor;
+
+    private Label currentRoom;
+
     private TextButton startGameButton;
 
     private MainMenuScreen menuScreen;
     private Client client;
 
-    private String[] gameModes;
-
     private Window passwordEnterWindow;
     private TextButton passwordEnterButton;
     private TextField passwordEnterField;
 
-    public LobbyScreen(Game game, MainMenuScreen menuScreen) {
+    private Texture background;
 
+    private static final float FONT_SCALING = 1.75f;
+
+    public LobbyScreen(Game game, MainMenuScreen menuScreen) {
         super(game);
         this.menuScreen = menuScreen;
         this.client = menuScreen.getClient();
@@ -60,15 +69,12 @@ public class LobbyScreen extends LaserCatsScreen {
         this.genericViewport.apply();
 
         rooms = new ArrayList<Room>();
-        gameModes = new String[] {"Story Mode", "Time Attack Mode"};
 
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
-
-        //TODO Placeholder JSON. Change later.
-        this.skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         this.root.setFillParent(true);
 
+        createTextures();
         createActors();
         positionActors();
         setListeners();
@@ -78,33 +84,44 @@ public class LobbyScreen extends LaserCatsScreen {
     @Override
     public void positionActors() {
         //Once again, feel free to play around with alignment and sizes
+
+        //Need to double check this part once all the bugs related to passwords are fixed.
         passwordEnterWindow.add(passwordEnterField).expandX();
         passwordEnterWindow.add(passwordEnterButton).expandX();
         passwordEnterWindow.setVisible(false);
 
-        this.root.add(goBackButton).expandX().align(Align.topLeft).width(60).height(60);
-        this.root.row();
+        roomTable.add(roomListLabel).expand().align(Align.top);
+        roomTable.row();
         for (TextButton roomButton : roomButtons) {
             roomList.addActor(roomButton);
+            roomList.addActor(passwordEnterWindow);
         }
-        root.add(roomList).expand().colspan(3);
+        roomTable.add(roomList).expand().align(Align.top);
+
+        roomCreationTable.add(newLobbyLabel).colspan(2);
+        roomCreationTable.row();
+        roomCreationTable.add(roomNameLabel).expand().align(Align.right).padRight(Gdx.graphics.getWidth() / 24);
+        roomCreationTable.add(roomCreateField).expand().align(Align.left);
+        roomCreationTable.row();
+        roomCreationTable.add(passwordLabel).expand().align(Align.right).padRight(Gdx.graphics.getWidth() / 24);
+        roomCreationTable.add(passwordEnterField).expand().align(Align.left);
+        roomCreationTable.row();
+        roomCreationTable.add(roomCreateButton).align(Align.center).colspan(2).padBottom(Gdx.graphics.getHeight() / 8);
+
+        root.add(goBackButton).expandX().align(Align.topLeft).width(Gdx.graphics.getWidth() / 12).height(Gdx.graphics.getHeight() / 12).padBottom(Gdx.graphics.getHeight() / 16);
         root.row();
-        root.add(passwordEnterWindow).colspan(3).padBottom(60);
+        root.add(roomTable).expand().fillY().width(Gdx.graphics.getWidth() / 3);
+        root.add(roomCreationTable).expand().width(Gdx.graphics.getWidth() / 3).fillY();
         root.row();
-        root.add(roomNameLabel).colspan(3).padBottom(30);
-        root.row();
-        root.add(roomCreateField).expandX().align(Align.right).padRight(Gdx.graphics.getWidth() / 60).padBottom(Gdx.graphics.getHeight() / 20);
-        root.add(passwordField).expandX().align(Align.center).padRight(Gdx.graphics.getWidth() / 60).padBottom(Gdx.graphics.getHeight() / 20);
-        root.add(roomCreateButton).expandX().align(Align.left).padLeft(Gdx.graphics.getWidth() / 60).padBottom(Gdx.graphics.getHeight() / 20);
-        root.row();
-        root.add(gameModeDropBox).expandX().align(Align.right).padBottom(30);
-        root.add(startGameButton).expandX().colspan(2).align(Align.center).padBottom(30);
+        root.add(currentRoom).expand();
+        root.add(startGameButton).expand().align(Align.center).height(Gdx.graphics.getHeight() / 10).width(Gdx.graphics.getWidth() / 9);
+
+        root.setBackground(new TextureRegionDrawable(background));
         stage.setRoot(root);
         //stage.setDebugAll(true);
     }
     @Override
     public void render(float delta) {
-        ScreenUtils.clear(Color.ORANGE);
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
@@ -149,28 +166,24 @@ public class LobbyScreen extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (startGameButton.isPressed() && client.getRoom().getPlayerCount() == 2) {
-                    if (gameModeDropBox.getSelected().equals("Story Mode")) {
-                        //TODO change to story mode related screen
                         game.setScreen(new LevelScreen(game, client));
-                    }
-                    else if (gameModeDropBox.getSelected().equals("Time Attack Mode")) {
-                        //TODO change to time attack mode related screen
-                        game.setScreen(new LevelScreen(game, client));
-                    }
-                } 
-            }
+                }
+            } 
         });
     }
     @Override
     public void createActors() {
+       
         roomButtons = new ArrayList<TextButton>();
-        roomCreateField = new TextField("", skin);
-        roomCreateField.setMessageText("Enter room name");
-        roomNameLabel = new Label("Currently in no Room", skin);
-        roomCreateButton = new TextButton("Create Room", skin);
         roomList = new VerticalGroup();
-        goBackButton = new ImageButton(skin);
-        gameModeDropBox = new SelectBox<String[]>(skin);
+        roomList.setWidth(Gdx.graphics.getWidth() / 2f);
+        roomList.setHeight(Gdx.graphics.getHeight() / 2f);
+        roomTable = new Table(skin);
+        roomTable.setBackground(new TextureRegionDrawable(new Texture(tableBackgroundColor)));
+        roomListLabel = new Label("Lobbies", skin);
+        roomListLabel.setFontScale(FONT_SCALING);
+
+        goBackButton = new TextButton("Back", skin, "dark");
 
         passwordField = new TextField("", skin);
         passwordField.setMessageText("Create password");
@@ -178,19 +191,43 @@ public class LobbyScreen extends LaserCatsScreen {
         passwordField.setPasswordCharacter('*');
 
         startGameButton = new TextButton("Start", skin);
-        gameModeDropBox.setItems(gameModes);
+        startGameButton.getLabel().setFontScale(FONT_SCALING);
+
         passwordEnterWindow = new Window("Enter password", skin);
         passwordEnterButton = new TextButton("Confirm", skin);
         passwordEnterField = new TextField("", skin);
         passwordEnterField.setPasswordMode(true);
         passwordEnterField.setPasswordCharacter('*');
-        roomList.setWidth(Gdx.graphics.getWidth() / 2f);
-        roomList.setHeight(Gdx.graphics.getHeight() / 2f);
+
+        roomCreationTable = new Table(skin);
+        roomCreationTable.setBackground(new TextureRegionDrawable(new Texture(tableBackgroundColor)));
+        roomCreateField = new TextField("", skin);
+        roomCreateField.setMessageText("Enter room name");
+        roomNameLabel = new Label("Name", skin);
+        roomNameLabel.setFontScale(FONT_SCALING);
+        roomCreateButton = new TextButton("Create Room", skin);
+        roomCreateButton.getLabel().setFontScale(FONT_SCALING);
+        passwordLabel = new Label("Password", skin);
+        passwordLabel.setFontScale(FONT_SCALING);
+        newLobbyLabel = new Label("New Lobby", skin);
+        newLobbyLabel.setFontScale(FONT_SCALING);
+
+        currentRoom = new Label("Currently in no room", skin);
+        currentRoom.setFontScale(FONT_SCALING);
+    }
+    @Override
+    public void createTextures() {
+        background = new Texture(Gdx.files.internal("TitleScreenBackground.jpg"));
+        tableBackgroundColor = new Pixmap(1, 1, Pixmap.Format.RGB565);
+        tableBackgroundColor.setColor(Color.SLATE);
+        tableBackgroundColor.fill();
     }
     @Override
     public void dispose() {
         batch.dispose();
         stage.dispose();
+        background.dispose();
+        tableBackgroundColor.dispose();
     }
     private void getRooms() {
         this.client.updateRooms();
@@ -208,7 +245,6 @@ public class LobbyScreen extends LaserCatsScreen {
             }
         }
     }
-
     private void updateRoomList() {
         getRooms();
 
@@ -232,13 +268,12 @@ public class LobbyScreen extends LaserCatsScreen {
             roomList.addActor(roomButton);
         }
     }
-
     private void updateCurrentRoom() {
         Room currentRoom = this.client.getRoom();
         if (currentRoom.isEmpty()) {
-            this.roomNameLabel.setText("Currently in No Room");
+            this.currentRoom.setText("Currently in no Room");
         } else {
-            this.roomNameLabel.setText("Current in Room " + currentRoom.getName());
+            this.currentRoom.setText("Currently in Room " + currentRoom.getName());
         }
     }
     private Room getRoomClicked() {
@@ -254,24 +289,26 @@ public class LobbyScreen extends LaserCatsScreen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //This part has some bugs I think
-                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 ) {
+                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 && !getRoomClicked().equals(client.getRoom())) {
                     if (room.hasPassword()) {
                         passwordEnterWindow.setVisible(true);
-                        passwordEnterButton.addListener(new ChangeListener() {
-                            @Override
-                            public void changed(ChangeEvent event, Actor actor) {
-                                if (passwordEnterButton.isPressed()) {
-                                    if (Client.hashPassword(passwordEnterField.getText()).equals(room.getPasswordHash())) {
-                                        client.joinRoom(getRoomClicked(), room.getPasswordHash());
-                                        passwordEnterWindow.setVisible(false);
-                                    }   
-                                }
-                            }
-                        });
+                        setPasswordEnterButtonListener(room);
                     }
                     else {
                         client.joinRoom(getRoomClicked());
+                    }   
+                }
+            }
+        });
+    }
+    private void setPasswordEnterButtonListener(Room room) {
+        passwordEnterButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (passwordEnterButton.isPressed()) {
+                    if (Client.hashPassword(passwordEnterField.getText()).equals(room.getPasswordHash())) {
+                        client.joinRoom(getRoomClicked(), room.getPasswordHash());
+                        passwordEnterWindow.setVisible(false);
                     }   
                 }
             }
