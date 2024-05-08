@@ -354,7 +354,7 @@ public class LevelScreen extends LaserCatsScreen {
 		return matrix;
 	}
 
-	private GameObject[][] mergeMatrices(GameObject[][] a, GameObject[][] b) {
+	public static GameObject[][] mergeMatrices(GameObject[][] a, GameObject[][] b) {
 		// if two objects collide, the objects of a will be replaced
 		GameObject[][] matrix = new GameObject[Math.max(a.length, b.length)][Math.max(a[0].length, b[0].length)];
 		for (int i = 0; i < a.length; i++) {

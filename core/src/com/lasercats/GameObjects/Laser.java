@@ -215,4 +215,7 @@ public class Laser implements GameObject {
     public Rectangle getCollider() {
         return new Rectangle(0,0,0,0);
     }
+
+    public Rectangle setX(float x) {return new Rectangle();}
+    public Rectangle setY(float y) {return new Rectangle();}
 }

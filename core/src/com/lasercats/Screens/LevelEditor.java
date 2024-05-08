@@ -30,6 +30,15 @@ public class LevelEditor extends LaserCatsScreen{
     private ArrayList<Tile> tiles;
     private ArrayList<GameObject> renderQueue;
 
+    private GameObject selected;
+
+    private GameObject[][] grid;
+    private GameObject[][] floatingGrid;
+    private GameObject holding;
+
+    private int gridStart;
+    private int tileSize = 64;
+
     private Table buttonTable;
 
     private TextButton goBackButton;
@@ -87,7 +96,11 @@ public class LevelEditor extends LaserCatsScreen{
 
         this.menuScreen = menuScreen;
 
-        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
+        grid = new GameObject[100][100];
+        grid = LevelScreen.mergeMatrices(grid,LevelScreen.generateRectangleWall(0,0,10,10) );
+        gameObjects.addAll(LevelScreen.linearizeMatrix(grid));
+
+//        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
 
         createActors();
         positionActors();
@@ -136,6 +149,18 @@ public class LevelEditor extends LaserCatsScreen{
         for (GameObject o : renderQueue) {
             o.render(batch);
         }
+        for (GameObject[] objectList : grid) for (GameObject o : objectList)
+        {
+            if (o == null) continue;
+            o.render(batch);
+        }
+        if (holding != null)
+        {
+            holding.setX((Gdx.input.getX()/tileSize) * tileSize);
+            holding.setY((Gdx.input.getY()/tileSize) * tileSize);
+            holding.render(batch);
+        }
+
         batch.end();
 
 //        UIViewport.apply();
@@ -187,6 +212,17 @@ public class LevelEditor extends LaserCatsScreen{
         requiredButtonGroup = new VerticalGroup();
         otherButtonGroup = new VerticalGroup();
     }
+
+    private void addWall(int i, int j)
+    {
+        addGameObject(i, j, new Wall(i * tileSize, i * tileSize,tileSize, tileSize, 2));
+    }
+
+    private void addGameObject(int i, int j, GameObject object)
+    {
+        grid[i][j] = object;
+    }
+
 
     @Override
     public void positionActors() {
