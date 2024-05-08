@@ -43,6 +43,15 @@ public class LevelEditor extends LaserCatsScreen{
     private ArrayList<Tile> tiles;
     private ArrayList<GameObject> renderQueue;
 
+    private GameObject selected;
+
+    private GameObject[][] grid;
+    private GameObject[][] floatingGrid;
+    private GameObject holding;
+
+    private int gridStart;
+    private int tileSize = 64;
+
     private ImageButton goBackButton;
     private Table objectsTable;
 
@@ -55,13 +64,14 @@ public class LevelEditor extends LaserCatsScreen{
     private ExtendViewport levelViewport;
     private ScreenViewport UIViewport;
 
+
+
     private int[] controlScheme = Player.controlScheme;
     private int speed = 10;
     private Vector2 velocity = new Vector2();
 
 
     private Vector2 position = new Vector2(100,100);
-
 
 
     public LevelEditor(Game game, Screen menuScreen)
@@ -80,18 +90,23 @@ public class LevelEditor extends LaserCatsScreen{
         gameObjects = new ArrayList<>();
         tiles = new ArrayList<Tile>();
         fillTiles();
-        skin = new Skin(Gdx.files.internal("clean-crispy/skin/clean-crispy-ui.json"));
         root.setFillParent(true);
         position = new Vector2();
 
         this.menuScreen = menuScreen;
 
-        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
+        grid = new GameObject[100][100];
+        grid = LevelScreen.mergeMatrices(grid,LevelScreen.generateRectangleWall(0,0,10,10) );
+        gameObjects.addAll(LevelScreen.linearizeMatrix(grid));
+
+//        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
 
         createActors();
         positionActors();
         setListeners();
     }
+
+
 
 
 
@@ -140,6 +155,18 @@ public class LevelEditor extends LaserCatsScreen{
         for (GameObject o : renderQueue) {
             o.render(batch);
         }
+        for (GameObject[] objectList : grid) for (GameObject o : objectList)
+        {
+            if (o == null) continue;
+            o.render(batch);
+        }
+        if (holding != null)
+        {
+            holding.setX((Gdx.input.getX()/tileSize) * tileSize);
+            holding.setY((Gdx.input.getY()/tileSize) * tileSize);
+            holding.render(batch);
+        }
+
         batch.end();
 
 
@@ -180,6 +207,16 @@ public class LevelEditor extends LaserCatsScreen{
         objectTab2 = new TextButton("Other",skin);
 
         TextButton wallButton = new TextButton("Wall", skin);
+        wallButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButton.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 2);
+                    holding = wall;
+                }
+            }
+        });
+
 
         root.add(goBackButton).expand().align(Align.topLeft).width(60).height(60);
         root.add(objectsTable).width(200).right().fillY();
@@ -190,6 +227,17 @@ public class LevelEditor extends LaserCatsScreen{
         stage.setDebugAll(true);
 
     }
+
+    private void addWall(int i, int j)
+    {
+        addGameObject(i, j, new Wall(i * tileSize, i * tileSize,tileSize, tileSize, 2));
+    }
+
+    private void addGameObject(int i, int j, GameObject object)
+    {
+        grid[i][j] = object;
+    }
+
 
     @Override
     public void positionActors() {

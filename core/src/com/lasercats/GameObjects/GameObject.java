@@ -20,4 +20,9 @@ public interface GameObject extends Tile {
 
     public float getX();
     public float getY();
+
+    public Rectangle setX(float x);
+    public Rectangle setY(float y);
+
+
 }

@@ -21,4 +21,5 @@ public class Empty extends Rectangle {
     public Rectangle getCollider() {
         return this;
     }
+
 }
