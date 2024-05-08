@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -22,15 +23,10 @@ import java.util.ArrayList;
 
 public class LevelEditor extends LaserCatsScreen{
 
-    @Override
-    public void createTextures() {}
-
     private ArrayList<GameObject> gameObjects;
     private ArrayList<PhysicsObject> physicsObjects;
     private ArrayList<Tile> tiles;
     private ArrayList<GameObject> renderQueue;
-
-    private GameObject selected;
 
     private GameObject[][] grid;
     private GameObject[][] floatingGrid;
@@ -62,6 +58,8 @@ public class LevelEditor extends LaserCatsScreen{
     private TextButton pressurePlateButton;
     private TextButton mirrorButton;
     private TextButton glassButton;
+    private TextButton boxButton;
+    private Pixmap bgPixmap;
 
     private TextButton entranceGateOneButton;
     private TextButton entranceGateTwoButton;
@@ -95,8 +93,8 @@ public class LevelEditor extends LaserCatsScreen{
         position = new Vector2();
 
         this.menuScreen = menuScreen;
-
-        grid = new GameObject[100][100];
+        physicsObjects = new ArrayList<PhysicsObject>();
+        grid = new GameObject[1000][1000];
         grid = LevelScreen.mergeMatrices(grid,LevelScreen.generateRectangleWall(0,0,10,10) );
         gameObjects.addAll(LevelScreen.linearizeMatrix(grid));
 
@@ -133,8 +131,7 @@ public class LevelEditor extends LaserCatsScreen{
         }
         velocity.nor();
         camera.translate(velocity.x * speed, velocity.y * speed, 0);
-
-
+        
         batch.setProjectionMatrix(levelViewport.getCamera().combined);
         batch.begin();
 
@@ -156,11 +153,26 @@ public class LevelEditor extends LaserCatsScreen{
         }
         if (holding != null)
         {
-            holding.setX((Gdx.input.getX()/tileSize) * tileSize);
-            holding.setY((Gdx.input.getY()/tileSize) * tileSize);
+            Vector3 position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
+            holding.setX(Gdx.input.getX() - position.x);
+            holding.setY(levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
             holding.render(batch);
         }
-
+        if (holding != null && Gdx.input.isTouched()) {
+            boolean collides = false;
+            for (GameObject object : gameObjects) {
+                if (((Empty)object).overlaps(((Empty)holding).getCollider())) {
+                    collides = true;
+                }
+            }
+            if (!collides) {
+                addGameObject((int) holding.getX(), (int) holding.getY(), holding);
+                if (holding instanceof PhysicsObject) {
+                    physicsObjects.add((PhysicsObject) holding);
+                }
+                holding = null;
+            }
+        }
         batch.end();
 
 //        UIViewport.apply();
@@ -175,7 +187,10 @@ public class LevelEditor extends LaserCatsScreen{
     public void dispose() {
         batch.dispose();
         stage.dispose();
+        bgPixmap.dispose();
     }
+    @Override
+    public void createTextures() {}
     @Override
     public void createActors() {
         buttonTable = new Table();
@@ -186,7 +201,7 @@ public class LevelEditor extends LaserCatsScreen{
 
         objectsTable = new Table();
         // Color objects table
-        Pixmap bgPixmap = new Pixmap(1,1, Pixmap.Format.RGB565);
+        bgPixmap = new Pixmap(1,1, Pixmap.Format.RGB565);
         bgPixmap.setColor(new Color(0.82745098039215686274509803921569f, 0.82745098039215686274509803921569f, 0.82745098039215686274509803921569f, 1));
         bgPixmap.fill();
         TextureRegionDrawable textureRegionDrawableBg = new TextureRegionDrawable(new TextureRegion(new Texture(bgPixmap)));
@@ -204,6 +219,7 @@ public class LevelEditor extends LaserCatsScreen{
         pressurePlateButton = new TextButton("Pressure Plate", skin);
         gateButton = new TextButton("Gate", skin);
         glassButton = new TextButton("Glass", skin);
+        boxButton = new TextButton("Box", skin);
 
         entranceGateOneButton = new TextButton("Entrance One", skin);
         entranceGateTwoButton = new TextButton("Entrance Two", skin);
@@ -221,6 +237,7 @@ public class LevelEditor extends LaserCatsScreen{
     private void addGameObject(int i, int j, GameObject object)
     {
         grid[i][j] = object;
+        gameObjects.add(object);
     }
 
 
@@ -235,6 +252,7 @@ public class LevelEditor extends LaserCatsScreen{
         otherButtonGroup.addActor(pressurePlateButton);
         otherButtonGroup.addActor(gateButton);
         otherButtonGroup.addActor(glassButton);
+        otherButtonGroup.addActor(boxButton);
 
         requiredButtonGroup.addActor(entranceGateOneButton);
         requiredButtonGroup.addActor(entranceGateTwoButton);
@@ -269,6 +287,101 @@ public class LevelEditor extends LaserCatsScreen{
                 }
             }
         });
+        wallButtonOne.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButtonOne.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 2);
+                    holding = wall;
+                }
+            }
+        });
+        wallButtonTwo.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButtonTwo.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 7);
+                    holding = wall;
+                }
+            }
+        });
+        wallButtonThree.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButtonThree.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 4);
+                    holding = wall;
+                }
+            }
+        });
+        wallButtonFour.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButtonFour.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 5);
+                    holding = wall;
+                }
+            }
+        });
+        mirrorButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (mirrorButton.isPressed()) {
+                    GameObject mirror = new Mirror(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
+                    holding = mirror;
+                }
+            }
+        });
+        laserTargetButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (laserTargetButton.isPressed()) {
+                    //Initially laserTarget will have an empty arrayList of activatables.
+                    //However, there is no way to do something like this from the constructor.
+                    //Therefore, the texture of the target becomes the entire animation sheet.
+                    //Applicable to every detector object.
+                    GameObject laserTarget = new LaserTarget(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, new ArrayList<Activatable>());
+                    holding = laserTarget;
+                }
+            }
+        });
+        pressurePlateButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (pressurePlateButton.isPressed()) {
+                    //Same here.
+                    GameObject pressurePlate = new PressurePlate(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, new ArrayList<Activatable>());
+                    holding = pressurePlate;
+                }
+            }
+        });
+        glassButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (glassButton.isPressed()) {
+                    GameObject glass = new Glass(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
+                    holding = glass;
+                }
+            }
+        });
+        gateButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (gateButton.isPressed()) {
+                    GameObject gate = new Gate(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
+                    holding = gate;
+                }
+            }
+        });
+        boxButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (boxButton.isPressed()) {
+                    GameObject box = new Box(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize);
+                    holding = box;
+                }
+            }
+        });
     }
 
     private void ySort() {
@@ -289,7 +402,4 @@ public class LevelEditor extends LaserCatsScreen{
             }
         }
     }
-
-
-
 }

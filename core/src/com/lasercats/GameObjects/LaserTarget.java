@@ -43,7 +43,6 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
         arr.add(a);
         setActivatables(arr);
     }
-
     public void process(){
         state += Gdx.graphics.getDeltaTime();
         for (Activatable a : activatables) {
