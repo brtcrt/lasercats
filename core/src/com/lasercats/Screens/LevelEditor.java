@@ -33,6 +33,11 @@ import java.util.Vector;
 
 public class LevelEditor extends LaserCatsScreen{
 
+    @Override
+    public void createTextures() {
+
+    }
+
     private ArrayList<GameObject> gameObjects;
     private ArrayList<PhysicsObject> physicsObjects;
     private ArrayList<Tile> tiles;
