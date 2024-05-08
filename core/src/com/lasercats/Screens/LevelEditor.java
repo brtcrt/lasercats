@@ -336,10 +336,12 @@ public class LevelEditor extends LaserCatsScreen{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (laserTargetButton.isPressed()) {
+                    //TODO important notes
                     //Initially laserTarget will have an empty arrayList of activatables.
                     //However, there is no way to do something like this from the constructor.
                     //Therefore, the texture of the target becomes the entire animation sheet.
                     //Applicable to every detector object.
+                    //One other thing is that we haven't talked about how we will set activators for a detector via the level editor.
                     GameObject laserTarget = new LaserTarget(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, new ArrayList<Activatable>());
                     holding = laserTarget;
                 }
