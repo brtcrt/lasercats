@@ -437,10 +437,6 @@ public class LevelEditor extends LaserCatsScreen{
         entranceGateOneButton.addListener(entranceGateOneButtonListener);
         entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
         exitGateButton.addListener(exitGateButtonListener);
-
-        //TODO listeners for required objects' buttons (Another thing here is that there is no distinction between a normal gate and a "special gate"
-        //so it might be confusing to place these elements, maybe we can use special assets for these or even just render them with different colors
-        //but this might not be possible because the original texture is not white hence you can't really tint them.)
     }
 
     private void ySort() {
