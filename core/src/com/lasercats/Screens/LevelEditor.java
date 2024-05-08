@@ -309,7 +309,7 @@ public class LevelEditor extends LaserCatsScreen{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (wallButtonThree.isPressed()) {
-                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 4);
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 5);
                     holding = wall;
                 }
             }
@@ -318,7 +318,7 @@ public class LevelEditor extends LaserCatsScreen{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (wallButtonFour.isPressed()) {
-                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 5);
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 4);
                     holding = wall;
                 }
             }
