@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
 import org.json.JSONObject;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -16,7 +17,9 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     private Texture gateOpen;
     private boolean isActive;
     private Sprite sprite;
-
+    private boolean isExitGate;
+    private boolean isLaserCatEntranceGate;
+    private boolean isReflectiveCatEntranceGate;
 
     public Gate(float x, float y, float width, float height){
         super(x, y, width, height);
@@ -24,6 +27,9 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         gateClosed = new Texture(Gdx.files.internal("gate_closed.png"));
         gateOpen = new Texture(Gdx.files.internal("gate_open.png"));
         sprite = new Sprite(gateClosed);
+        isExitGate = false;
+        isLaserCatEntranceGate = false;
+        isReflectiveCatEntranceGate = false;
     }
 
     public void process(){
@@ -40,7 +46,11 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     }
 
     public void render(SpriteBatch batch){
+        if (isExitGate) {batch.setColor(Color.GOLD);}
+        else if (isLaserCatEntranceGate) {batch.setColor(Color.RED);}
+        else if (isReflectiveCatEntranceGate) {batch.setColor(Color.BLUE);}
         batch.draw(sprite, x, y , width, height);
+        batch.setColor(Color.WHITE);
     }
 
     public void destroy(){
@@ -91,5 +101,23 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     @Override
     public boolean isStatic() {
         return true;
+    }
+    public void setAsExitGate() {
+        isExitGate = true;
+    }
+    public void setAsLaserCatEntranceGate() {
+        isLaserCatEntranceGate = true;
+    }
+    public void setAsReflectiveCatEntranceGate() {
+        isReflectiveCatEntranceGate = true;
+    }
+    public boolean getIsExitGate() {
+        return isExitGate;
+    }
+    public boolean getIsLaserCatEntranceGate() {
+        return isLaserCatEntranceGate;
+    }
+    public boolean getIsReflectiveCatEntranceGate() {
+        return isReflectiveCatEntranceGate;
     }
 }

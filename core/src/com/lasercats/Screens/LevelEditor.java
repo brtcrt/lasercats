@@ -62,8 +62,11 @@ public class LevelEditor extends LaserCatsScreen{
     private Pixmap bgPixmap;
 
     private TextButton entranceGateOneButton;
+    private ChangeListener entranceGateOneButtonListener;
     private TextButton entranceGateTwoButton;
+    private ChangeListener entranceGateTwoButtonListener;
     private TextButton exitGateButton;
+    private ChangeListener exitGateButtonListener;
 
     private int[] controlScheme = Player.controlScheme;
     private int speed = 10;
@@ -169,6 +172,17 @@ public class LevelEditor extends LaserCatsScreen{
                 addGameObject((int) holding.getX(), (int) holding.getY(), holding);
                 if (holding instanceof PhysicsObject) {
                     physicsObjects.add((PhysicsObject) holding);
+                }
+                if (holding instanceof Gate) {
+                    if (((Gate)holding).getIsLaserCatEntranceGate()) {
+                        entranceGateOneButton.removeListener(entranceGateOneButtonListener);
+                    }
+                    else if (((Gate)holding).getIsReflectiveCatEntranceGate()) {
+                        entranceGateTwoButton.removeListener(entranceGateTwoButtonListener);
+                    }
+                    else if (((Gate)holding).getIsExitGate()) {
+                        exitGateButton.removeListener(exitGateButtonListener);
+                    }
                 }
                 holding = null;
             }
@@ -279,6 +293,33 @@ public class LevelEditor extends LaserCatsScreen{
 
     @Override
     public void setListeners() {
+        entranceGateOneButtonListener = new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                if (entranceGateOneButton.isPressed()) {
+                    GameObject gate = new Gate(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
+                    ((Gate)gate).setAsLaserCatEntranceGate();
+                    holding = gate;
+                }
+            };
+        };
+        entranceGateTwoButtonListener = new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                if (entranceGateTwoButton.isPressed()) {
+                    GameObject gate = new Gate(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
+                    ((Gate)gate).setAsReflectiveCatEntranceGate();
+                    holding = gate;
+                }
+            };
+        };
+        exitGateButtonListener = new ChangeListener() {
+            public void changed(ChangeEvent event, Actor actor) {
+                if (exitGateButton.isPressed()) {
+                    GameObject gate = new Gate(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
+                    ((Gate)gate).setAsExitGate();
+                    holding = gate;
+                }
+            };
+        };
         goBackButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -384,6 +425,22 @@ public class LevelEditor extends LaserCatsScreen{
                 }
             }
         });
+        boxButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (boxButton.isPressed()) {
+                    GameObject box = new Box(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize);
+                    holding = box;
+                }
+            }
+        });
+        entranceGateOneButton.addListener(entranceGateOneButtonListener);
+        entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
+        exitGateButton.addListener(exitGateButtonListener);
+
+        //TODO listeners for required objects' buttons (Another thing here is that there is no distinction between a normal gate and a "special gate"
+        //so it might be confusing to place these elements, maybe we can use special assets for these or even just render them with different colors
+        //but this might not be possible because the original texture is not white hence you can't really tint them.)
     }
 
     private void ySort() {
