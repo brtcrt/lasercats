@@ -81,6 +81,8 @@ public class LevelEditor extends LaserCatsScreen{
 
         this.menuScreen = menuScreen;
 
+        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
+
         createActors();
         positionActors();
         setListeners();
@@ -171,16 +173,22 @@ public class LevelEditor extends LaserCatsScreen{
 
         objectTab1 = new TextButton("Required",skin);
         objectTab2 = new TextButton("Other",skin);
-    }
 
-    @Override
-    public void positionActors() {
+        TextButton wallButton = new TextButton("Wall", skin);
+
         root.add(goBackButton).expand().align(Align.topLeft).width(60).height(60);
         root.add(objectsTable).width(200).right().fillY();
         objectsTable.add(objectTab1).expandY().top().growX();
         objectsTable.add(objectTab2).expandY().top().growX();
+        objectsTable.add(wallButton);
         stage.setRoot(root);
         stage.setDebugAll(true);
+
+    }
+
+    @Override
+    public void positionActors() {
+
     }
 
     @Override
@@ -214,10 +222,6 @@ public class LevelEditor extends LaserCatsScreen{
         }
     }
 
-//    private PhysicsObject[] makeWalls(int x, int y, int width, int height)
-//    {
-//
-//    }
 
 
 }

@@ -262,7 +262,7 @@ public class LevelScreen extends LaserCatsScreen {
 	 * @param h height of rectangle
 	 * @return Matrix of walls and null objects
 	 */
-	private GameObject[][] generateRectangleWall(float x, float y, int w, int h) {
+	public static GameObject[][] generateRectangleWall(float x, float y, int w, int h) {
 		GameObject[][] matrix = new GameObject[h][w];
 
 		final float wallWidth = 64;
@@ -316,7 +316,7 @@ public class LevelScreen extends LaserCatsScreen {
 		return matrix;
 	}
 
-	private ArrayList<GameObject> linearizeMatrix(GameObject[][] m) {
+	public static ArrayList<GameObject> linearizeMatrix(GameObject[][] m) {
 		ArrayList<GameObject> linear = new ArrayList<GameObject>();
 		for (int i = 0; i < m.length; i++) {
 			for (int j = 0; j < m[0].length; j++) {
