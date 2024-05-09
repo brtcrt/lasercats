@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -85,6 +87,7 @@ public class LevelEditor extends LaserCatsScreen{
 
     private InputMultiplexer multiplexer;
     private ActivatableInputHandler detectorProcessor;
+    private ShapeRenderer drawer;
 
     public LevelEditor(Game game, MainMenuScreen menuScreen)
     {
@@ -94,6 +97,7 @@ public class LevelEditor extends LaserCatsScreen{
 
         UIViewport = new ScreenViewport();
         stage = new Stage(levelViewport, batch);
+        drawer = new ShapeRenderer();
 
         stage.setViewport(UIViewport);
         detectorProcessor = new ActivatableInputHandler();
@@ -123,6 +127,7 @@ public class LevelEditor extends LaserCatsScreen{
     public void resize(int width, int height)
     {
         //TODO currently when you resize the window the positioning mechanism of objects breaks.
+        //Other things break as well such as lines between detectors and activators, deletion hitboxes etc.
         levelViewport.update(width, height, false);
         UIViewport.update(width, height, true);
         root.setHeight(height);
@@ -242,6 +247,17 @@ public class LevelEditor extends LaserCatsScreen{
 //        UIViewport.apply();S
         stage.act(delta);
         stage.draw();
+        drawer.begin(ShapeType.Line);
+        drawer.setColor(Color.RED);
+        //O(n^2) solution but should not be an issue in most cases.
+        for (GameObject object : gameObjects) {
+            if (object instanceof Detector) {
+                for (Activatable activatable : ((Detector)object).getActivatables()) {
+                    drawer.line(object.getX() + ((Empty)object).getWidth() / 2 + position.x, object.getY() + ((Empty)object).getHeight() / 2 + position.y, ((Empty)activatable).getX() + ((Empty)activatable).getWidth() / 2 + position.x, ((Empty)activatable).getY() + ((Empty)activatable).getHeight() / 2 + + position.y);
+                }
+            }
+        }
+        drawer.end();
     }
     @Override
     public void pause() {}

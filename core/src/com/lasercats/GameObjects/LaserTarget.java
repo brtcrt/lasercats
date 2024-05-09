@@ -115,7 +115,9 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
     public boolean isTriggered() {
         return isTriggered;
     }
-
+    public ArrayList<Activatable> getActivatables() {
+        return activatables;
+    }
     @Override
     public boolean canCollide() {
         return false;

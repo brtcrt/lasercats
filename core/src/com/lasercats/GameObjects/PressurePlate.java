@@ -72,7 +72,9 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
             }
         }
     }
-
+    public ArrayList<Activatable> getActivatables() {
+        return activatables;
+    }
     @Override
     public boolean isStatic() {
         return true;
