@@ -1,6 +1,7 @@
 package com.lasercats.Screens;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -149,11 +150,6 @@ public class LevelEditor extends LaserCatsScreen{
         for (GameObject o : renderQueue) {
             o.render(batch);
         }
-        for (GameObject[] objectList : grid) for (GameObject o : objectList)
-        {
-            if (o == null) continue;
-            o.render(batch);
-        }
         if (holding != null)
         {
             Vector3 position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
@@ -169,6 +165,7 @@ public class LevelEditor extends LaserCatsScreen{
                 }
             }
             if (!collides) {
+                System.out.println(new Vector2((int) holding.getX(), (int) holding.getY()));
                 addGameObject((int) holding.getX(), (int) holding.getY(), holding);
                 if (holding instanceof PhysicsObject) {
                     physicsObjects.add((PhysicsObject) holding);
@@ -189,7 +186,18 @@ public class LevelEditor extends LaserCatsScreen{
         }
         batch.end();
 
-//        UIViewport.apply();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
+            Vector3 position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
+            for (int i = 0; i < gameObjects.size(); i++) {
+                GameObject object = gameObjects.get(i);
+                Vector2 mousePoint = new Vector2(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
+                if (((Empty)object).contains(mousePoint)) {
+                    gameObjects.remove(object);
+                    break;
+                }
+            }
+        }
+//        UIViewport.apply();S
         stage.act(delta);
         stage.draw();
     }
