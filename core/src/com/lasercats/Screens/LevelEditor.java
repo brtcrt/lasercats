@@ -519,11 +519,13 @@ public class LevelEditor extends LaserCatsScreen{
             if (button == Buttons.RIGHT) {
                 mousePoint.set(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
                 for (GameObject object : gameObjects) {
-                    if (((Empty)object).contains(mousePoint) && object instanceof Activatable) {
-                        detectorObject.addActivatable((Activatable) object);
-                        multiplexer.removeProcessor(this);
-                        multiplexer.addProcessor(stage);
-                        return true;
+                    if (((Empty)object).contains(mousePoint) && (object instanceof Activatable)) {
+                        if (!(object instanceof Gate && ((Gate)object).getIsExitGate() || ((Gate)object).getIsLaserCatEntranceGate() || ((Gate)object).getIsReflectiveCatEntranceGate())) {
+                            detectorObject.addActivatable((Activatable) object);
+                            multiplexer.removeProcessor(this);
+                            multiplexer.addProcessor(stage);
+                            return true;
+                        }
                     }
                 }
             }
