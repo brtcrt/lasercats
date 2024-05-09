@@ -2,6 +2,9 @@ package com.lasercats.Screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -29,11 +32,11 @@ public class LevelEditor extends LaserCatsScreen{
     private ArrayList<Tile> tiles;
     private ArrayList<GameObject> renderQueue;
 
-    private GameObject[][] grid;
-    private GameObject[][] floatingGrid;
+    //private GameObject[][] grid;
+    //private GameObject[][] floatingGrid;
     private GameObject holding;
 
-    private int gridStart;
+    //private int gridStart;
     private int tileSize = 64;
 
     private Table buttonTable;
@@ -54,6 +57,8 @@ public class LevelEditor extends LaserCatsScreen{
     private TextButton wallButtonTwo;
     private TextButton wallButtonThree;
     private TextButton wallButtonFour;
+    private TextButton wallButtonFive;
+    private TextButton wallButtonSix;
     private TextButton gateButton;
     private TextButton laserTargetButton;
     private TextButton pressurePlateButton;
@@ -72,10 +77,14 @@ public class LevelEditor extends LaserCatsScreen{
     private int[] controlScheme = Player.controlScheme;
     private int speed = 10;
     private Vector2 velocity = new Vector2();
-    private Vector2 position = new Vector2(100,100);
+    private Vector3 position;
+    private Vector2 mousePoint;
 
     private VerticalGroup requiredButtonGroup;
     private VerticalGroup otherButtonGroup;
+
+    private InputMultiplexer multiplexer;
+    private ActivatableInputHandler detectorProcessor;
 
     public LevelEditor(Game game, MainMenuScreen menuScreen)
     {
@@ -87,6 +96,9 @@ public class LevelEditor extends LaserCatsScreen{
         stage = new Stage(levelViewport, batch);
 
         stage.setViewport(UIViewport);
+        detectorProcessor = new ActivatableInputHandler();
+        multiplexer = new InputMultiplexer();
+        multiplexer.addProcessor(stage);
 
 //        genericViewport = new ExtendViewport(1024, 720, camera);
 //        genericViewport.apply();
@@ -94,13 +106,12 @@ public class LevelEditor extends LaserCatsScreen{
         tiles = new ArrayList<Tile>();
         fillTiles();
         root.setFillParent(true);
-        position = new Vector2();
 
         this.menuScreen = menuScreen;
         physicsObjects = new ArrayList<PhysicsObject>();
-        grid = new GameObject[1000][1000];
-        grid = LevelScreen.mergeMatrices(grid,LevelScreen.generateRectangleWall(0,0,10,10) );
-        gameObjects.addAll(LevelScreen.linearizeMatrix(grid));
+        //grid = new GameObject[1000][1000];
+        //grid = LevelScreen.mergeMatrices(grid,LevelScreen.generateRectangleWall(0,0,10,10) );
+        //gameObjects.addAll(LevelScreen.linearizeMatrix(grid));
 
 //        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
 
@@ -111,6 +122,7 @@ public class LevelEditor extends LaserCatsScreen{
     @Override
     public void resize(int width, int height)
     {
+        //TODO currently when you resize the window the positioning mechanism of objects breaks.
         levelViewport.update(width, height, false);
         UIViewport.update(width, height, true);
         root.setHeight(height);
@@ -120,7 +132,7 @@ public class LevelEditor extends LaserCatsScreen{
     public void render(float delta) {
 
         levelViewport.apply();
-        Gdx.input.setInputProcessor(stage);
+        Gdx.input.setInputProcessor(multiplexer);
 
         velocity.x = 0;
         velocity.y = 0;
@@ -150,49 +162,79 @@ public class LevelEditor extends LaserCatsScreen{
         for (GameObject o : renderQueue) {
             o.render(batch);
         }
-        if (holding != null)
-        {
-            Vector3 position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
+        position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
+        mousePoint = new Vector2(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
+        if (holding != null) {
             holding.setX(Gdx.input.getX() - position.x);
             holding.setY(levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
             holding.render(batch);
-        }
-        if (holding != null && Gdx.input.isTouched()) {
-            boolean collides = false;
-            for (GameObject object : gameObjects) {
-                if (((Empty)object).overlaps(((Empty)holding).getCollider())) {
-                    collides = true;
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                boolean collides = false;
+                for (GameObject object : gameObjects) {
+                    if (((Empty)object).overlaps(((Empty)holding).getCollider())) {
+                        collides = true;
+                    }
+                }
+                if (!collides) {
+                    gameObjects.add(holding);
+                    if (holding instanceof PhysicsObject) {
+                        physicsObjects.add((PhysicsObject) holding);
+                    }
+                    if (holding instanceof Gate) {
+                        if (((Gate)holding).getIsLaserCatEntranceGate()) {
+                            entranceGateOneButton.removeListener(entranceGateOneButtonListener);
+                        }
+                        else if (((Gate)holding).getIsReflectiveCatEntranceGate()) {
+                            entranceGateTwoButton.removeListener(entranceGateTwoButtonListener);
+                        }
+                        else if (((Gate)holding).getIsExitGate()) {
+                            exitGateButton.removeListener(exitGateButtonListener);
+                        }
+                    }
+                    holding = null;
                 }
             }
-            if (!collides) {
-                System.out.println(new Vector2((int) holding.getX(), (int) holding.getY()));
-                addGameObject((int) holding.getX(), (int) holding.getY(), holding);
-                if (holding instanceof PhysicsObject) {
-                    physicsObjects.add((PhysicsObject) holding);
-                }
-                if (holding instanceof Gate) {
-                    if (((Gate)holding).getIsLaserCatEntranceGate()) {
-                        entranceGateOneButton.removeListener(entranceGateOneButtonListener);
-                    }
-                    else if (((Gate)holding).getIsReflectiveCatEntranceGate()) {
-                        entranceGateTwoButton.removeListener(entranceGateTwoButtonListener);
-                    }
-                    else if (((Gate)holding).getIsExitGate()) {
-                        exitGateButton.removeListener(exitGateButtonListener);
+        }
+        else {
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
+                for (GameObject object : gameObjects) {
+                    if (((Empty)object).contains(mousePoint)) {
+                        holding = object;
+                        gameObjects.remove(object);
+                        break;
                     }
                 }
-                holding = null;
+            }
+            else if (Gdx.input.isButtonJustPressed(Input.Buttons.RIGHT)) {
+                for (GameObject object : gameObjects) {
+                    if (((Empty)object).contains(mousePoint) && object instanceof Detector) {
+                        Detector detectorObject = (Detector) object;
+                        detectorProcessor.setDetector(detectorObject);
+                        multiplexer.removeProcessor(stage);
+                        multiplexer.addProcessor(detectorProcessor);
+                        break;
+                    }
+                } 
             }
         }
         batch.end();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
-            Vector3 position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
             for (int i = 0; i < gameObjects.size(); i++) {
                 GameObject object = gameObjects.get(i);
-                Vector2 mousePoint = new Vector2(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
                 if (((Empty)object).contains(mousePoint)) {
                     gameObjects.remove(object);
+                    if (object instanceof Gate) {
+                        if (((Gate)object).getIsLaserCatEntranceGate()) {
+                            entranceGateOneButton.addListener(entranceGateOneButtonListener);
+                        }
+                        else if (((Gate)object).getIsReflectiveCatEntranceGate()) {
+                            entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
+                        }
+                        else if (((Gate)object).getIsExitGate()) {
+                            exitGateButton.addListener(exitGateButtonListener);
+                        }
+                    }
                     break;
                 }
             }
@@ -236,6 +278,8 @@ public class LevelEditor extends LaserCatsScreen{
         wallButtonTwo = new TextButton("Wall Bottom", skin);
         wallButtonThree = new TextButton("Wall Right", skin);
         wallButtonFour = new TextButton("Wall Left", skin);
+        wallButtonFive = new TextButton("Wall Right Corner", skin);
+        wallButtonSix = new TextButton("Wall Left Corner", skin);
         mirrorButton = new TextButton("Mirror", skin);
         laserTargetButton = new TextButton("Laser Target", skin);
         pressurePlateButton = new TextButton("Pressure Plate", skin);
@@ -250,25 +294,14 @@ public class LevelEditor extends LaserCatsScreen{
         requiredButtonGroup = new VerticalGroup();
         otherButtonGroup = new VerticalGroup();
     }
-
-    private void addWall(int i, int j)
-    {
-        addGameObject(i, j, new Wall(i * tileSize, i * tileSize,tileSize, tileSize, 2));
-    }
-
-    private void addGameObject(int i, int j, GameObject object)
-    {
-        grid[i][j] = object;
-        gameObjects.add(object);
-    }
-
-
     @Override
     public void positionActors() {
         otherButtonGroup.addActor(wallButtonOne);
         otherButtonGroup.addActor(wallButtonTwo);
         otherButtonGroup.addActor(wallButtonThree);
         otherButtonGroup.addActor(wallButtonFour);
+        otherButtonGroup.addActor(wallButtonFive);
+        otherButtonGroup.addActor(wallButtonSix);
         otherButtonGroup.addActor(mirrorButton);
         otherButtonGroup.addActor(laserTargetButton);
         otherButtonGroup.addActor(pressurePlateButton);
@@ -298,7 +331,6 @@ public class LevelEditor extends LaserCatsScreen{
         stage.setRoot(root);
         //stage.setDebugAll(true);
     }
-
     @Override
     public void setListeners() {
         entranceGateOneButtonListener = new ChangeListener() {
@@ -372,6 +404,24 @@ public class LevelEditor extends LaserCatsScreen{
                 }
             }
         });
+        wallButtonFive.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButtonFive.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 8);
+                    holding = wall;
+                }
+            }
+        });
+        wallButtonSix.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (wallButtonSix.isPressed()) {
+                    GameObject wall = new Wall(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, 6);
+                    holding = wall;
+                }
+            }
+        });
         mirrorButton.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
@@ -385,13 +435,7 @@ public class LevelEditor extends LaserCatsScreen{
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (laserTargetButton.isPressed()) {
-                    //TODO important notes
-                    //Initially laserTarget will have an empty arrayList of activatables.
-                    //However, there is no way to do something like this from the constructor.
-                    //Therefore, the texture of the target becomes the entire animation sheet.
-                    //Applicable to every detector object.
-                    //One other thing is that we haven't talked about how we will set activators for a detector via the level editor.
-                    GameObject laserTarget = new LaserTarget(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, new ArrayList<Activatable>());
+                    GameObject laserTarget = new LaserTarget(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize);
                     holding = laserTarget;
                 }
             }
@@ -463,6 +507,32 @@ public class LevelEditor extends LaserCatsScreen{
             for (int j = 0; j < 40; j++) {
                 tiles.add(new FloorTile(startX + 64 * i, startY + 64 * j, 64, 64, ((int)Math.round(Math.random() * 11)) + 1));
             }
+        }
+    }
+    private class ActivatableInputHandler extends InputAdapter {
+        private Detector detectorObject; 
+        public ActivatableInputHandler() {
+            this.detectorObject = null;
+        }
+        @Override
+        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+            if (button == Buttons.RIGHT) {
+                mousePoint.set(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
+                for (GameObject object : gameObjects) {
+                    if (((Empty)object).contains(mousePoint) && object instanceof Activatable) {
+                        detectorObject.addActivatable((Activatable) object);
+                        multiplexer.removeProcessor(this);
+                        multiplexer.addProcessor(stage);
+                        return true;
+                    }
+                }
+            }
+            multiplexer.removeProcessor(this);
+            multiplexer.addProcessor(stage);
+            return false;
+        }
+        public void setDetector(Detector detector) {
+            detectorObject = detector;
         }
     }
 }
