@@ -21,7 +21,7 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
     private float state;
     private boolean isTriggered;
 
-    public LaserTarget(float x, float y, float width, float height, ArrayList<Activatable> activatables){
+    public LaserTarget(float x, float y, float width, float height) {
         super(x, y, width, height);
         velocity = new Vector2();
         image = new Texture(Gdx.files.internal("LaserTargetSheet2.png")); // I hand-drew this fucking monstrosity kill me ~brtcrt
@@ -31,12 +31,15 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
         offFrame = offFrames[0];
         onAnimation = new Animation<TextureRegion>(0.4f, onFrames);
         onAnimation.setPlayMode(Animation.PlayMode.LOOP_PINGPONG);
-        sprite = new Sprite(image);
+        sprite = new Sprite(offFrame);
         isTriggered = false;
         state = 0;
+        activatables = new ArrayList<Activatable>();
+    }
+    public LaserTarget(float x, float y, float width, float height, ArrayList<Activatable> activatables){
+        this(x, y, width, height);
         setActivatables(activatables);
     }
-
     public LaserTarget(float x, float y, float width, float height, Activatable a){
         this(x,y,width,height, new ArrayList<Activatable>());
         ArrayList<Activatable> arr = new ArrayList<Activatable>();
@@ -79,7 +82,15 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
         image.dispose();
     }
 
-
+    @Override
+    public void addActivatable(Activatable a) {
+        for (Activatable activatable : activatables) {
+            if (activatable.equals(a)) {
+                return;
+            }
+        }
+        activatables.add(a);
+    }
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {

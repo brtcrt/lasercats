@@ -17,13 +17,17 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     private ArrayList<Activatable> activatables;
     private boolean isTriggered;
 
-    public PressurePlate(float x, float y, float width, float height, ArrayList<Activatable> activatables){
+    public PressurePlate(float x, float y, float width, float height){
         super(x, y, width, height);
         velocity = new Vector2();
         image = new Texture(Gdx.files.internal("Button.png"));
         imagePressed = new Texture(Gdx.files.internal("ButtonClick.png"));
         sprite = new Sprite(image);
         isTriggered = false;
+        activatables = new ArrayList<Activatable>();
+    }
+    public PressurePlate(float x, float y, float width, float height, ArrayList<Activatable> activatables){
+        this(x, y, width, height);
         setActivatables(activatables);
     }
 
@@ -50,7 +54,15 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     public void setActivatables(ArrayList<Activatable> activatables) {
         this.activatables = activatables;
     }
-
+    @Override
+    public void addActivatable(Activatable a) {
+        for (Activatable activatable : activatables) {
+            if (activatable.equals(a)) {
+                return;
+            }
+        }
+        activatables.add(a);
+    }
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         isTriggered = false;
