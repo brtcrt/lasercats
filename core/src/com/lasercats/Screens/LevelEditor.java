@@ -278,6 +278,13 @@ public class LevelEditor extends LaserCatsScreen{
         batch.dispose();
         stage.dispose();
         bgPixmap.dispose();
+        for (GameObject object : gameObjects) {
+            object.destroy();
+        }
+        drawer.dispose();
+        for (Tile tile : tiles) {
+            tile.destroy();
+        }
     }
     @Override
     public void createTextures() {}
