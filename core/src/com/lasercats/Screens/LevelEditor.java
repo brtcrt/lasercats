@@ -240,6 +240,16 @@ public class LevelEditor extends LaserCatsScreen{
                             exitGateButton.addListener(exitGateButtonListener);
                         }
                     }
+                    if (object instanceof Activatable) {
+                        for (GameObject object2 : gameObjects) {
+                            if (object2 instanceof Detector) {
+                                //Since addActivatable method only adds an activatable that is not in the list of activatables of a detector
+                                //These method calls ensure that we remove this object no matter if it is in the list of activatables
+                                ((Detector)object2).addActivatable((Activatable) object);
+                                ((Detector)object2).getActivatables().remove((Activatable) object);
+                            }
+                        }
+                    }
                     break;
                 }
             }
