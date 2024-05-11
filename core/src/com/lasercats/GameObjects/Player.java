@@ -39,7 +39,7 @@ public class Player extends Empty implements PhysicsObject {
     private boolean isMeowOrange = false;
     private boolean isReflective = false;
 
-    private Laser laser;
+    public Laser laser;
 
     protected final float walkSpeed = 150f;
     protected final float idlePeriod = 0.5f;
@@ -211,6 +211,7 @@ public class Player extends Empty implements PhysicsObject {
         // Fuck libgdx's json library I'm changing it to org.json ~brtcrt
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("direction.x", direction.x);
             json.put("direction.y", direction.y);
             json.put("velocity.x", velocity.x);
