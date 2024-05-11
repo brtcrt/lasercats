@@ -71,4 +71,9 @@ public class TestObject extends Empty implements GameObject, Activatable{
             System.out.println(e);
         }
     }
+
+    @Override
+    public int getActivationCount() {
+        return 0;
+    }
 }

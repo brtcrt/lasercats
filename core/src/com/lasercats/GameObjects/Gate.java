@@ -16,6 +16,7 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     private Texture gateClosed;
     private Texture gateOpen;
     private boolean isActive;
+    private int activationCount = 0;
     private Sprite sprite;
     private boolean isExitGate;
     private boolean isLaserCatEntranceGate;
@@ -33,11 +34,17 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     }
 
     public void process(){
+        if (activationCount > 0) {
+            isActive = true;
+        } else {
+            isActive = false;
+        }
         if (isActive) {
             sprite = new Sprite(gateOpen);
         } else {
             sprite = new Sprite(gateClosed);
         }
+        activationCount = 0;
     }
 
     @Override
@@ -61,12 +68,11 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
 
     @Override
     public void deactivate() {
-        this.isActive = false;
     }
 
     @Override
     public void activate() {
-        this.isActive = true;
+        this.activationCount++;
     }
 
     public boolean isActive() {
@@ -81,8 +87,11 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("x", x);
             json.put("y", y);
+            json.put("width", width);
+            json.put("height", height);
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -93,9 +102,14 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            width = (float)json.getDouble("width");
+            height = (float)json.getDouble("height");
         } catch (JSONException e) {
             System.out.println(e);
         }
+    }
+    public int getActivationCount() {
+        return activationCount;
     }
 
     @Override

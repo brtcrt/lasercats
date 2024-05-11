@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Laser implements GameObject {
+    public String ID = java.util.UUID.randomUUID().toString();
 
     final private static int MAX_REFLECTIONS = 10;
     private int x1, y1;
@@ -21,8 +22,8 @@ public class Laser implements GameObject {
     private Vector2 velocity, initialDirection;
     protected ArrayList<Vector2> vertices;
     private ShapeRenderer debugRenderer = new ShapeRenderer();
-    private Viewport viewport;
-    private ArrayList<PhysicsObject> physicsObjects;
+    public Viewport viewport;
+    public ArrayList<PhysicsObject> physicsObjects;
 
     private ArrayList<PhysicsObject> ignoreAlways;
     private ArrayList<PhysicsObject> ignoreOnFirstReflection;
@@ -154,6 +155,7 @@ public class Laser implements GameObject {
     public JSONObject getIdentifiers() {
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("vertices", vertices);
             json.put("initialDirection",initialDirection);
         } 
@@ -173,7 +175,6 @@ public class Laser implements GameObject {
                 s = s.replace("(", "");
                 s = s.replace(")", "");
                 String [] xy = s.split(",");
-                System.out.println(xy[0]);
                 vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
             }
             String dir = json.getString("initialDirection");
@@ -218,4 +219,5 @@ public class Laser implements GameObject {
 
     public Rectangle setX(float x) {return new Rectangle();}
     public Rectangle setY(float y) {return new Rectangle();}
+    public String getID() { return this.ID; }
 }

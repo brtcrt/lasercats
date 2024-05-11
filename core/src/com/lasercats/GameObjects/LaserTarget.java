@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,11 +17,15 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
     private Texture image;
     private Sprite sprite;
     private ArrayList<Activatable> activatables;
+    private ArrayList<String> activatableIDs = new ArrayList<>();;
     private TextureRegion offFrame;
     private Animation<TextureRegion> onAnimation;
     private float state;
     private boolean isTriggered;
 
+    public LaserTarget(int x, int y, int width, int height) {
+        this((float)x, (float)y, (float)width, (float)height);
+    }
     public LaserTarget(float x, float y, float width, float height) {
         super(x, y, width, height);
         velocity = new Vector2();
@@ -46,6 +51,8 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
         arr.add(a);
         setActivatables(arr);
     }
+
+
     public void process(){
         state += Gdx.graphics.getDeltaTime();
         for (Activatable a : activatables) {
@@ -67,6 +74,13 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         reset();
+        if (this.activatables.isEmpty()) {
+            for (PhysicsObject o : objects) {
+                if (activatableIDs.contains(o.getID())) {
+                    activatables.add((Activatable) o);
+                }
+            }
+        }
     }
 
     @Override
@@ -94,8 +108,12 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("x", x);
             json.put("y", y);
+            json.put("width", width);
+            json.put("height", height);
+            json.put("activatables", this.activatableIDs);
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -106,6 +124,12 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            width = (float)json.getDouble("width");
+            height = (float)json.getDouble("height");
+            JSONArray activatableIDsJSON = json.getJSONArray("activatables");
+            for (int i = 0; i < activatableIDsJSON.length(); i++) {
+                activatableIDs.add(activatableIDsJSON.getString(i));
+            }
         } catch (JSONException e) {
             System.out.println(e);
         }
