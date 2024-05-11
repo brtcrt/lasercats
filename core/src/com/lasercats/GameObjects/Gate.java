@@ -88,6 +88,7 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         JSONObject json = new JSONObject();
         try {
             json.put("type", this.getClass().getName());
+            json.put("id", getID());
             json.put("x", x);
             json.put("y", y);
             json.put("width", width);
@@ -104,6 +105,7 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
             y = (float)json.getDouble("y");
             width = (float)json.getDouble("width");
             height = (float)json.getDouble("height");
+            this.ID = json.getString("id");
         } catch (JSONException e) {
             System.out.println(e);
         }

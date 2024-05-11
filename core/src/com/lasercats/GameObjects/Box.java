@@ -67,6 +67,7 @@ public class Box extends Empty implements PhysicsObject {
         JSONObject json = new JSONObject();
         try {
             json.put("type", this.getClass().getName());
+            json.put("id", getID());
             json.put("velocity.x", velocity.x);
             json.put("velocity.y", velocity.y);
             json.put("x", x);
@@ -83,6 +84,7 @@ public class Box extends Empty implements PhysicsObject {
             velocity.y = (float)json.getDouble("velocity.y");
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            this.ID = json.getString("id");
         } catch (JSONException e) {
             System.out.println(e);
         }

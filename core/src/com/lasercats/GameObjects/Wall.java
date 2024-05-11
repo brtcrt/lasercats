@@ -26,17 +26,8 @@ public class Wall extends Empty implements PhysicsObject {
         map = new Texture(Gdx.files.internal("Dungeon_Tileset.png"));
         dungeonTextures = TextureRegion.split(map, 16,16);
         velocity = new Vector2();
-        textures = new TextureRegion[8];
-        textures[0] = dungeonTextures[0][0];
-        textures[1] = dungeonTextures[0][1];
-        textures[2] = dungeonTextures[0][5];
-        textures[3] = dungeonTextures[1][0];
-        textures[4] = dungeonTextures[1][5];
-        textures[5] = dungeonTextures[4][0];
-        textures[6] = dungeonTextures[4][3];
-        textures[7] = dungeonTextures[4][5];
-        sprite = new Sprite(textures[type - 1]);
         this.type = type;
+        setSprite(type);
     }
 
     public void process(){
@@ -56,6 +47,18 @@ public class Wall extends Empty implements PhysicsObject {
         map.dispose();
     }
 
+    private void setSprite(int type) {
+        textures = new TextureRegion[8];
+        textures[0] = dungeonTextures[0][0];
+        textures[1] = dungeonTextures[0][1];
+        textures[2] = dungeonTextures[0][5];
+        textures[3] = dungeonTextures[1][0];
+        textures[4] = dungeonTextures[1][5];
+        textures[5] = dungeonTextures[4][0];
+        textures[6] = dungeonTextures[4][3];
+        textures[7] = dungeonTextures[4][5];
+        sprite = new Sprite(textures[type - 1]);
+    }
 
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
@@ -66,6 +69,7 @@ public class Wall extends Empty implements PhysicsObject {
             json.put("y", y);
             json.put("width", width);
             json.put("height", height);
+            json.put("id", getID());
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -79,6 +83,8 @@ public class Wall extends Empty implements PhysicsObject {
             type = json.getInt("typeWall");
             width = (float)json.getDouble("width");
             height = (float)json.getDouble("height");
+            setSprite(type);
+            this.ID = json.getString("id");
         } catch (JSONException e) {
             System.out.println(e);
         }

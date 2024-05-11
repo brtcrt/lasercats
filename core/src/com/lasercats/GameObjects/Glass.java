@@ -46,6 +46,7 @@ public class Glass extends Empty implements PhysicsObject {
             json.put("y", y);
             json.put("width", width);
             json.put("height", height);
+            json.put("id", getID());
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -58,6 +59,7 @@ public class Glass extends Empty implements PhysicsObject {
             y = (float)json.getDouble("y");
             width = (float)json.getDouble("width");
             height = (float)json.getDouble("height");
+            this.ID = json.getString("id");
         } catch (JSONException e) {
             System.out.println(e);
         }

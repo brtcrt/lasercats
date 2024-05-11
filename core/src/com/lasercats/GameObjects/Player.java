@@ -220,6 +220,7 @@ public class Player extends Empty implements PhysicsObject {
             json.put("y", y);
             json.put("meow", isMeow);
             json.put("meowOrange", isMeowOrange);
+            json.put("id", getID());
             isMeow = false;
         } catch (JSONException e) {
             System.out.println(e);
@@ -238,6 +239,7 @@ public class Player extends Empty implements PhysicsObject {
             y = (float)json.getDouble("y");
             isMeow = (boolean)json.getBoolean("meow");
             isMeowOrange = (boolean)json.getBoolean("meowOrange");
+            this.ID = json.getString("id");
         } catch (JSONException e) {
             System.out.println(e);
         }

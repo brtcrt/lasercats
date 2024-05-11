@@ -113,6 +113,7 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
             json.put("y", y);
             json.put("width", width);
             json.put("height", height);
+            json.put("id", getID());
             json.put("activatables", this.activatableIDs);
         } catch (JSONException e) {
             System.out.println(e);
@@ -126,6 +127,7 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
             y = (float)json.getDouble("y");
             width = (float)json.getDouble("width");
             height = (float)json.getDouble("height");
+            this.ID = json.getString("id");
             JSONArray activatableIDsJSON = json.getJSONArray("activatables");
             for (int i = 0; i < activatableIDsJSON.length(); i++) {
                 activatableIDs.add(activatableIDsJSON.getString(i));
