@@ -170,8 +170,8 @@ public class LevelEditor extends LaserCatsScreen{
         position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
         mousePoint = new Vector2(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
         if (holding != null) {
-            holding.setX(Gdx.input.getX() - position.x);
-            holding.setY(levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
+            holding.setX((int) ((Gdx.input.getX() - position.x)/tileSize) * tileSize);
+            holding.setY((int) ((levelViewport.getScreenHeight() - Gdx.input.getY() - position.y)/tileSize) * tileSize);
             holding.render(batch);
             if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                 boolean collides = false;
@@ -196,7 +196,8 @@ public class LevelEditor extends LaserCatsScreen{
                             exitGateButton.removeListener(exitGateButtonListener);
                         }
                     }
-                    holding = null;
+
+                        holding = null;
                 }
             }
         }
@@ -254,6 +255,7 @@ public class LevelEditor extends LaserCatsScreen{
                 }
             }
         }
+
 //        UIViewport.apply();S
         stage.act(delta);
         stage.draw();
