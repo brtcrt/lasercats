@@ -39,7 +39,7 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
         arr.add(a);
         setActivatables(arr);
     }
-    public PressurePlate(float x, float y, float width, float height){
+    public PressurePlate(int x, int y, int width, int height){
         this(x,y,width,height, new ArrayList<Activatable>());
         this.activatables = new ArrayList<>();
     }
