@@ -19,6 +19,7 @@ public class Wall extends Empty implements PhysicsObject {
     private Texture map;
     private TextureRegion[] textures;
     private Sprite sprite;
+    protected int type;
 
     public Wall(float x, float y, float width, float height, int type){
         super(x, y, width, height);
@@ -34,12 +35,8 @@ public class Wall extends Empty implements PhysicsObject {
         textures[5] = dungeonTextures[4][0];
         textures[6] = dungeonTextures[4][3];
         textures[7] = dungeonTextures[4][5];
-//        textures[0] =  new Texture(Gdx.files.internal("w1.png"));
-//        textures[1] =  new Texture(Gdx.files.internal("w2.png"));
-//        textures[2] =  new Texture(Gdx.files.internal("w3.png"));
-//        textures[3] =  new Texture(Gdx.files.internal("w4.png"));
-//        textures[4] =  new Texture(Gdx.files.internal("w5.png"));
         sprite = new Sprite(textures[type - 1]);
+        this.type = type;
     }
 
     public void process(){
@@ -63,8 +60,12 @@ public class Wall extends Empty implements PhysicsObject {
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
+            json.put("typeWall", this.type);
             json.put("x", x);
             json.put("y", y);
+            json.put("width", width);
+            json.put("height", height);
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -75,6 +76,9 @@ public class Wall extends Empty implements PhysicsObject {
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            type = json.getInt("typeWall");
+            width = (float)json.getDouble("width");
+            height = (float)json.getDouble("height");
         } catch (JSONException e) {
             System.out.println(e);
         }

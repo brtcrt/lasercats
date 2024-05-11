@@ -10,6 +10,7 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import jdk.internal.reflect.Reflection;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +32,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "https://lasercats.fly.dev";
+        this.uri = "http://localhost:8080";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
@@ -230,13 +231,21 @@ public class Client {
                     } else {
                         JSONObject identifier = (JSONObject) data.get(0);
                         otherPlayer.setIdentifiers(identifier);
-                        assert data.length() == gameObjects.size();
-                        for (int i = 2; i < data.length(); i++) {
-                            // This will cause a lot of problems later on... End me. ~brtcrt
-                            identifier = (JSONObject) data.get(i);
-                            GameObject g = gameObjects.get(i);
-                            g.setIdentifiers(identifier);
+                        if (gameObjects.size() == data.length()) {
+                            for (int i = 2; i < gameObjects.size(); i++) {
+                                // This will cause a lot of problems later on... End me. ~brtcrt
+                                identifier = (JSONObject) data.get(i);
+                                GameObject g = gameObjects.get(i);
+                                g.setIdentifiers(identifier);
+                            }
+                        } else {
+                            if (gameObjects.size() > data.length()) {
+                                Gdx.app.log("Client error","GameObjects too big");
+                            } else {
+                                Gdx.app.log("Client error","Data too big");
+                            }
                         }
+
                     }
 
                 } catch (JSONException e) {

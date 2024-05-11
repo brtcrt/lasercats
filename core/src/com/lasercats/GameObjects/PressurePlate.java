@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,6 +17,7 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     private Sprite sprite;
     private ArrayList<Activatable> activatables;
     private boolean isTriggered;
+    private ArrayList<String> activatableIDs = new ArrayList<>();
 
     public PressurePlate(float x, float y, float width, float height, ArrayList<Activatable> activatables){
         super(x, y, width, height);
@@ -33,6 +35,10 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
         arr.add(a);
         setActivatables(arr);
     }
+    public PressurePlate(float x, float y, float width, float height){
+        this(x,y,width,height, new ArrayList<Activatable>());
+        this.activatables = new ArrayList<>();
+    }
 
     public void process(){
         for (Activatable a : activatables) {
@@ -49,11 +55,22 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     @Override
     public void setActivatables(ArrayList<Activatable> activatables) {
         this.activatables = activatables;
+        for (Activatable a : activatables) {
+            GameObject o = (GameObject) a;
+            activatableIDs.add(o.getID());
+        }
     }
 
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         isTriggered = false;
+        if (this.activatables.isEmpty()) {
+            for (PhysicsObject o : objects) {
+                if (activatableIDs.contains(o.getID())) {
+                    activatables.add((Activatable) o);
+                }
+            }
+        }
         for (PhysicsObject o : objects) {
             if (o.getCollider().overlaps(this)) {
                 this.isTriggered = true;
@@ -79,8 +96,12 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("x", x);
             json.put("y", y);
+            json.put("width", width);
+            json.put("height", height);
+            json.put("activatables", this.activatableIDs);
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -91,6 +112,12 @@ public class PressurePlate extends Empty implements GameObject, Detector, Physic
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            width = (float)json.getDouble("width");
+            height = (float)json.getDouble("height");
+            JSONArray activatableIDsJSON = json.getJSONArray("activatables");
+            for (int i = 0; i < activatableIDsJSON.length(); i++) {
+                activatableIDs.add(activatableIDsJSON.getString(i));
+            }
         } catch (JSONException e) {
             System.out.println(e);
         }

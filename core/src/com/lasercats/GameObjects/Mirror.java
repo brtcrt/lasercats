@@ -45,8 +45,11 @@ public class Mirror extends Empty implements PhysicsObject {
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("x", x);
             json.put("y", y);
+            json.put("width", width);
+            json.put("height", height);
         } catch (JSONException e) {
             System.out.println(e);
         }

@@ -25,7 +25,6 @@ public class Box extends Empty implements PhysicsObject {
         boxImage = new Texture(Gdx.files.internal("Box.png"));
         sprite = new Sprite(boxImage);
     }
-
     public void process(){
 
     }
@@ -67,6 +66,7 @@ public class Box extends Empty implements PhysicsObject {
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
+            json.put("type", this.getClass().getName());
             json.put("velocity.x", velocity.x);
             json.put("velocity.y", velocity.y);
             json.put("x", x);
