@@ -23,6 +23,9 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
     private float state;
     private boolean isTriggered;
 
+    public LaserTarget(int x, int y, int width, int height) {
+        this((float)x, (float)y, (float)width, (float)height);
+    }
     public LaserTarget(float x, float y, float width, float height) {
         super(x, y, width, height);
         velocity = new Vector2();
@@ -49,9 +52,6 @@ public class LaserTarget extends Empty implements GameObject, Detector, PhysicsO
         setActivatables(arr);
     }
 
-    public LaserTarget(float x, float y, float width, float height){
-        this(x,y,width,height, new ArrayList<Activatable>());
-    }
 
     public void process(){
         state += Gdx.graphics.getDeltaTime();
