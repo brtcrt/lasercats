@@ -5,6 +5,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.files.FileHandleStream;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -25,7 +27,13 @@ import com.lasercats.GameObjects.*;
 import com.lasercats.Tiles.FloorTile;
 import com.lasercats.Tiles.Tile;
 import com.badlogic.gdx.Game;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.FileHandler;
 
 public class LevelEditor extends LaserCatsScreen{
 
@@ -122,6 +130,7 @@ public class LevelEditor extends LaserCatsScreen{
         createActors();
         positionActors();
         setListeners();
+        loadFromFile("levels/level1.json");
     }
     @Override
     public void resize(int width, int height)
@@ -152,9 +161,20 @@ public class LevelEditor extends LaserCatsScreen{
         }
         velocity.nor();
         camera.translate(velocity.x * speed, velocity.y * speed, 0);
-        
+
         batch.setProjectionMatrix(levelViewport.getCamera().combined);
         batch.begin();
+
+        // Adding processing of game objects and physics objects as well even though we most likely don't need it
+        for (GameObject o : gameObjects) {
+            o.process();
+        }
+        for (int i = 0; i < physicsObjects.size(); i++) {
+            PhysicsObject o = physicsObjects.get(i);
+            ArrayList<PhysicsObject> passedObjects = new ArrayList<PhysicsObject>(physicsObjects);
+            passedObjects.remove(i);
+            o.calculatePhysics(passedObjects);
+        }
 
         renderQueue = new ArrayList<GameObject>(gameObjects);
         ySort();
@@ -270,6 +290,7 @@ public class LevelEditor extends LaserCatsScreen{
             }
         }
         drawer.end();
+        writeToFile("levels/level1.json");
     }
     @Override
     public void pause() {}
@@ -544,8 +565,88 @@ public class LevelEditor extends LaserCatsScreen{
             }
         }
     }
+
+    public void loadFromFile(String path) {
+        FileHandle levelFile = Gdx.files.local(path);
+        try {
+            JSONObject json = new JSONObject(levelFile.readString());
+            loadFromJson(json);
+        } catch (JSONException e) {
+            Gdx.app.log("JSONError", "Error while importing JSON: " + e);
+        }
+
+    }
+
+    public void writeToFile(String path) {
+        FileHandle f = Gdx.files.local(path);
+        f.writeString(saveToJson().toString(), false);
+    }
+
+    public JSONObject saveToJson() {
+        JSONObject json = new JSONObject();
+        JSONArray array = new JSONArray();
+        for (GameObject o : gameObjects) {
+            array.put(o.getIdentifiers());
+        }
+        try {
+            json.put("objects", array);
+        } catch (JSONException e) {
+            Gdx.app.log("JSONError", "Error while saving to JSON: " + e);
+        }
+        return json;
+    }
+
+    public void loadFromJson(JSONObject json) {
+        // ok this is cancer I'm gonna kill myself
+        gameObjects.clear();
+        try {
+            JSONArray objects = json.getJSONArray("objects");
+            for (int i = 0; i < objects.length(); i++) {
+                JSONObject objectData = objects.getJSONObject(i);
+                String objectType = objectData.getString("type");
+                objectType = objectType.replace("com.lasercats.GameObjects.", "");
+                GameObject newObject = (GameObject) new Wall(0,0,0,0, 1);
+                switch (objectType) {
+                    case "Box":
+                        newObject = (GameObject) new Box(0,0);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                    case "Gate":
+                        newObject = (GameObject) new Gate(0,0,0,0);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                    case "Glass":
+                        newObject = (GameObject) new Glass(0,0,0,0);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                    case "LaserTarget":
+                        newObject = (GameObject) new LaserTarget(0,0,0,0);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                    case "Mirror":
+                        newObject = (GameObject) new Mirror(0,0,0,0);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                    case "PressurePlate":
+                        newObject = (GameObject) new PressurePlate(0,0,0,0);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                    case "Wall":
+                        newObject = (GameObject) new Wall(0,0,0,0, 1);
+                        newObject.setIdentifiers(objectData);
+                        break;
+                }
+                gameObjects.add(newObject);
+                physicsObjects.add((PhysicsObject) newObject);
+            }
+        } catch (JSONException e) {
+            Gdx.app.log("JSONError", "Error while loading from JSON: " + e);
+        }
+
+    }
+
     private class ActivatableInputHandler extends InputAdapter {
-        private Detector detectorObject; 
+        private Detector detectorObject;
         public ActivatableInputHandler() {
             this.detectorObject = null;
         }
