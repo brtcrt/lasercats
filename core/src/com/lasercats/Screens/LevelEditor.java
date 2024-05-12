@@ -198,7 +198,7 @@ public class LevelEditor extends LaserCatsScreen {
         }
         position = camera.project(new Vector3(camera.direction.x * speed, camera.direction.y * speed, 0));
         mousePoint = new Vector2(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
-        if (holding != null) {
+        if (holding != null && (!saveDialog.isVisible() && !importDialog.isVisible())) {
             holding.setX((int) ((Gdx.input.getX() - position.x)/tileSize) * tileSize);
             holding.setY((int) ((levelViewport.getScreenHeight() - Gdx.input.getY() - position.y)/tileSize) * tileSize);
             holding.render(batch);
@@ -230,7 +230,7 @@ public class LevelEditor extends LaserCatsScreen {
                 }
             }
         }
-        else {
+        else if (holding == null && (!saveDialog.isVisible() && !importDialog.isVisible())) {
             if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) {
                 for (GameObject object : gameObjects) {
                     if (((Empty)object).contains(mousePoint)) {
@@ -368,6 +368,7 @@ public class LevelEditor extends LaserCatsScreen {
         saveDialog.add(saveFileNameField);
         saveDialog.add(saveConfirmButton);
         saveDialog.pack();
+        saveDialog.setVisible(false);
 
         importFileNameField = new TextField("", skin);
         importConfirmButton = new TextButton("Import", skin, "dark");
@@ -378,6 +379,7 @@ public class LevelEditor extends LaserCatsScreen {
         importDialog.add(importFileNameField);
         importDialog.add(importConfirmButton);
         importDialog.pack();
+        importDialog.setVisible(false);
     }
     @Override
     public void positionActors() {
@@ -578,6 +580,7 @@ public class LevelEditor extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (saveButton.isPressed()) {
+                    saveDialog.setVisible(true);
                     saveDialog.show(stage);
                 }
             }
@@ -588,6 +591,7 @@ public class LevelEditor extends LaserCatsScreen {
                 if (saveConfirmButton.isPressed()) {
                     writeToFile("levels/" + saveFileNameField.getText() + ".json");
                     saveDialog.remove();
+                    saveDialog.setVisible(false);
                 }  
             }
         });
@@ -596,6 +600,7 @@ public class LevelEditor extends LaserCatsScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (saveDialogCloseButton.isPressed()) {
                     saveDialog.remove();
+                    saveDialog.setVisible(false);
                 }
             }
         });
@@ -603,6 +608,7 @@ public class LevelEditor extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (importButton.isPressed()) {
+                    importDialog.setVisible(true);
                     importDialog.show(stage);
                 }
             }            
@@ -613,6 +619,7 @@ public class LevelEditor extends LaserCatsScreen {
                 if (importConfirmButton.isPressed()) {
                     loadFromFile("levels/" + importFileNameField.getText() + ".json");
                     importDialog.remove();
+                    importDialog.setVisible(false);
                 }
             }
         });
@@ -621,6 +628,7 @@ public class LevelEditor extends LaserCatsScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (importDialogCloseButton.isPressed()) {
                     importDialog.remove();
+                    importDialog.setVisible(false);
                 }
             }
         });
@@ -660,6 +668,9 @@ public class LevelEditor extends LaserCatsScreen {
         FileHandle f = Gdx.files.local(path);
         if (!f.exists()) {
             try {
+                //You might have noticed even though new files are created they might not show up in the directory when you search them through file explorer.
+                //This is just an issue with display and I think it is related to the operating system (not sure though).
+                //Doesn't impact save, import functionality though.
                 File file = new File(path);
                 file.createNewFile();
             }
