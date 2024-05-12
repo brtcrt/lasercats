@@ -27,7 +27,7 @@ public class TutorialScreen extends LaserCatsScreen {
     private Pixmap tutorialTableBackgroundColor;
     private ArrayList<Image> tutorialImages;
     private ArrayList<Texture> tutorialTextures;
-    private final static int TUTORIAL_COUNT = 6;
+    private final static int TUTORIAL_COUNT = 9;
     private Table tutorialDisplayTable;
     private String[] tutorialNames;
     private String[] tutorialDescriptions;
@@ -77,20 +77,25 @@ public class TutorialScreen extends LaserCatsScreen {
     }
     private void createTutorialNames() {
             tutorialNames[0] = "Lobby Creation";
-            tutorialNames[1] = "Level Editor";
-            tutorialNames[2] = "Level Editor Showcase";
-            tutorialNames[3] = "Required Puzzle Elements";
-            tutorialNames[4] = "Other Puzze Elements";
-            tutorialNames[5] = "Options and Keybinds";
+            tutorialNames[1] = "Level Editor Showcase";
+            tutorialNames[2] = "Level Editor Showcase 2";
+            tutorialNames[3] = "Level Editor Showcase 3";
+            tutorialNames[4] = "Level Editor Showcase 4";
+            tutorialNames[5] = "Required Puzzle Elements";
+            tutorialNames[6] = "Other Puzzle Elements";
+            tutorialNames[7] = "Other Puzzle Elements 2";
+            tutorialNames[8] = "Options and Keybinds";
     }
     private void createTutorialDescriptions() {
             tutorialDescriptions[0] = "To create a lobby, enter the name of your lobby. You can also create a password for your lobby if you want.";
-            tutorialDescriptions[1] = "You can access the level editor of the game through the main menu and create your own levels!";
-            //TODO will complete description later after level editor is done.
-            tutorialDescriptions[2] = "";
-            tutorialDescriptions[3] = "The main objective of every level is getting the two cats to the end door of a level.";
-            tutorialDescriptions[4] = "Whether that be laser targets, pressure plates, buttons, mirrors and additional gates, every level consists of multiple obstacles for players to get through.";
-            tutorialDescriptions[5] = "If you are not happy with the current audio levels and keybinds, you can access the options menu to change these anytime. Furthermore, you can change the color of your cat as well!";
+            tutorialDescriptions[1] = "Click on the level elements to the right and place them on the screen. You can also move an element you placed before. Press Backspace on an element to delete it.";
+            tutorialDescriptions[2] = "Right click on a detector element and right click on a gate to make it so that gate triggers from the changes in the detector element.";
+            tutorialDescriptions[3] = "You can only place one of each required elements which are the entrances for the cats and the exit gate.";
+            tutorialDescriptions[4] = "You can save and import levels by entering the necessary information on the window.";
+            tutorialDescriptions[5] = "The main objective of every level is getting the two cats to the end door of a level.";
+            tutorialDescriptions[6] = "Whether that be laser targets, pressure plates, buttons, mirrors and additional gates, every level consists of multiple obstacles for players to get through.";
+            tutorialDescriptions[7] = "Pressure plates and laser targets are part of a special set of elements called detectors. Changes in detectors cause gates to open.";
+            tutorialDescriptions[8] = "If you are not happy with the current audio levels and keybinds, you can access the options menu to change these anytime. Furthermore, you can change the color of your cat as well!";
     }
     private void createTutorialDisplayTable(Tutorial tutorial) {
             tutorialDisplayTable.clear();
@@ -158,19 +163,18 @@ public class TutorialScreen extends LaserCatsScreen {
             //An important note about this part: The reason I'm creating seperate textures instead of using them anonymously is because 
             //if you use them anonymously you can't dispose them (because Texture class manages disposing not the Image class) later which causes memory leaks.
             tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/LobbyCreation.png")));
-            tutorialTextures.add(null);
-            tutorialTextures.add(null);
+            tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/Level-Editor-Showcase.png")));
+            tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/Level-Editor-Showcase-2.png")));
+            tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/Level-Editor-Showcase-3.png")));
+            tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/Level-Editor-Showcase-4.png")));
             tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/Door.png")));
             tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/OtherLevelElements.png")));
+            tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/OtherLevelElements-2.png")));
             tutorialTextures.add(new Texture(Gdx.files.internal("Tutorial-Images/Cats.png")));
 
-            tutorialImages.add(new Image(tutorialTextures.get(0)));
-            //TODO add images when level editor is done.
-            tutorialImages.add(null);
-            tutorialImages.add(null);
-            tutorialImages.add(new Image(tutorialTextures.get(3)));
-            tutorialImages.add(new Image(tutorialTextures.get(4)));
-            tutorialImages.add(new Image(tutorialTextures.get(5)));
+            for (Texture texture : tutorialTextures) {
+                tutorialImages.add(new Image(texture));
+            }
     }
     @Override
     public void render(float delta) {
