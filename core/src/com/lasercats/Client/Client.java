@@ -1,16 +1,12 @@
 package com.lasercats.Client;
 
 import com.badlogic.gdx.Gdx;
-
-import com.badlogic.gdx.math.Vector2;
 import com.lasercats.GameObjects.GameObject;
 import com.lasercats.GameObjects.Player;
-
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import jdk.internal.reflect.Reflection;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,7 +14,6 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Client {
     private final String uri;
@@ -32,7 +27,7 @@ public class Client {
     public JSONArray rooms;
 
     public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "http://localhost:8080";
+        this.uri = "https://lasercats.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();

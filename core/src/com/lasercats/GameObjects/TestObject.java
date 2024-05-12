@@ -8,8 +8,6 @@ import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class TestObject extends Empty implements GameObject, Activatable{
     private Texture imageOpen;
     private Texture imageClosed;

@@ -27,7 +27,6 @@ import com.lasercats.Client.Room;
 
 public class LobbyScreen extends LaserCatsScreen {
     //TODO there are numerous bugs related to room creation and passwords here. We need to fix them ASAP.
-
     private ArrayList<TextButton> roomButtons;
     private VerticalGroup roomList;
     private Table roomTable;
@@ -118,7 +117,6 @@ public class LobbyScreen extends LaserCatsScreen {
 
         root.setBackground(new TextureRegionDrawable(background));
         stage.setRoot(root);
-        //stage.setDebugAll(true);
     }
     @Override
     public void render(float delta) {

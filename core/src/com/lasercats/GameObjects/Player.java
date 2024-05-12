@@ -65,7 +65,6 @@ public class Player extends Empty implements PhysicsObject {
         TextureRegion[] walkFrames = new TextureRegion[2];
         TextureRegion[] sleepFrames = new TextureRegion[2];
         TextureRegion[] transitionFrames = new TextureRegion[4];
-        TextureRegion[] reverseTransitionFrames = new TextureRegion[4];
 
         walkFrames[0] = tmp[1][0];
         walkFrames[1] = tmp[1][1];
@@ -75,7 +74,6 @@ public class Player extends Empty implements PhysicsObject {
 
         sleepFrames[0] = tmp[2][3];
         sleepFrames[1] = tmp[3][3];
-
 
         // walking to sleeping
         transitionFrames[0] = tmp[2][0];

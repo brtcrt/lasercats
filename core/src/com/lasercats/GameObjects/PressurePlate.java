@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class PressurePlate extends Empty implements GameObject, Detector, PhysicsObject {
+public class PressurePlate extends Empty implements Detector, PhysicsObject {
     private Texture image;
     private Texture imagePressed;
     private Sprite sprite;

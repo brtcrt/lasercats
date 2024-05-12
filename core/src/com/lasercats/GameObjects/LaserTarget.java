@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-public class LaserTarget extends Empty implements GameObject, Detector, PhysicsObject {
+public class LaserTarget extends Empty implements Detector, PhysicsObject {
     private Texture image;
     private Sprite sprite;
     private ArrayList<Activatable> activatables;

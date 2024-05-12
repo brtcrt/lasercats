@@ -112,7 +112,6 @@ public class TutorialScreen extends LaserCatsScreen {
         root.add(tutorialDisplayTable).expandX().fillX();
         stage.setRoot(root);
         root.setBackground(new TextureRegionDrawable(background));
-        //stage.setDebugAll(true);
     }
     @Override
     public void setListeners() {

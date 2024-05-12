@@ -11,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public abstract class LaserCatsScreen implements Screen {
-    //Might not be the optimal way of doing this. Instead we can instantiate an OrthographicCamera and SpriteBatch in the Game Object that handles the screens instead of
-    //one for every screen.
     OrthographicCamera camera;
     SpriteBatch batch;
 

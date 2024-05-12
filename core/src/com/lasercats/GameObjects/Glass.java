@@ -3,7 +3,6 @@ package com.lasercats.GameObjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -20,14 +19,10 @@ public class Glass extends Empty implements PhysicsObject {
         sprite = new Sprite(img);
     }
 
-    public void process(){
-
-    }
+    public void process(){}
 
     @Override
-    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
-
-    }
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) { }
 
     public void render(SpriteBatch batch){
         batch.draw(sprite, x, y , width, height);
@@ -36,8 +31,6 @@ public class Glass extends Empty implements PhysicsObject {
     public void destroy(){
         img.dispose();
     }
-
-
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {

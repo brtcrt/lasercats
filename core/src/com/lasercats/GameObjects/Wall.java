@@ -1,12 +1,9 @@
 package com.lasercats.GameObjects;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
@@ -30,14 +27,10 @@ public class Wall extends Empty implements PhysicsObject {
         setSprite(type);
     }
 
-    public void process(){
-
-    }
+    public void process(){}
 
     @Override
-    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
-
-    }
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
 
     public void render(SpriteBatch batch){
         batch.draw(sprite, x, y , width, height);

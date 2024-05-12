@@ -159,6 +159,7 @@ public class LevelEditor extends LaserCatsScreen {
 
         velocity.x = 0;
         velocity.y = 0;
+        //speed = (int) (root.getWidth() / 102.4);
         if (Gdx.input.isKeyPressed(controlScheme[2])) {
             velocity.x = 1;
         } if (Gdx.input.isKeyPressed(controlScheme[3])) {

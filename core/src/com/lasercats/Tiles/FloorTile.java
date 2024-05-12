@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 
 public class FloorTile extends Rectangle implements Tile {
     private TextureRegion[][] dungeonTextures;
@@ -31,11 +30,6 @@ public class FloorTile extends Rectangle implements Tile {
         textures[9] = dungeonTextures[2][7];
         textures[10] = dungeonTextures[2][8];
         textures[11] = dungeonTextures[2][9];
-//        textures[0] =  new Texture(Gdx.files.internal("w1.png"));
-//        textures[1] =  new Texture(Gdx.files.internal("w2.png"));
-//        textures[2] =  new Texture(Gdx.files.internal("w3.png"));
-//        textures[3] =  new Texture(Gdx.files.internal("w4.png"));
-//        textures[4] =  new Texture(Gdx.files.internal("w5.png"));
         sprite = new Sprite(textures[type - 1]);
     }
 

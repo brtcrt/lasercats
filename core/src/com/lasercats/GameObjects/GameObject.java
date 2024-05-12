@@ -1,10 +1,7 @@
 package com.lasercats.GameObjects;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Shape2D;
-import com.badlogic.gdx.math.Vector2;
 import com.lasercats.Tiles.Tile;
 import org.json.JSONObject;
 

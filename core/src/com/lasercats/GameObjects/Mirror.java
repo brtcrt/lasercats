@@ -3,7 +3,6 @@ package com.lasercats.GameObjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
@@ -12,9 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Mirror extends Empty implements PhysicsObject {
-    private TextureRegion[][] dungeonTextures;
     private Texture image;
-    private TextureRegion[] textures;
     private Sprite sprite;
 
     public Mirror(float x, float y, float width, float height){
@@ -24,14 +21,10 @@ public class Mirror extends Empty implements PhysicsObject {
         sprite = new Sprite(image);
     }
 
-    public void process(){
-
-    }
+    public void process(){}
 
     @Override
-    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
-
-    }
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
 
     public void render(SpriteBatch batch){
         batch.draw(sprite, x, y , width, height);
@@ -40,7 +33,6 @@ public class Mirror extends Empty implements PhysicsObject {
     public void destroy(){
         image.dispose();
     }
-
 
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
