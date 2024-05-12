@@ -93,6 +93,9 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
             json.put("y", y);
             json.put("width", width);
             json.put("height", height);
+            json.put("lasercatEntrance", isLaserCatEntranceGate);
+            json.put("reflectiveCatEntrance", isReflectiveCatEntranceGate);
+            json.put("exit", isExitGate);
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -106,6 +109,9 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
             width = (float)json.getDouble("width");
             height = (float)json.getDouble("height");
             this.ID = json.getString("id");
+            isLaserCatEntranceGate = json.getBoolean("lasercatEntrance");
+            isReflectiveCatEntranceGate = json.getBoolean("reflectiveCatEntrance");
+            isExitGate = json.getBoolean("exit");
         } catch (JSONException e) {
             System.out.println(e);
         }
@@ -113,7 +119,6 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     public int getActivationCount() {
         return activationCount;
     }
-
     @Override
     public boolean isStatic() {
         return true;
