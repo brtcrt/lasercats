@@ -74,7 +74,7 @@ public class Laser implements GameObject {
                 continue;
             }
 //            System.out.println(vertices.size());
-            System.out.println(vertices.size);
+            //System.out.println(vertices.size);
 //            start = vertices.getLast();
 //            start = vertices.get(vertices.size() - 1); // BUG IS HERE
             start = vertices.get(vertices.size - 1); // BUG IS HERE
@@ -170,11 +170,17 @@ public class Laser implements GameObject {
     @Override
     public JSONObject getIdentifiers() {
         JSONObject json = new JSONObject();
+        ArrayList<int[]> arr = new ArrayList<>();
+        for (int i = 0; i < vertices.size; i++) {
+            int[] coords = {(int)vertices.get(i).x, (int)vertices.get(i).y};
+            arr.add(coords);
+        }
+        double[] dir = {initialDirection.x, initialDirection.y};
         try {
             json.put("type", this.getClass().getName());
             json.put("id", getID());
-            json.put("vertices", vertices);
-            json.put("initialDirection",initialDirection);
+            json.put("vertices", arr);
+            json.put("initialDirection",dir);
         }
         catch (JSONException e) {
             System.out.println(e);
@@ -188,19 +194,16 @@ public class Laser implements GameObject {
             JSONArray a = json.getJSONArray("vertices");
             vertices.clear();
             for(int i = 0; i < a.length(); i++){
-                String s = a.getString(i);
-                s = s.replace("(", "");
-                s = s.replace(")", "");
-                String [] xy = s.split(",");
-                vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
+                JSONArray xy = a.getJSONArray(i);
+                vertices.add(new Vector2((int)(xy.get(0)), (int)(xy.get(1))));
             }
-            String dir = json.getString("initialDirection");
-            dir = dir.replace("(", "");
-            dir = dir.replace(")", "");
-            String[] split = dir.split(",");
-            this.initialDirection = new Vector2(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
+            JSONArray dir = json.getJSONArray("initialDirection");
+            Double xDir = dir.getDouble(0);
+            Double yDir = dir.getDouble(1);
+            this.initialDirection = new Vector2(xDir.floatValue(), yDir.floatValue());
+            initialDirection.nor();
             this.ID = json.getString("id");
-        } 
+        }
         catch (JSONException e) {
             System.out.println("AAAAAAARRRRRRGGHHHHHHHHHHH");
             System.out.println(e);
@@ -217,6 +220,11 @@ public class Laser implements GameObject {
         for (int i = 0; i < vertices.size - 1; i ++)
         {
             debugRenderer.line(vertices.get(i), vertices.get(i + 1));
+        }
+        try {
+
+        } catch (Exception e) {
+            System.out.println(e);
         }
         debugRenderer.end();
         batch.begin();

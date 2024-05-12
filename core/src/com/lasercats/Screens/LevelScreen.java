@@ -33,14 +33,13 @@ public class LevelScreen extends LaserCatsScreen {
         this.client = client;
         this.genericViewport = new ExtendViewport(1024, 720, camera);
         this.genericViewport.apply();
+		client.viewport = genericViewport;
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
 		// OK this is incredibly retarded. I'm actually going to kill myself. ~brtcrt
-        physicsObjects = new ArrayList<PhysicsObject>();
-		physicsObjects.add((Player)gameObjects.get(0));
-		physicsObjects.add((Player)gameObjects.get(1));
+        physicsObjects = client.physicsObjects;
 		String creatorID = client.getRoom().getPlayerIDs()[0];
 		Player lasercat;
 		int reflectable;
@@ -61,6 +60,7 @@ public class LevelScreen extends LaserCatsScreen {
 		dataToServer = new JSONObject();
 
 		createTestLevel();
+		client.inGame = true;
     }
     @Override
     public void render(float delta) {

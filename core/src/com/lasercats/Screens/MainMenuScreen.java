@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.GameObject;
+import com.lasercats.GameObjects.PhysicsObject;
 import com.lasercats.GameObjects.Player;
 
 public class MainMenuScreen extends LaserCatsScreen {
@@ -45,6 +46,7 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Client client;
     //Includes just the players initially
     private ArrayList<GameObject> initialGameObjects;
+    private ArrayList<PhysicsObject> initialPhysicsObjects;
     private Player player;
     private Player otherPlayer;
 
@@ -58,11 +60,14 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.player = new Player(32, 32, 128, 80, true);
 		this.otherPlayer = new Player(-300, -300, 128, 80, false);
         initialGameObjects = new ArrayList<GameObject>();
+        initialPhysicsObjects = new ArrayList<PhysicsObject>();
         initialGameObjects.add(player);
         initialGameObjects.add(otherPlayer);
-        client = new Client(initialGameObjects);
+        initialPhysicsObjects.add(player);
+        initialPhysicsObjects.add(otherPlayer);
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
+        client = new Client(initialGameObjects, initialPhysicsObjects, genericViewport);
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         this.root.setFillParent(true);
