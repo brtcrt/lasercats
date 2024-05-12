@@ -1,4 +1,4 @@
-package com.lasercats.game;
+package com.lasercats.Game;
 
 import com.badlogic.gdx.Game;
 import com.lasercats.Screens.MainMenuScreen;
