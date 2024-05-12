@@ -6,7 +6,6 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Input.Buttons;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.files.FileHandleStream;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
@@ -32,10 +31,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.logging.FileHandler;
 
-public class LevelEditor extends LaserCatsScreen{
+public class LevelEditor extends LaserCatsScreen {
 
     private ArrayList<GameObject> gameObjects;
     private ArrayList<PhysicsObject> physicsObjects;
@@ -97,6 +96,16 @@ public class LevelEditor extends LaserCatsScreen{
     private ActivatableInputHandler detectorProcessor;
     private ShapeRenderer drawer;
 
+    private Dialog saveDialog;
+    private TextButton saveConfirmButton;
+    private TextField saveFileNameField;
+    private TextButton saveDialogCloseButton;
+
+    private Dialog importDialog;
+    private TextButton importConfirmButton;
+    private TextField importFileNameField;
+    private TextButton importDialogCloseButton;
+
     public LevelEditor(Game game, MainMenuScreen menuScreen)
     {
         super(game);
@@ -130,7 +139,7 @@ public class LevelEditor extends LaserCatsScreen{
         createActors();
         positionActors();
         setListeners();
-        loadFromFile("levels/level1.json");
+        //loadFromFile("levels/level1.json");
     }
     @Override
     public void resize(int width, int height)
@@ -290,7 +299,7 @@ public class LevelEditor extends LaserCatsScreen{
             }
         }
         drawer.end();
-        writeToFile("levels/level1.json");
+        //writeToFile("levels/level1.json");
     }
     @Override
     public void pause() {}
@@ -334,8 +343,8 @@ public class LevelEditor extends LaserCatsScreen{
         wallButtonTwo = new TextButton("Wall Bottom", skin);
         wallButtonThree = new TextButton("Wall Right", skin);
         wallButtonFour = new TextButton("Wall Left", skin);
-        wallButtonFive = new TextButton("Wall Right Corner", skin);
-        wallButtonSix = new TextButton("Wall Left Corner", skin);
+        wallButtonFive = new TextButton("Wall Bottom Right Corner", skin);
+        wallButtonSix = new TextButton("Wall Bottom Left Corner", skin);
         mirrorButton = new TextButton("Mirror", skin);
         laserTargetButton = new TextButton("Laser Target", skin);
         pressurePlateButton = new TextButton("Pressure Plate", skin);
@@ -349,6 +358,26 @@ public class LevelEditor extends LaserCatsScreen{
 
         requiredButtonGroup = new VerticalGroup();
         otherButtonGroup = new VerticalGroup();
+
+        saveFileNameField = new TextField("", skin);
+        saveConfirmButton = new TextButton("Save", skin, "dark");
+        saveDialogCloseButton = new TextButton("Exit", skin, "dark");
+        saveDialog = new Dialog("Enter level name", skin, "c2");
+        saveDialog.key(Input.Keys.ENTER, true);
+        saveDialog.getTitleTable().add(saveDialogCloseButton).height(20).width(40);
+        saveDialog.add(saveFileNameField);
+        saveDialog.add(saveConfirmButton);
+        saveDialog.pack();
+
+        importFileNameField = new TextField("", skin);
+        importConfirmButton = new TextButton("Import", skin, "dark");
+        importDialog = new Dialog("Enter level name", skin, "c2");
+        importDialogCloseButton = new TextButton("Exit", skin, "dark");
+        importDialog.key(Input.Keys.ENTER, true);
+        importDialog.getTitleTable().add(importDialogCloseButton).height(20).width(40);
+        importDialog.add(importFileNameField);
+        importDialog.add(importConfirmButton);
+        importDialog.pack();
     }
     @Override
     public void positionActors() {
@@ -545,6 +574,56 @@ public class LevelEditor extends LaserCatsScreen{
         entranceGateOneButton.addListener(entranceGateOneButtonListener);
         entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
         exitGateButton.addListener(exitGateButtonListener);
+        saveButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (saveButton.isPressed()) {
+                    saveDialog.show(stage);
+                }
+            }
+        });
+        saveConfirmButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (saveConfirmButton.isPressed()) {
+                    writeToFile("levels/" + saveFileNameField.getText() + ".json");
+                    saveDialog.remove();
+                }  
+            }
+        });
+        saveDialogCloseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (saveDialogCloseButton.isPressed()) {
+                    saveDialog.remove();
+                }
+            }
+        });
+        importButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (importButton.isPressed()) {
+                    importDialog.show(stage);
+                }
+            }            
+        });
+        importConfirmButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (importConfirmButton.isPressed()) {
+                    loadFromFile("levels/" + importFileNameField.getText() + ".json");
+                    importDialog.remove();
+                }
+            }
+        });
+        importDialogCloseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                if (importDialogCloseButton.isPressed()) {
+                    importDialog.remove();
+                }
+            }
+        });
     }
 
     private void ySort() {
@@ -579,6 +658,15 @@ public class LevelEditor extends LaserCatsScreen{
 
     public void writeToFile(String path) {
         FileHandle f = Gdx.files.local(path);
+        if (!f.exists()) {
+            try {
+                File file = new File(path);
+                file.createNewFile();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         f.writeString(saveToJson().toString(), false);
     }
 
@@ -656,7 +744,7 @@ public class LevelEditor extends LaserCatsScreen{
                 mousePoint.set(Gdx.input.getX() - position.x, levelViewport.getScreenHeight() - Gdx.input.getY() - position.y);
                 for (GameObject object : gameObjects) {
                     if (((Empty)object).contains(mousePoint) && (object instanceof Activatable)) {
-                        if (!(object instanceof Gate && ((Gate)object).getIsExitGate() || ((Gate)object).getIsLaserCatEntranceGate() || ((Gate)object).getIsReflectiveCatEntranceGate())) {
+                        if (!(object instanceof Gate && ((Gate)object).getIsLaserCatEntranceGate() || ((Gate)object).getIsReflectiveCatEntranceGate())) {
                             detectorObject.addActivatable((Activatable) object);
                             multiplexer.removeProcessor(this);
                             multiplexer.addProcessor(stage);
