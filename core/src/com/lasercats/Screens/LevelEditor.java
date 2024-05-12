@@ -125,7 +125,7 @@ public class LevelEditor extends LaserCatsScreen {
 //        genericViewport.apply();
         gameObjects = new ArrayList<>();
         tiles = new ArrayList<Tile>();
-        fillTiles();
+        fillTiles(tiles);
         root.setFillParent(true);
 
         this.menuScreen = menuScreen;
@@ -187,7 +187,7 @@ public class LevelEditor extends LaserCatsScreen {
         }
 
         renderQueue = new ArrayList<GameObject>(gameObjects);
-        ySort();
+        ySort(renderQueue);
 
         for (Tile tile : tiles)
         {
@@ -618,7 +618,7 @@ public class LevelEditor extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (importConfirmButton.isPressed()) {
-                    loadFromFile("levels/" + importFileNameField.getText() + ".json");
+                    loadFromFileLevelEditor("levels/" + importFileNameField.getText() + ".json", gameObjects, physicsObjects);
                     importDialog.remove();
                     importDialog.setVisible(false);
                 }
@@ -635,7 +635,7 @@ public class LevelEditor extends LaserCatsScreen {
         });
     }
 
-    private void ySort() {
+    public static void ySort(ArrayList<GameObject> renderQueue) {
         renderQueue.sort((o1, o2) -> {
             if(o1 instanceof PressurePlate){return -1;}
             if(o1 instanceof CatLaser)return -1;
@@ -643,7 +643,7 @@ public class LevelEditor extends LaserCatsScreen {
         });
     }
 
-    public void fillTiles() {
+    public static void fillTiles(ArrayList<Tile> tiles) {
         // For testing purposes I'll just fill a portion of the level with FloorTiles here ~brtcrt
         final int startX = -1280;
         final int startY = -1280;
@@ -654,15 +654,23 @@ public class LevelEditor extends LaserCatsScreen {
         }
     }
 
-    public void loadFromFile(String path) {
+    public static void loadFromFile(String path, ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects) {
         FileHandle levelFile = Gdx.files.local(path);
         try {
             JSONObject json = new JSONObject(levelFile.readString());
-            loadFromJson(json);
+            loadFromJson(json, gameObjects, physicsObjects);
         } catch (JSONException e) {
             Gdx.app.log("JSONError", "Error while importing JSON: " + e);
         }
-
+    }
+    public static void loadFromFileLevelEditor(String path, ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects) {
+        FileHandle levelFile = Gdx.files.local(path);
+        try {
+            JSONObject json = new JSONObject(levelFile.readString());
+            loadFromJsonLevelEditor(json, gameObjects, physicsObjects);
+        } catch (JSONException e) {
+            Gdx.app.log("JSONError", "Error while importing JSON: " + e);
+        }
     }
 
     public void writeToFile(String path) {
@@ -696,9 +704,8 @@ public class LevelEditor extends LaserCatsScreen {
         return json;
     }
 
-    public void loadFromJson(JSONObject json) {
+    private static void loadFromJson(JSONObject json, ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects) {
         // ok this is cancer I'm gonna kill myself
-        gameObjects.clear();
         try {
             JSONArray objects = json.getJSONArray("objects");
             for (int i = 0; i < objects.length(); i++) {
@@ -742,7 +749,10 @@ public class LevelEditor extends LaserCatsScreen {
         } catch (JSONException e) {
             Gdx.app.log("JSONError", "Error while loading from JSON: " + e);
         }
-
+    }
+    private static void loadFromJsonLevelEditor(JSONObject json, ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects) {
+        gameObjects.clear();
+        loadFromJson(json, gameObjects, physicsObjects);
     }
 
     private class ActivatableInputHandler extends InputAdapter {

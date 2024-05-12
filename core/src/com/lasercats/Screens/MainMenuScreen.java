@@ -57,8 +57,8 @@ public class MainMenuScreen extends LaserCatsScreen {
     //Feel free to remove the unnecessary parts.
     public MainMenuScreen(Game game) {
         super(game);
-        this.player = new Player(32, 32, 128, 80, true);
-		this.otherPlayer = new Player(-300, -300, 128, 80, false);
+        this.player = new Player(32, 32, 64, 64, true);
+		this.otherPlayer = new Player(-300, -300, 64, 64, false);
         initialGameObjects = new ArrayList<GameObject>();
         initialPhysicsObjects = new ArrayList<PhysicsObject>();
         initialGameObjects.add(player);

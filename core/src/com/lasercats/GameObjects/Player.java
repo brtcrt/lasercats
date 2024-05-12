@@ -44,7 +44,7 @@ public class Player extends Empty implements PhysicsObject {
     protected final float walkSpeed = 150f;
     protected final float idlePeriod = 0.5f;
     protected final float walkPeriod = 0.14f;
-    private final static float WIDTH = 128 , HEIGHT = 128;
+    private final static float WIDTH = 64 , HEIGHT = 64;
     protected float stateTime;
     public Vector2 direction;
     public static int[] controlScheme;
