@@ -12,6 +12,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
+import com.badlogic.gdx.utils.Array;
 
 public class Laser implements GameObject {
     public String ID = java.util.UUID.randomUUID().toString();
@@ -20,7 +22,9 @@ public class Laser implements GameObject {
     private int x1, y1;
 
     private Vector2 velocity, initialDirection;
-    protected ArrayList<Vector2> vertices;
+//    protected ArrayList<Vector2> vertices;
+//    protected CopyOnWriteArrayList<Vector2> vertices;
+    protected Array<Vector2> vertices;
     private ShapeRenderer debugRenderer = new ShapeRenderer();
     public Viewport viewport;
     public ArrayList<PhysicsObject> physicsObjects;
@@ -34,7 +38,9 @@ public class Laser implements GameObject {
         this.initialDirection.nor();
         this.viewport = viewport;
         Gdx.gl.glLineWidth(10);
-        vertices = new ArrayList<>();
+//        vertices = new ArrayList<>();
+//        vertices = new CopyOnWriteArrayList<>();
+        vertices = new Array<>();
         vertices.add(new Vector2(x,y));
         this.physicsObjects = physicsObjects;
         this.ignoreAlways = new ArrayList<>();
@@ -46,7 +52,7 @@ public class Laser implements GameObject {
     public void process() {
         Vector2 firstVertex = vertices.get(0);
         vertices.clear();
-        vertices.add(firstVertex);
+        vertices.add(firstVertex); // size 1
         Vector2 finalDirection = new Vector2(initialDirection);
 
         int reflections = 0;
@@ -62,9 +68,18 @@ public class Laser implements GameObject {
         PhysicsObject lastCollidedObject = physicsObjects.get(0);
         while (!finishedTraveling) {
 
-            start = vertices.get(vertices.size() - 1);
+//            if (vertices.size() == 0) {
+            if (vertices.size == 0) {
+                System.out.println("ARRRRRGHHHH");
+                continue;
+            }
+//            System.out.println(vertices.size());
+            System.out.println(vertices.size);
+//            start = vertices.getLast();
+//            start = vertices.get(vertices.size() - 1); // BUG IS HERE
+            start = vertices.get(vertices.size - 1); // BUG IS HERE
             end = new Vector2(start).mulAdd(finalDirection, 100_000);
-            vertices.add(end);
+            vertices.add(end); // iter 1: size: 2
 
             Vector2 closestIntersectionInDirection = new Vector2();
             float distanceOfClosestIntersectionInDirection = Float.POSITIVE_INFINITY;
@@ -73,6 +88,7 @@ public class Laser implements GameObject {
             for (PhysicsObject object : physicsObjects) {
                 if (reflections == 0 && ignoreOnFirstReflection.contains(object)) continue;
                 if (ignoreAlways.contains(object) || object instanceof PressurePlate || object instanceof Glass) continue;
+
 
                 Rectangle collider = object.getCollider();
                 Polygon colliderPolygon = new Polygon(new float[]{
@@ -186,6 +202,7 @@ public class Laser implements GameObject {
             this.ID = json.getString("id");
         } 
         catch (JSONException e) {
+            System.out.println("AAAAAAARRRRRRGGHHHHHHHHHHH");
             System.out.println(e);
         }
     }
@@ -196,7 +213,8 @@ public class Laser implements GameObject {
         debugRenderer.setProjectionMatrix(viewport.getCamera().combined);
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
-        for (int i = 0; i < vertices.size() - 1; i ++)
+//        for (int i = 0; i < vertices.size() - 1; i ++)
+        for (int i = 0; i < vertices.size - 1; i ++)
         {
             debugRenderer.line(vertices.get(i), vertices.get(i + 1));
         }
