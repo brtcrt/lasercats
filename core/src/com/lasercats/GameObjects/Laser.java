@@ -51,6 +51,9 @@ public class Laser implements GameObject {
 
         int reflections = 0;
 
+        //I think there are some issues regarding this rectangle
+        //On the initial level we created, laser reflections work just fine.
+        //However, on other levels reflections don't properly work
         Rectangle viewportBox = new Rectangle(-600, -600,
                 3000, 3000);
 
