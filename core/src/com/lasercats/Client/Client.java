@@ -255,114 +255,11 @@ public class Client {
                         JSONObject identifier = (JSONObject) data.get(0);
                         otherPlayer.setIdentifiers(identifier);
                         gameObjects.get(2).setIdentifiers((JSONObject) data.get(2));
-                        // change this condition later just to test
-                        if (gameObjects.size() == data.length()) {
-//                            for (int i = 2; i < gameObjects.size(); i++) {
-//                                // This will cause a lot of problems later on... End me. ~brtcrt
-//                                identifier = (JSONObject) data.get(i);
-//                                GameObject g = gameObjects.get(i);
-//                                g.setIdentifiers(identifier);
-//                            }
-                        } else {
-                            Gdx.app.log("Client error", "Entered else part in updateFromServer");
-//                            gameObjects.clear();
-//                            physicsObjects.clear();
-//                            for (int i = 2; i < data.length(); i++) {
-//                                // This will cause a lot of problems later on... End me. ~brtcrt
-//                                JSONObject objectData = (JSONObject) data.get(i);
-//                                String objectType = objectData.getString("type");
-//                                objectType = objectType.replace("com.lasercats.GameObjects.", "");
-//                                GameObject newObject = new GameObject() {
-//                                    @Override
-//                                    public void process() {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void render(SpriteBatch batch) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public void destroy() {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public JSONObject getIdentifiers() {
-//                                        return null;
-//                                    }
-//
-//                                    @Override
-//                                    public void setIdentifiers(JSONObject json) {
-//
-//                                    }
-//
-//                                    @Override
-//                                    public float getX() {
-//                                        return 0;
-//                                    }
-//
-//                                    @Override
-//                                    public float getY() {
-//                                        return 0;
-//                                    }
-//
-//                                    @Override
-//                                    public String getID() {
-//                                        return null;
-//                                    }
-//
-//                                    @Override
-//                                    public Rectangle setX(float x) {
-//                                        return null;
-//                                    }
-//
-//                                    @Override
-//                                    public Rectangle setY(float y) {
-//                                        return null;
-//                                    }
-//                                };
-//                                switch (objectType) {
-//                                    case "Box":
-//                                        newObject = (GameObject) new Box(0,0);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                    case "CatLaser":
-//                                        newObject = new CatLaser(otherPlayer, viewport, physicsObjects);
-//                                        newObject.setIdentifiers(objectData);
-//                                    case "Gate":
-//                                        newObject = (GameObject) new Gate(0,0,0,0);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                    case "Glass":
-//                                        newObject = (GameObject) new Glass(0,0,0,0);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                    case "LaserTarget":
-//                                        newObject = (GameObject) new LaserTarget(0,0,0,0);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                    case "Mirror":
-//                                        newObject = (GameObject) new Mirror(0,0,0,0);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                    case "PressurePlate":
-//                                        newObject = (GameObject) new PressurePlate(0,0,0,0);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                    case "Wall":
-//                                        newObject = (GameObject) new Wall(0,0,0,0, 1);
-//                                        newObject.setIdentifiers(objectData);
-//                                        break;
-//                                }
-//                                gameObjects.add(newObject);
-//                                if (newObject instanceof PhysicsObject) {
-//                                    physicsObjects.add((PhysicsObject) newObject);
-//                                }
-//                            }
-                        }
-
+                        // If I have to deal with another networking problem
+                        // I swear to every single god out there
+                        // that I will commit unspeakable atrocities
+                        // that future generations will not be able to
+                        // live a prosperous life for centuries
                     }
 
                 } catch (JSONException e) {
