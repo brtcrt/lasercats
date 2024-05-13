@@ -66,11 +66,11 @@ public class Level extends LaserCatsScreen {
 		dataToServer = new JSONObject();
 		menu = menuScreen;
         LevelEditor.fillTiles(tiles);
-		client.inGame = true;
 		exitGate = null;
 		createActors();
 		setListeners();
 		positionActors();
+		client.inGame = true;
     }
     
     @Override
@@ -115,7 +115,11 @@ public class Level extends LaserCatsScreen {
 		for (GameObject object : gameObjects)
 		{
 			object.process();
-			identifiers.add(object.getIdentifiers());
+			// identifiers.add(object.getIdentifiers());
+		}
+
+		for (int i = 0; i < 3; i++) {
+			identifiers.add(gameObjects.get(i).getIdentifiers());
 		}
 
 		createDataJSON(identifiers);
@@ -150,7 +154,7 @@ public class Level extends LaserCatsScreen {
 		}
         batch.dispose();
 		stage.dispose();
-		// client.close();
+		client.close();
     }
     protected void calculatePhysics () {
 		// this is a dumb solution in O(n^2) but should be fine in our case.
