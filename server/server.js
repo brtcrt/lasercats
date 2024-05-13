@@ -76,8 +76,12 @@ io.on("connection", (socket) => {
     for (let i = 0; i < clients.length; i++) {
       if (clients[i].clientID == args["clientID"]) {
         clients[i].socketID = socket.id;
+        return;
       }
     }
+    clients.push({"socketID": socket.id, "clientID": args["clientID"]});
+    console.log(args);
+    console.log(clients);
   });
   socket.on("getRooms", (args) => {
     socket.emit("updateRooms", { rooms: rooms });
@@ -102,7 +106,7 @@ io.on("connection", (socket) => {
           rooms.splice(old_room, 1);
         } else {
           // if not then remove the player from room["players"]
-          const player_index = rooms[old_room].players.indexOf(socket.id);
+          const player_index = rooms[old_room].players.indexOf(args["clientID"]);
           if (player_index > -1) {
             // double check to see if player is in the room
             rooms[old_room].players.splice(player_index, 1);
@@ -112,7 +116,7 @@ io.on("connection", (socket) => {
       const room = {
         roomId: uuid.v4(),
         roomName: roomName,
-        players: [socket.id],
+        players: [args["clientID"]],
         passwordHash: args["passwordHash"],
       };
       console.log(`Created room ${roomName}: ${JSON.stringify(room)}`);
@@ -158,14 +162,14 @@ io.on("connection", (socket) => {
             rooms.splice(old_room, 1);
           } else {
             // if not then remove the player from room["players"]
-            const player_index = rooms[old_room].players.indexOf(socket.id);
+            const player_index = rooms[old_room].players.indexOf(args["clientID"]);
             if (player_index > -1) {
               // double check to see if player is in the room
               rooms[old_room].players.splice(player_index, 1);
             }
           }
         }
-        rooms[index].players.push(socket.id);
+        rooms[index].players.push(args["clientID"]);
         socket.emit("joinRoomRes", {
           code: 202, // http response code for "Accepted"
           message: `Joined Room ${rooms[index].roomName}`,
@@ -189,14 +193,31 @@ io.on("connection", (socket) => {
   });
   socket.on("disconnect", (reason) => {
     // leave room on disconnect
-    const index = findByPlayerId(rooms, socket.id);
+    let clientID = "";
+    for (let i = 0; i < clients.length; i++) {
+      if (clients[i].socketID == socket.id) {
+        clientID = clients[i].clientID;
+        return;
+      }
+    }
+    const index = findByPlayerId(rooms, clientID);
     if (index > -1) {
       if (rooms[index].players.length < 2) {
         rooms.splice(index, 1);
       } else {
-        rooms[index].players.splice(rooms[index].players.indexOf(socket.id), 1);
+        rooms[index].players.splice(rooms[index].players.indexOf(clientID), 1);
       }
     }
     console.log("Player disconnected. Reason: " + reason);
   });
+  socket.on("closeClient", (args) => {
+    const index = findByPlayerId(rooms, args["clientID"]);
+    if (index > -1) {
+      if (rooms[index].players.length < 2) {
+        rooms.splice(index, 1);
+      } else {
+        rooms[index].players.splice(rooms[index].players.indexOf(args["clientID"]), 1);
+      }
+    }
+  })
 });

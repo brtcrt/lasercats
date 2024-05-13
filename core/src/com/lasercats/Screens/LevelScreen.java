@@ -110,7 +110,7 @@ public class LevelScreen extends LaserCatsScreen {
 		}
         batch.dispose();
 		stage.dispose();
-		// client.close();
+		client.close();
     }
     @Override
     public void pause() {}
