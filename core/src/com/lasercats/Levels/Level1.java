@@ -17,7 +17,7 @@ public class Level1 extends Level {
     @Override
     protected void displayLevelEnding() {
         if (isGameOver()) {
-			game.setScreen(new Level2(game, client, menu));
+			game.setScreen(new Level3(game, client, menu));
 		}
     }
 }
