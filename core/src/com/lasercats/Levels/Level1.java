@@ -10,12 +10,6 @@ import com.lasercats.Screens.MainMenuScreen;
 public class Level1 extends Level {
     public Level1(Game game, Client client, MainMenuScreen menuScreen) {
         super(game, client, menuScreen);
-        for (int i = 3; i < gameObjects.size(); i++) {
-            gameObjects.remove(i);
-        }
-        for (int i = 3; i < physicsObjects.size(); i++) {
-            physicsObjects.remove(i);
-        }
         LevelEditor.loadFromFile("levels/1.json", gameObjects, physicsObjects);
         exitGate = findExitGate();
         super.setPlayerStarts();
@@ -23,6 +17,12 @@ public class Level1 extends Level {
     @Override
     protected void displayLevelEnding() {
         if (isGameOver()) {
+            for (int i = 3; i < gameObjects.size(); i++) {
+                gameObjects.remove(i);
+            }
+            for (int i = 2; i < physicsObjects.size(); i++) {
+                physicsObjects.remove(i);
+            }
 			game.setScreen(new Level3(game, client, menu));
 		}
     }
