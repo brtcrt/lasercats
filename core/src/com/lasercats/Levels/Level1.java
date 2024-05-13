@@ -2,6 +2,7 @@ package com.lasercats.Levels;
 
 import com.badlogic.gdx.Game;
 import com.lasercats.Client.Client;
+import com.lasercats.GameObjects.Player;
 import com.lasercats.Screens.LevelEditor;
 import com.lasercats.Screens.LobbyScreen;
 
@@ -15,13 +16,17 @@ public class Level1 extends Level {
     @Override
     protected void displayLevelEnding() {
         if (isGameOver()) {
-            for (int i = 3; i < client.gameObjects.size(); i++) {
-                client.gameObjects.remove(i);
-            }
-            for (int i = 2; i < physicsObjects.size(); i++) {
-                client.physicsObjects.remove(i);
-            }
-			game.setScreen(new Level2(game, client, lobby));
+            Player p1 = (Player) gameObjects.get(0);
+            Player p2 = (Player) gameObjects.get(1);
+            gameObjects.clear();
+            physicsObjects.clear();
+            gameObjects.add(p1);
+            gameObjects.add(p2);
+            physicsObjects.add(p1);
+            physicsObjects.add(p2);
+            client.gameObjects = gameObjects;
+            client.physicsObjects = physicsObjects;
+			game.setScreen(new Level3(game, client, lobby));
 		}
     }
 }

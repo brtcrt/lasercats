@@ -2,6 +2,7 @@ package com.lasercats.Levels;
 
 import java.util.ArrayList;
 
+import com.badlogic.gdx.graphics.GL20;
 import com.lasercats.GameObjects.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,7 +78,8 @@ public class Level extends LaserCatsScreen {
     public void resume() {}
     @Override
     public void render(float delta) {
-		
+		Gdx.gl20.glClearColor(0, 0, 0, 1);
+		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.input.setInputProcessor(stage);
         this.stage.act(delta);
         this.batch.setProjectionMatrix(this.genericViewport.getCamera().combined);
