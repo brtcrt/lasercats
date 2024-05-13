@@ -565,15 +565,7 @@ public class LevelEditor extends LaserCatsScreen {
                 }
             }
         });
-        boxButton.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeEvent event, Actor actor) {
-                if (boxButton.isPressed()) {
-                    GameObject box = new Box(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize);
-                    holding = box;
-                }
-            }
-        });
+
         entranceGateOneButton.addListener(entranceGateOneButtonListener);
         entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
         exitGateButton.addListener(exitGateButtonListener);
