@@ -14,7 +14,7 @@ public class Box extends Empty implements PhysicsObject {
     private Texture boxImage;
     private Sprite sprite;
     protected final float moveSpeed = 150f;
-    private final static float WIDTH = 128 , HEIGHT = 128;
+    private final static float WIDTH = 64 , HEIGHT = 64;
 
     public Box(int x, int y){
         super(x, y, WIDTH - HEIGHT / 4, HEIGHT - HEIGHT / 32);
