@@ -30,10 +30,10 @@ public class Level extends LaserCatsScreen {
 	private JSONObject dataToServer;
 	protected int reflectable;
 	protected Gate exitGate;
-	private Dialog levelEndDialog; 
-	private TextButton exitToMainMenuButton;
-	private TextButton nextLevelButton;
-	private MainMenuScreen menu;
+	protected Dialog levelEndDialog; 
+	protected TextButton exitToMainMenuButton;
+	protected TextButton nextLevelButton;
+	protected MainMenuScreen menu;
 
     public Level(Game game, Client client, MainMenuScreen menuScreen) {
         super(game);
@@ -94,15 +94,6 @@ public class Level extends LaserCatsScreen {
 				if (exitToMainMenuButton.isPressed()) {
 					levelEndDialog.hide();
 					game.setScreen(menu);
-				}
-			}
-		});
-		nextLevelButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent arg0, Actor arg1) {
-				if (nextLevelButton.isPressed()) {
-					levelEndDialog.hide();
-					game.setScreen(new Level2(game, client, menu));
 				}
 			}
 		});
