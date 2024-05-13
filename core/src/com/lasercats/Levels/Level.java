@@ -64,9 +64,6 @@ public class Level extends LaserCatsScreen {
 		menu = menuScreen;
         LevelEditor.fillTiles(tiles);
 		exitGate = null;
-		createActors();
-		setListeners();
-		positionActors();
 		client.inGame = true;
     }
     

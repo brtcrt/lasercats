@@ -12,6 +12,12 @@ public class Level3 extends Level {
 
     public Level3(Game game, Client client, MainMenuScreen menuScreen) {
         super(game, client, menuScreen);
+        for (int i = 3; i < gameObjects.size(); i++) {
+            gameObjects.remove(i);
+        }
+        for (int i = 3; i < physicsObjects.size(); i++) {
+            physicsObjects.remove(i);
+        }
         LevelEditor.loadFromFile("levels/3.json", gameObjects, physicsObjects);
         exitGate = findExitGate();
         super.setPlayerStarts();
