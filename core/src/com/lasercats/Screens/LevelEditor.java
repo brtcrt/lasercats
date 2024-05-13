@@ -688,9 +688,6 @@ public class LevelEditor extends LaserCatsScreen {
         FileHandle f = Gdx.files.local(path);
         if (!f.exists()) {
             try {
-                //You might have noticed even though new files are created they might not show up in the directory when you search them through file explorer.
-                //This is just an issue with display and I think it is related to the operating system (not sure though).
-                //Doesn't impact save, import functionality though.
                 File file = new File(path);
                 file.createNewFile();
             }
