@@ -1,8 +1,6 @@
 package com.lasercats.Levels;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.lasercats.Client.Client;
 import com.lasercats.Screens.LevelEditor;
 import com.lasercats.Screens.MainMenuScreen;
@@ -23,7 +21,7 @@ public class Level1 extends Level {
             for (int i = 2; i < physicsObjects.size(); i++) {
                 client.physicsObjects.remove(i);
             }
-			game.setScreen(new Level3(game, client, menu));
+			game.setScreen(new Level2(game, client, menu));
 		}
     }
 }

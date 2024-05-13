@@ -1,8 +1,6 @@
 package com.lasercats.Levels;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.lasercats.Client.Client;
 import com.lasercats.Screens.LevelEditor;
 import com.lasercats.Screens.MainMenuScreen;
