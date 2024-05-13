@@ -33,7 +33,7 @@ public class Client {
     public boolean inGame = false;
 
     public Client (ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects, Viewport v) {
-        this.uri = "http://192.168.129.36:8080";
+        this.uri = "https://lasercats.fly.dev";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
