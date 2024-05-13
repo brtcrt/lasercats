@@ -17,11 +17,11 @@ public class Level1 extends Level {
     @Override
     protected void displayLevelEnding() {
         if (isGameOver()) {
-            for (int i = 3; i < gameObjects.size(); i++) {
-                gameObjects.remove(i);
+            for (int i = 3; i < client.gameObjects.size(); i++) {
+                client.gameObjects.remove(i);
             }
             for (int i = 2; i < physicsObjects.size(); i++) {
-                physicsObjects.remove(i);
+                client.physicsObjects.remove(i);
             }
 			game.setScreen(new Level3(game, client, menu));
 		}
