@@ -26,7 +26,7 @@ public class Level1 extends Level {
             physicsObjects.add(p2);
             client.gameObjects = gameObjects;
             client.physicsObjects = physicsObjects;
-			game.setScreen(new Level3(game, client, lobby));
+			game.setScreen(new Level2(game, client, lobby));
 		}
     }
 }
