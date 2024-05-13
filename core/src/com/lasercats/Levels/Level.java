@@ -96,6 +96,11 @@ public class Level extends LaserCatsScreen {
 		for (int i = 0; i < 3; i++) {
 			identifiers.add(gameObjects.get(i).getIdentifiers());
 		}
+		for (GameObject o : gameObjects) {
+			if (o instanceof Box) {
+				identifiers.add(o.getIdentifiers());
+			}
+		}
 
 		createDataJSON(identifiers);
 		client.sendUpdate(dataToServer);

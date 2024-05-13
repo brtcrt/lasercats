@@ -260,6 +260,15 @@ public class Client {
                         // that I will commit unspeakable atrocities
                         // that future generations will not be able to
                         // live a prosperous life for centuries
+                        int boxIndex = 3;
+                        // this really should not work
+                        for (int i = 3; i < gameObjects.size(); i++) {
+                            GameObject o = gameObjects.get(i);
+                            if (o instanceof Box) {
+                                o.setIdentifiers(data.getJSONObject(boxIndex));
+                                boxIndex++;
+                            }
+                        }
                     }
 
                 } catch (JSONException e) {
