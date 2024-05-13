@@ -20,12 +20,10 @@ public class Level3 extends Level {
         if (isGameOver()) {
             Player p1 = (Player) gameObjects.get(0);
             Player p2 = (Player) gameObjects.get(1);
-            CatLaser l = (CatLaser) gameObjects.get(2);
             gameObjects.clear();
             physicsObjects.clear();
             gameObjects.add(p1);
             gameObjects.add(p2);
-            gameObjects.add(l);
             physicsObjects.add(p1);
             physicsObjects.add(p2);
             client.gameObjects = gameObjects;
