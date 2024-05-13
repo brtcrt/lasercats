@@ -30,9 +30,6 @@ public class Level extends LaserCatsScreen {
 	private JSONObject dataToServer;
 	protected int reflectable;
 	protected Gate exitGate;
-	protected Dialog levelEndDialog; 
-	protected TextButton exitToMainMenuButton;
-	protected TextButton nextLevelButton;
 	protected MainMenuScreen menu;
 
     public Level(Game game, Client client, MainMenuScreen menuScreen) {
@@ -74,30 +71,13 @@ public class Level extends LaserCatsScreen {
     }
     
     @Override
-    public void createActors() {
-		levelEndDialog = new Dialog("Level Completed", skin, "c2");
-		exitToMainMenuButton = new TextButton("Exit", skin, "dark");
-		nextLevelButton = new TextButton("Continue", skin, "dark");
-	}
+    public void createActors() {}
     @Override
-    public void positionActors() {
-		levelEndDialog.add(exitToMainMenuButton).growX();
-		levelEndDialog.add(nextLevelButton).growX();
-	}
+    public void positionActors() {}
     @Override
     public void createTextures() {}
     @Override
-    public void setListeners() {
-		exitToMainMenuButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent arg0, Actor arg1) {
-				if (exitToMainMenuButton.isPressed()) {
-					levelEndDialog.hide();
-					game.setScreen(menu);
-				}
-			}
-		});
-	}
+    public void setListeners() {}
     @Override
     public void pause() {}
     @Override
@@ -228,17 +208,13 @@ public class Level extends LaserCatsScreen {
 			}
 		}
 	}
-	private boolean isGameOver() {
+	protected boolean isGameOver() {
 		if (exitGate.contains(gameObjects.get(0).getX(), gameObjects.get(0).getY()) && exitGate.contains(gameObjects.get(1).getX(), gameObjects.get(1).getY()) && exitGate.isActive()) {
 			return true;
 		}
 		return false;
 	}
-	private void displayLevelEnding() {
-		if (isGameOver()) {
-			levelEndDialog.show(stage);
-		}
-	}
+	protected void displayLevelEnding() {}
 	protected Gate findExitGate() {
 		for (GameObject object : gameObjects) {
 			if (object instanceof Gate && ((Gate)object).getIsExitGate()) {
@@ -246,5 +222,9 @@ public class Level extends LaserCatsScreen {
 			}
 		}
 		return null;
+	}
+	@Override
+	public void hide() {
+		dispose();
 	}
 }

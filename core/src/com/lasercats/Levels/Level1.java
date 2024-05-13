@@ -15,16 +15,9 @@ public class Level1 extends Level {
         super.setPlayerStarts();
     }
     @Override
-    public void setListeners() {
-        super.setListeners();
-        nextLevelButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent arg0, Actor arg1) {
-				if (nextLevelButton.isPressed()) {
-					levelEndDialog.hide();
-					game.setScreen(new Level2(game, client, menu));
-				}
-			}
-		});
-    } 
+    protected void displayLevelEnding() {
+        if (isGameOver()) {
+			game.setScreen(new Level2(game, client, menu));
+		}
+    }
 }
