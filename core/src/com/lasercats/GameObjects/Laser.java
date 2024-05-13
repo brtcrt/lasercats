@@ -19,7 +19,7 @@ public class Laser implements GameObject {
     public String ID = java.util.UUID.randomUUID().toString();
 
     final private static int MAX_REFLECTIONS = 10;
-    private int x1, y1;
+    protected float x1, y1;
 
     private Vector2 velocity, initialDirection;
 //    protected ArrayList<Vector2> vertices;
@@ -41,7 +41,9 @@ public class Laser implements GameObject {
 //        vertices = new ArrayList<>();
 //        vertices = new CopyOnWriteArrayList<>();
         vertices = new Array<>();
-        vertices.add(new Vector2(x,y));
+        x1 = x;
+        y1 = y;
+        // vertices.add(new Vector2(x,y));
         this.physicsObjects = physicsObjects;
         this.ignoreAlways = new ArrayList<>();
         this.ignoreOnFirstReflection = new ArrayList<>();
@@ -50,9 +52,15 @@ public class Laser implements GameObject {
 
     @Override
     public void process() {
-        Vector2 firstVertex = vertices.get(0);
-        vertices.clear();
-        vertices.add(firstVertex); // size 1
+        try {
+            // Vector2 firstVertex = vertices.get(0);
+            vertices.clear();
+            vertices.add(new Vector2(x1, y1)); // size 1
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e);
+            System.out.println("kill me please for fucks sake end this misery");
+        }
+
         Vector2 finalDirection = new Vector2(initialDirection);
 
         int reflections = 0;
@@ -60,8 +68,8 @@ public class Laser implements GameObject {
         //I think there are some issues regarding this rectangle
         //On the initial level we created, laser reflections work just fine.
         //However, on other levels reflections don't properly work
-        Rectangle viewportBox = new Rectangle(-600, -600,
-                3000, 3000);
+        Rectangle viewportBox = new Rectangle(-50_000, -50_000,
+                100_000, 100_000);
 
 
         boolean finishedTraveling = false;
@@ -182,7 +190,9 @@ public class Laser implements GameObject {
         try {
             json.put("type", this.getClass().getName());
             json.put("id", getID());
-            json.put("vertices", arr);
+            json.put("x", x1);
+            json.put("y", y1);
+            // json.put("vertices", arr);
             json.put("initialDirection",dir);
         }
         catch (JSONException e) {
@@ -194,18 +204,23 @@ public class Laser implements GameObject {
     @Override
     public void setIdentifiers(JSONObject json) {
         try {
-            JSONArray a = json.getJSONArray("vertices");
-            vertices.clear();
-            for(int i = 0; i < a.length(); i++){
-                JSONArray xy = a.getJSONArray(i);
-                vertices.add(new Vector2((int)(xy.get(0)), (int)(xy.get(1))));
-            }
+            // JSONArray a = json.getJSONArray("vertices");
+//            vertices.clear();
+//            for(int i = 0; i < a.length(); i++){
+//                JSONArray xy = a.getJSONArray(i);
+//                vertices.add(new Vector2((int)(xy.get(0)), (int)(xy.get(1))));
+//            }
             JSONArray dir = json.getJSONArray("initialDirection");
             Double xDir = dir.getDouble(0);
             Double yDir = dir.getDouble(1);
             this.initialDirection = new Vector2(xDir.floatValue(), yDir.floatValue());
             initialDirection.nor();
             this.ID = json.getString("id");
+            Double x = json.getDouble("x");
+            Double y = json.getDouble("y");
+            x1 = x.floatValue();
+            y1 = y.floatValue();
+
         }
         catch (JSONException e) {
             System.out.println("AAAAAAARRRRRRGGHHHHHHHHHHH");
@@ -220,13 +235,13 @@ public class Laser implements GameObject {
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
 //        for (int i = 0; i < vertices.size() - 1; i ++)
-        for (int i = 0; i < vertices.size - 1; i ++)
-        {
-            debugRenderer.line(vertices.get(i), vertices.get(i + 1));
-        }
-        try {
 
-        } catch (Exception e) {
+        try {
+            for (int i = 0; i < vertices.size - 1; i ++)
+            {
+                debugRenderer.line(vertices.get(i), vertices.get(i + 1));
+            }
+        } catch (IndexOutOfBoundsException e) {
             System.out.println(e);
         }
         debugRenderer.end();

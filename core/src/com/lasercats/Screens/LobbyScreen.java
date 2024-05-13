@@ -1,6 +1,8 @@
 package com.lasercats.Screens;
 
 import java.util.ArrayList;
+
+import com.lasercats.Levels.Level1;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -164,7 +166,7 @@ public class LobbyScreen extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (startGameButton.isPressed() && client.getRoom().getPlayerCount() == 2) {
-                        game.setScreen(new LevelScreen(game, client));
+                        game.setScreen(new Level1(game, client));
                 }
             } 
         });

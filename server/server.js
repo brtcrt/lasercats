@@ -9,14 +9,32 @@
 
 const express = require("express");
 const http = require("http");
-const socketio = require("socket.io");
+const { Server } = require("socket.io");
 const uuid = require("uuid");
 const findRoom = require("./utils/findRoom");
 const findByPlayerId = require("./utils/findByPlayerId");
 
-const app = express();
-const server = http.Server(app);
-const io = socketio(server);
+const io = new Server(8080, {
+  maxHttpBufferSize: 1e8,
+  pingTimeout: 600_000,
+  connectionStateRecovery: {
+    // the backup duration of the sessions and the packets
+    maxDisconnectionDuration: 2 * 60 * 1000,
+    // whether to skip middlewares upon successful recovery
+    skipMiddlewares: true,
+  },
+});
+
+let clients = [
+  {
+    socketID: 22222,
+    clientID: "acasda-123asd-12asd-df3412",
+  },
+  {
+    socketID: 312323,
+    clientID: "asdasx-xaswd-sdfgsd-df3412",
+  },
+];
 
 let rooms = [
   {
@@ -33,10 +51,6 @@ let rooms = [
       "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", // hash of abc
   },
 ];
-
-server.listen(8080, () => {
-  console.log("Listening on 8080");
-});
 
 /*
 List of Events
@@ -58,6 +72,13 @@ Emitters
 
 io.on("connection", (socket) => {
   console.log("Player connected.");
+  socket.on("newPlayer", (args) => {
+    for (let i = 0; i < clients.length; i++) {
+      if (clients[i].clientID == args["clientID"]) {
+        clients[i].socketID = socket.id;
+      }
+    }
+  });
   socket.on("getRooms", (args) => {
     socket.emit("updateRooms", { rooms: rooms });
   });
@@ -166,7 +187,7 @@ io.on("connection", (socket) => {
     // console.log(rooms);
     socket.to(args["roomId"]).emit("updateFromServer", args);
   });
-  socket.on("disconnect", () => {
+  socket.on("disconnect", (reason) => {
     // leave room on disconnect
     const index = findByPlayerId(rooms, socket.id);
     if (index > -1) {
@@ -176,6 +197,6 @@ io.on("connection", (socket) => {
         rooms[index].players.splice(rooms[index].players.indexOf(socket.id), 1);
       }
     }
-    console.log("Player disconnected.");
+    console.log("Player disconnected. Reason: " + reason);
   });
 });

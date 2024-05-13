@@ -110,7 +110,7 @@ public class LevelScreen extends LaserCatsScreen {
 		}
         batch.dispose();
 		stage.dispose();
-		client.close();
+		// client.close();
     }
     @Override
     public void pause() {}
@@ -130,7 +130,7 @@ public class LevelScreen extends LaserCatsScreen {
 		for (int i = 0; i < physicsObjects.size(); i++) {
 			PhysicsObject o = physicsObjects.get(i);
 			ArrayList<PhysicsObject> passedObjects = new ArrayList<PhysicsObject>(physicsObjects);
-			passedObjects.remove(i);
+			passedObjects.remove(o);
 			o.calculatePhysics(passedObjects);
 		}
 	}
@@ -258,7 +258,7 @@ public class LevelScreen extends LaserCatsScreen {
 		renderQueue.sort((o1, o2) -> {
 			if(o1 instanceof PressurePlate){return -1;}
 			if(o1 instanceof Glass) return -1;
-			// if(o1 instanceof CatLaser)return -1;
+			// if(o1 instanceof Laser) return 1;
 			return -1 * Float.compare(o1.getY(), o2.getY());
 		});
 	}

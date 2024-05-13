@@ -48,6 +48,7 @@ public class Client {
 
     public void sendUpdate(JSONObject data) {
         try {
+            data.put("clientID", clientID);
             data.put("roomId", room.getId());
         } catch (JSONException e) {
             System.out.println(e);
@@ -58,6 +59,7 @@ public class Client {
     public void createRoom(String roomName) {
         JSONObject data = new JSONObject();
         try {
+            data.put("clientID", clientID);
             if (!this.room.isEmpty()) {
                 data.put("currentRoom", this.room.getJSON());
             }
@@ -73,6 +75,7 @@ public class Client {
         JSONObject data = new JSONObject();
         // Gdx.app.log("Hashed password", hashPassword(password));
         try {
+            data.put("clientID", clientID);
             if (!this.room.isEmpty()) {
                 data.put("currentRoom", this.room.getJSON());
             }
@@ -108,6 +111,7 @@ public class Client {
     public void joinRoom(Room r) {
         JSONObject data = new JSONObject();
         try {
+            data.put("clientID", clientID);
             data.put("roomId", r.getId());
             data.put("roomName", r.getName());
             data.put("players", r.getPlayerIDs());
@@ -122,6 +126,7 @@ public class Client {
     public void joinRoom(Room r, String password) {
         JSONObject data = new JSONObject();
         try {
+            data.put("clientID", clientID);
             data.put("roomId", r.getId());
             data.put("roomName", r.getName());
             data.put("players", r.getPlayerIDs());
@@ -150,6 +155,13 @@ public class Client {
         try {
             this.socket = IO.socket(uri);
             socket.connect();
+            try {
+                JSONObject data = new JSONObject();
+                data.put("clientID", clientID);
+                socket.emit("newPlayer", data);
+            } catch (JSONException e) {
+                System.out.println(e);
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -165,12 +177,12 @@ public class Client {
             public void call(Object... args) {
                 JSONObject data = new JSONObject();
                 try {
-                    data.put("roomName", room.getName());
+                    data.put("clientID", clientID);
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
-                // socket.emit("newRoom", data);
-                clientID = socket.id();
+                socket.emit("newPlayer", data);
+                // clientID = socket.id();
                 Gdx.app.log("SocketIO", "Connected with ID: " + clientID);
             }
         });
@@ -244,6 +256,7 @@ public class Client {
                                 g.setIdentifiers(identifier);
                             }
                         } else {
+                            Gdx.app.log("Client error", "Entered else part in updateFromServer");
                             gameObjects.clear();
                             physicsObjects.clear();
                             for (int i = 2; i < data.length(); i++) {
@@ -347,6 +360,16 @@ public class Client {
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
+            }
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Gdx.app.log("SocketIO", "Disconnected " + clientID);
+            }
+        }).on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Gdx.app.log("SocketIO", "Connect Error");
             }
         });
     }
