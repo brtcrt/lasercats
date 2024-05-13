@@ -128,6 +128,30 @@ public class Level extends LaserCatsScreen {
 		// Ok wtf this might be the single worst piece of code I have ever written. jk I fucked up harder before. ~brtcrt
 		camera.position.x = gameObjects.get(0).getX();
 		camera.position.y = gameObjects.get(0).getY();
+		if (gameObjects.get(0).getX() + ((Empty)gameObjects.get(0)).width > 1280) {
+			gameObjects.get(0).setX(1280 - ((Empty)gameObjects.get(0)).width);
+		}
+		else if (gameObjects.get(0).getX() < -1280) {
+			gameObjects.get(0).setX(-1280);
+		}
+		if (gameObjects.get(0).getY() + ((Empty)gameObjects.get(0)).height > 1280) {
+			gameObjects.get(0).setY(1280- ((Empty)gameObjects.get(0)).height);
+		}
+		else if (gameObjects.get(0).getY() < -1280) {
+			gameObjects.get(0).setY(-1280);
+		}
+		if (camera.position.x + camera.viewportWidth / 2 > 1280) {
+            camera.position.x = 1280 - camera.viewportWidth / 2;
+        }
+        else if (camera.position.x - camera.viewportWidth / 2 < -1280) {
+            camera.position.x = -1280 + camera.viewportWidth / 2;
+        }
+        if (camera.position.y + camera.viewportHeight / 2 > 1280) {
+            camera.position.y = 1280 - camera.viewportHeight / 2;
+        }
+        else if (camera.position.y - camera.viewportHeight / 2 < -1280) {
+            camera.position.y = -1280 + camera.viewportHeight / 2;
+        }
 		camera.update();
 
 		batch.begin();
