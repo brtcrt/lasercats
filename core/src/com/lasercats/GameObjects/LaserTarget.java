@@ -104,6 +104,7 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
             }
         }
         activatables.add(a);
+        activatableIDs.add(((GameObject)a).getID());
     }
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
