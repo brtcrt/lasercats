@@ -44,6 +44,9 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         } else {
             sprite = new Sprite(gateClosed);
         }
+        if (this.isLaserCatEntranceGate || this.isReflectiveCatEntranceGate) {
+            return;
+        }
         activationCount = 0;
     }
 

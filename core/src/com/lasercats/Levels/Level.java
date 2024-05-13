@@ -143,6 +143,8 @@ public class Level extends LaserCatsScreen {
 			if (o instanceof Gate) {
 				Gate g = (Gate) o;
 				if (g.getIsLaserCatEntranceGate()) {
+					g.activate();
+					g.process();
 					if (reflectable == 0) {
 						p2.x = g.x;
 						p2.y = g.y;
@@ -152,6 +154,8 @@ public class Level extends LaserCatsScreen {
 					}
 				}
 				if (g.getIsReflectiveCatEntranceGate()) {
+					g.activate();
+					g.process();
 					if (reflectable == 1) {
 						p2.x = g.x;
 						p2.y = g.y;
