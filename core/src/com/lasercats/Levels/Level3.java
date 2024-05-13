@@ -13,7 +13,7 @@ public class Level3 extends Level {
     private Label gameFinishedLabel;
     public Level3(Game game, Client client, MainMenuScreen menuScreen) {
         super(game, client, menuScreen);
-        LevelEditor.loadFromFile("levels/level3.json", gameObjects, physicsObjects);
+        LevelEditor.loadFromFile("levels/3.json", gameObjects, physicsObjects);
         exitGate = findExitGate();
         super.setPlayerStarts();
     }
