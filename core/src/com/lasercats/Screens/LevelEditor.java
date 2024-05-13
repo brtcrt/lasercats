@@ -171,6 +171,19 @@ public class LevelEditor extends LaserCatsScreen {
         }
         velocity.nor();
         camera.translate(velocity.x * speed, velocity.y * speed, 0);
+        //This feels like a terrible work around but whatever.
+        if (camera.position.x + camera.viewportWidth / 2 > 1280) {
+            camera.position.x = 1280 - camera.viewportWidth / 2;
+        }
+        else if (camera.position.x - camera.viewportWidth / 2 < -1280) {
+            camera.position.x = -1280 + camera.viewportWidth / 2;
+        }
+        if (camera.position.y + camera.viewportHeight / 2 > 1280) {
+            camera.position.y = 1280 - camera.viewportHeight / 2;
+        }
+        else if (camera.position.y - camera.viewportHeight / 2 < -1280) {
+            camera.position.y = -1280 + camera.viewportHeight / 2;
+        }
 
         batch.setProjectionMatrix(levelViewport.getCamera().combined);
         batch.begin();
