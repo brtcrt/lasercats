@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.Screens.LaserCatsScreen;
 import com.lasercats.Screens.LevelEditor;
-import com.lasercats.Screens.MainMenuScreen;
+import com.lasercats.Screens.LobbyScreen;
 import com.lasercats.Tiles.Tile;
 
 public class Level extends LaserCatsScreen {
@@ -26,9 +26,9 @@ public class Level extends LaserCatsScreen {
 	private JSONObject dataToServer;
 	protected int reflectable;
 	protected Gate exitGate;
-	protected MainMenuScreen menu;
+	protected LobbyScreen lobby;
 
-    public Level(Game game, Client client, MainMenuScreen menuScreen) {
+    public Level(Game game, Client client, LobbyScreen lobbyScreen) {
         super(game);
         this.client = client;
         this.genericViewport = new ExtendViewport(1024, 720, camera);
@@ -57,7 +57,7 @@ public class Level extends LaserCatsScreen {
 		tiles = new ArrayList<Tile>();
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
-		menu = menuScreen;
+		lobby = lobbyScreen;
         LevelEditor.fillTiles(tiles);
 		exitGate = null;
 		client.inGame = true;

@@ -3,6 +3,9 @@ package com.lasercats.Screens;
 import java.util.ArrayList;
 
 import com.lasercats.Levels.Level1;
+import com.lasercats.Levels.Level2;
+import com.lasercats.Levels.Level3;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,6 +64,8 @@ public class LobbyScreen extends LaserCatsScreen {
 
     private Texture background;
 
+    private LobbyScreen lobby;
+
     private static final float FONT_SCALING = 1.75f;
 
     public LobbyScreen(Game game, MainMenuScreen menuScreen) {
@@ -75,6 +80,7 @@ public class LobbyScreen extends LaserCatsScreen {
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         this.root.setFillParent(true);
+        lobby = this;
 
         createTextures();
         createActors();
@@ -166,7 +172,7 @@ public class LobbyScreen extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (startGameButton.isPressed() && client.getRoom().getPlayerCount() == 2) {
-                        game.setScreen(new Level1(game, client, menuScreen));
+                        game.setScreen(new Level1(game, client, lobby));
                 }
             } 
         });

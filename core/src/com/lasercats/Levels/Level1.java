@@ -3,11 +3,11 @@ package com.lasercats.Levels;
 import com.badlogic.gdx.Game;
 import com.lasercats.Client.Client;
 import com.lasercats.Screens.LevelEditor;
-import com.lasercats.Screens.MainMenuScreen;
+import com.lasercats.Screens.LobbyScreen;
 
 public class Level1 extends Level {
-    public Level1(Game game, Client client, MainMenuScreen menuScreen) {
-        super(game, client, menuScreen);
+    public Level1(Game game, Client client, LobbyScreen lobbyScreen) {
+        super(game, client, lobbyScreen);
         LevelEditor.loadFromFile("levels/1.json", gameObjects, physicsObjects);
         exitGate = findExitGate();
         super.setPlayerStarts();
@@ -21,7 +21,7 @@ public class Level1 extends Level {
             for (int i = 2; i < physicsObjects.size(); i++) {
                 client.physicsObjects.remove(i);
             }
-			game.setScreen(new Level2(game, client, menu));
+			game.setScreen(new Level2(game, client, lobby));
 		}
     }
 }
