@@ -13,12 +13,12 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
-import com.badlogic.gdx.scenes.scene2d.ui.Window;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
@@ -28,7 +28,6 @@ import com.lasercats.Client.Client;
 import com.lasercats.Client.Room;
 
 public class LobbyScreen extends LaserCatsScreen {
-    //TODO there are numerous bugs related to room creation and passwords here. We need to fix them ASAP.
     private ArrayList<TextButton> roomButtons;
     private VerticalGroup roomList;
     private Table roomTable;
@@ -50,13 +49,15 @@ public class LobbyScreen extends LaserCatsScreen {
     private Label currentRoom;
 
     private TextButton startGameButton;
+    private TextField passwordCreateField;
 
     private MainMenuScreen menuScreen;
     private Client client;
 
-    private Window passwordEnterWindow;
+    private Dialog passwordEnterDialog;
     private TextButton passwordEnterButton;
     private TextField passwordEnterField;
+    private TextButton passwordDialogCloseButton;
 
     private Texture background;
 
@@ -85,17 +86,16 @@ public class LobbyScreen extends LaserCatsScreen {
     @Override
     public void positionActors() {
         //Once again, feel free to play around with alignment and sizes
-
-        //Need to double check this part once all the bugs related to passwords are fixed.
-        passwordEnterWindow.add(passwordEnterField).expandX();
-        passwordEnterWindow.add(passwordEnterButton).expandX();
-        passwordEnterWindow.setVisible(false);
+        passwordEnterDialog.getTitleTable().add(passwordDialogCloseButton).height(20).width(45);
+        passwordEnterDialog.add(passwordEnterField);
+        passwordEnterDialog.add(passwordEnterButton);
+        passwordEnterDialog.setVisible(false);
 
         roomTable.add(roomListLabel).expand().align(Align.top);
         roomTable.row();
         for (TextButton roomButton : roomButtons) {
             roomList.addActor(roomButton);
-            roomList.addActor(passwordEnterWindow);
+            roomList.addActor(passwordEnterDialog);
         }
         roomTable.add(roomList).expand().align(Align.top);
 
@@ -105,7 +105,7 @@ public class LobbyScreen extends LaserCatsScreen {
         roomCreationTable.add(roomCreateField).expand().align(Align.left);
         roomCreationTable.row();
         roomCreationTable.add(passwordLabel).expand().align(Align.right).padRight(Gdx.graphics.getWidth() / 24);
-        roomCreationTable.add(passwordEnterField).expand().align(Align.left);
+        roomCreationTable.add(passwordCreateField).expand().align(Align.left);
         roomCreationTable.row();
         roomCreationTable.add(roomCreateButton).align(Align.center).colspan(2).padBottom(Gdx.graphics.getHeight() / 8);
 
@@ -170,6 +170,15 @@ public class LobbyScreen extends LaserCatsScreen {
                 }
             } 
         });
+        passwordDialogCloseButton.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent arg0, Actor arg1) {
+                if (passwordDialogCloseButton.isPressed()) {
+                    passwordEnterDialog.setVisible(false);
+                    passwordEnterDialog.hide();
+                }    
+            }
+        });
     }
     @Override
     public void createActors() {
@@ -192,12 +201,16 @@ public class LobbyScreen extends LaserCatsScreen {
 
         startGameButton = new TextButton("Start", skin);
         startGameButton.getLabel().setFontScale(FONT_SCALING);
+        passwordCreateField = new TextField("", skin);
+        passwordCreateField.setPasswordMode(true);
+        passwordCreateField.setPasswordCharacter('*');
 
-        passwordEnterWindow = new Window("Enter password", skin);
-        passwordEnterButton = new TextButton("Confirm", skin);
+        passwordEnterDialog = new Dialog("Enter password", skin, "c2");
         passwordEnterField = new TextField("", skin);
         passwordEnterField.setPasswordMode(true);
         passwordEnterField.setPasswordCharacter('*');
+        passwordEnterButton = new TextButton("Confirm", skin);
+        passwordDialogCloseButton = new TextButton("Close", skin, "dark");
 
         roomCreationTable = new Table(skin);
         roomCreationTable.setBackground(new TextureRegionDrawable(new Texture(tableBackgroundColor)));
@@ -289,9 +302,10 @@ public class LobbyScreen extends LaserCatsScreen {
         button.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 && !getRoomClicked().equals(client.getRoom())) {
+                if (button.isPressed() && getRoomClicked().getPlayerCount() < 2 && !getRoomClicked().equals(client.getRoom()) && !passwordEnterDialog.isVisible()) {
                     if (room.hasPassword()) {
-                        passwordEnterWindow.setVisible(true);
+                        passwordEnterDialog.setVisible(true);
+                        passwordEnterDialog.show(stage);
                         setPasswordEnterButtonListener(room);
                     }
                     else {
@@ -308,7 +322,8 @@ public class LobbyScreen extends LaserCatsScreen {
                 if (passwordEnterButton.isPressed()) {
                     if (Client.hashPassword(passwordEnterField.getText()).equals(room.getPasswordHash())) {
                         client.joinRoom(getRoomClicked(), room.getPasswordHash());
-                        passwordEnterWindow.setVisible(false);
+                        passwordEnterDialog.setVisible(false);
+                        passwordEnterDialog.hide();
                     }   
                 }
             }
