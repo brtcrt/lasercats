@@ -166,7 +166,7 @@ public class LobbyScreen extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (startGameButton.isPressed() && client.getRoom().getPlayerCount() == 2) {
-                        game.setScreen(new Level1(game, client));
+                        game.setScreen(new Level1(game, client, menuScreen));
                 }
             } 
         });

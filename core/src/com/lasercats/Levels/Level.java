@@ -8,11 +8,16 @@ import org.json.JSONObject;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.Screens.LaserCatsScreen;
 import com.lasercats.Screens.LevelEditor;
+import com.lasercats.Screens.MainMenuScreen;
 import com.lasercats.Tiles.Tile;
 
 public class Level extends LaserCatsScreen {
@@ -24,8 +29,13 @@ public class Level extends LaserCatsScreen {
 	protected Client client;
 	private JSONObject dataToServer;
 	protected int reflectable;
+	protected Gate exitGate;
+	private Dialog levelEndDialog; 
+	private TextButton exitToMainMenuButton;
+	private TextButton nextLevelButton;
+	private MainMenuScreen menu;
 
-    public Level(Game game, Client client) {
+    public Level(Game game, Client client, MainMenuScreen menuScreen) {
         super(game);
         this.client = client;
         this.genericViewport = new ExtendViewport(1024, 720, camera);
@@ -54,18 +64,49 @@ public class Level extends LaserCatsScreen {
 		tiles = new ArrayList<Tile>();
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
+		menu = menuScreen;
         LevelEditor.fillTiles(tiles);
 		client.inGame = true;
+		exitGate = null;
+		createActors();
+		setListeners();
+		positionActors();
     }
     
     @Override
-    public void createActors() {}
+    public void createActors() {
+		levelEndDialog = new Dialog("Level Completed", skin, "c2");
+		exitToMainMenuButton = new TextButton("Exit", skin, "dark");
+		nextLevelButton = new TextButton("Continue", skin, "dark");
+	}
     @Override
-    public void positionActors() {}
+    public void positionActors() {
+		levelEndDialog.add(exitToMainMenuButton).growX();
+		levelEndDialog.add(nextLevelButton).growX();
+	}
     @Override
     public void createTextures() {}
     @Override
-    public void setListeners() {}
+    public void setListeners() {
+		exitToMainMenuButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent arg0, Actor arg1) {
+				if (exitToMainMenuButton.isPressed()) {
+					levelEndDialog.hide();
+					game.setScreen(menu);
+				}
+			}
+		});
+		nextLevelButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent arg0, Actor arg1) {
+				if (nextLevelButton.isPressed()) {
+					levelEndDialog.hide();
+					game.setScreen(new Level2(game, client, menu));
+				}
+			}
+		});
+	}
     @Override
     public void pause() {}
     @Override
@@ -107,6 +148,7 @@ public class Level extends LaserCatsScreen {
 		for (GameObject o : renderQueue) {
 			o.render(batch);
 		}
+		displayLevelEnding();
 		batch.end();
     }
     @Override
@@ -166,5 +208,24 @@ public class Level extends LaserCatsScreen {
 				}
 			}
 		}
+	}
+	private boolean isGameOver() {
+		if (exitGate.contains(gameObjects.get(0).getX(), gameObjects.get(0).getY()) && exitGate.contains(gameObjects.get(1).getX(), gameObjects.get(1).getY()) && exitGate.isActive()) {
+			return true;
+		}
+		return false;
+	}
+	private void displayLevelEnding() {
+		if (isGameOver()) {
+			levelEndDialog.show(stage);
+		}
+	}
+	protected Gate findExitGate() {
+		for (GameObject object : gameObjects) {
+			if (object instanceof Gate && ((Gate)object).getIsExitGate()) {
+				return (Gate) object;
+			}
+		}
+		return null;
 	}
 }
