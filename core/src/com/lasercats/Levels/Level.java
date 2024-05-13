@@ -223,8 +223,4 @@ public class Level extends LaserCatsScreen {
 		}
 		return null;
 	}
-	@Override
-	public void hide() {
-		dispose();
-	}
 }
