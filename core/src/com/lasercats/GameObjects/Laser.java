@@ -81,7 +81,7 @@ public class Laser implements GameObject {
 
             for (PhysicsObject object : physicsObjects) {
                 if (reflections == 0 && ignoreOnFirstReflection.contains(object)) continue;
-                if (ignoreAlways.contains(object) || object instanceof PressurePlate || object instanceof Glass) continue;
+                if (ignoreAlways.contains(object) || object instanceof PressurePlate || object instanceof Glass || (object instanceof Gate && ((Gate)object).isActive())) continue;
 
 
                 Rectangle collider = object.getCollider();
@@ -122,7 +122,7 @@ public class Laser implements GameObject {
             end.set(closestIntersectionInDirection);
             finalDirection = reflect(finalDirection, normalOfClosestIntersectionInDirection);
             reflections++;
-            if (!((lastCollidedObject instanceof Mirror) || (lastCollidedObject instanceof Player && ((Player)lastCollidedObject).getIsReflective()))) finishedTraveling = true;
+            if (!((lastCollidedObject instanceof Mirror) || (lastCollidedObject instanceof Player && ((Player)lastCollidedObject).getIsReflective()) || (lastCollidedObject instanceof Gate && ((Gate)lastCollidedObject).isActive()))) finishedTraveling = true;
             if (!viewportBox.contains(end) || reflections > MAX_REFLECTIONS) finishedTraveling = true;
             if (lastCollidedObject instanceof LaserTarget) {
                 LaserTarget target = (LaserTarget) lastCollidedObject;

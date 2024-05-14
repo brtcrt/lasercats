@@ -153,7 +153,7 @@ public class LobbyScreen extends LaserCatsScreen {
            public void changed(ChangeEvent event, Actor actor) {
                if (roomCreateButton.isPressed()) {
                 String roomName = roomCreateField.getText();
-                String password = passwordField.getText();
+                String password = passwordCreateField.getText();
                 if (password.isEmpty()) {
                     client.createRoom(roomName);
                 } else {
@@ -196,7 +196,7 @@ public class LobbyScreen extends LaserCatsScreen {
 
         goBackButton = new TextButton("Back", skin, "dark");
 
-        passwordField = new TextField("", skin);
+        passwordField = new TextField(null,skin);
         passwordField.setMessageText("Create password");
         passwordField.setPasswordMode(true);
         passwordField.setPasswordCharacter('*');
@@ -204,6 +204,7 @@ public class LobbyScreen extends LaserCatsScreen {
         startGameButton = new TextButton("Start", skin);
         startGameButton.getLabel().setFontScale(FONT_SCALING);
         passwordCreateField = new TextField("", skin);
+        passwordCreateField.setMessageText("Create password");
         passwordCreateField.setPasswordMode(true);
         passwordCreateField.setPasswordCharacter('*');
 
