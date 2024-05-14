@@ -1,0 +1,361 @@
+@startuml
+interface GameObject extends Tile {
+    public void process();
+    public void render(SpriteBatch batch);
+    public void destroy();
+
+    public JSONObject getIdentifiers();
+
+    public void setIdentifiers(JSONObject json);
+
+    public float getX();
+    public float getY();
+    public String getID();
+
+    public Rectangle setX(float x);
+    public Rectangle setY(float y);
+
+
+}
+interface PhysicsObject extends GameObject{
+    public Vector2 getVelocity();
+
+    public Rectangle getCollider();
+
+    public boolean isStatic();
+    public boolean canCollide();
+
+    public void calculatePhysics(ArrayList<PhysicsObject> objects);
+
+}
+interface Tile {
+    public void render(SpriteBatch batch);
+    public void destroy();
+}
+interface Detector {
+    public void setActivatables(ArrayList<Activatable> activatables);
+    public boolean isTriggered();
+    public void addActivatable(Activatable a);
+    public ArrayList<Activatable> getActivatables();
+}
+interface Activatable {
+    public void activate();
+    public void deactivate();
+    public int getActivationCount();
+}
+class Rectangle {
+    // from libgdx
+
+    public float x, y;
+   	public float width, height;
+
+    public Rectangle (float x, float y, float width, float height)
+   	public boolean contains (Vector2 point)
+   	public boolean contains (float x, float y)
+   	public boolean contains (Rectangle rectangle)
+   	public boolean overlaps (Rectangle r)
+}
+class Empty extends Rectangle {
+
+    public Vector2 velocity;
+    public String ID = java.util.UUID.randomUUID().toString();
+
+    public Empty(float x, float y, float width, float height)
+    public Vector2 getVelocity()
+    public Rectangle getCollider()
+    public String getID()
+}
+class CatLaser extends Laser {
+
+    private Player player;
+    public CatLaser(Player player, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
+    public void process()
+}
+class Gate extends Empty implements PhysicsObject, Activatable {
+
+    private Texture gateClosed;
+    private Texture gateOpen;
+    private boolean isActive;
+    private int activationCount = 0;
+    private Sprite sprite;
+    private boolean isExitGate;
+    private boolean isLaserCatEntranceGate;
+    private boolean isReflectiveCatEntranceGate;
+
+    public Gate(float x, float y, float width, float height)
+    public void process()
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
+    public void render(SpriteBatch batch)
+    public void destroy()
+    public void deactivate() {}
+    public void activate()
+    public boolean isActive()
+    public boolean canCollide()
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public int getActivationCount()
+    public boolean isStatic()
+    public void setAsExitGate()
+    public void setAsLaserCatEntranceGate()
+    public void setAsReflectiveCatEntranceGate()
+    public boolean getIsExitGate()
+    public boolean getIsLaserCatEntranceGate()
+    public boolean getIsReflectiveCatEntranceGate()
+}
+class Glass extends Empty implements PhysicsObject {
+
+    private Texture img;
+    private Sprite sprite;
+
+    public Glass(float x, float y, float width, float height)
+    public void process(){}
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
+    public void render(SpriteBatch batch)
+    public void destroy()
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public boolean isStatic()
+    public boolean canCollide()
+}
+class Laser implements GameObject {
+    public String ID = java.util.UUID.randomUUID().toString();
+    final private static int MAX_REFLECTIONS = 10;
+    protected float x1, y1;
+    public boolean isFiring;
+    private Vector2 velocity, initialDirection;
+    protected Array<Vector2> vertices;
+    protected ShapeRenderer debugRenderer = new ShapeRenderer();
+    public Viewport viewport;
+    public ArrayList<PhysicsObject> physicsObjects;
+    private ArrayList<PhysicsObject> ignoreAlways;
+    private ArrayList<PhysicsObject> ignoreOnFirstReflection;
+
+    public Laser(float x, float y, Vector2 direction, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
+    public void process()
+    protected void addObjectToIgnore(PhysicsObject physicsObject, boolean firstReflection)
+    public void rotateLeft()
+    public void rotateRight()
+    private Vector2 reflect(Vector2 direction, Vector2 normal)
+    public void destroy()
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public void render(SpriteBatch batch)
+    public float getX()
+    public float getY()
+    public Vector2 getVelocity()
+    public Rectangle getCollider()
+    public Rectangle setX(float x)
+    public Rectangle setY(float y)
+    public String getID()
+}
+class LaserTarget extends Empty implements Detector, PhysicsObject {
+
+    private Texture image;
+    private Sprite sprite;
+    private ArrayList<Activatable> activatables;
+    private ArrayList<String> activatableIDs = new ArrayList<>();;
+    private TextureRegion offFrame;
+    private Animation<TextureRegion> onAnimation;
+    private float state;
+    private boolean isTriggered;
+
+    public LaserTarget(int x, int y, int width, int height)
+    public LaserTarget(float x, float y, float width, float height)
+    public LaserTarget(float x, float y, float width, float height, ArrayList<Activatable> activatables)
+    public LaserTarget(float x, float y, float width, float height, Activatable a)
+    public void process()
+    public void setActivatables(ArrayList<Activatable> activatables)
+    public void calculatePhysics(ArrayList<PhysicsObject> objects)
+    public boolean isStatic()
+    public void render(SpriteBatch batch)
+    public void destroy()
+    public void addActivatable(Activatable a)
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public boolean isTriggered()
+    public ArrayList<Activatable> getActivatables()
+    public boolean canCollide()
+    public void trigger()
+    public void reset()
+}
+class Mirror extends Empty implements PhysicsObject {
+
+    private Texture image;
+    private Sprite sprite;
+
+    public Mirror(float x, float y, float width, float height)
+    public void process(){}
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
+    public void render(SpriteBatch batch)
+    public void destroy()
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public boolean isStatic()
+    public boolean canCollide()
+}
+class Player extends Empty implements PhysicsObject {
+
+    protected Texture animationSheet;
+    protected Sprite sprite;
+    protected Animation<TextureRegion> idleAnimation;
+    protected Animation<TextureRegion> walkAnimation;
+    protected Animation<TextureRegion> transitionAnimation;
+    protected Animation<TextureRegion> sleepAnimation;
+    protected Animation<TextureRegion> currentAnimation;
+    private boolean inTransition;
+    private long transitionBeginTime;
+    private float transitionState;
+    protected boolean isSleeping;
+    protected long lastInputTime;
+    protected Sound meow;
+    protected Sound meowOrange;
+    private boolean isMainPlayer;
+    private boolean isMeow = false;
+    private boolean isMeowOrange = false;
+    private boolean isReflective = false;
+    public Laser laser;
+    protected final float walkSpeed = 150f;
+    protected final float idlePeriod = 0.5f;
+    protected final float walkPeriod = 0.14f;
+    private final static float WIDTH = 64 , HEIGHT = 64;
+    protected float stateTime;
+    public Vector2 direction;
+    public static int[] controlScheme;
+    protected boolean isFiring = false;
+    private float sfxVolume;
+
+    public Player (float x, float y, float width, float height, boolean isMainPlayer)
+    public void addLaser(CatLaser laser)
+    public void process()
+    public void render(SpriteBatch batch)oid move()
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public boolean is_walking()
+    public void destroy()
+    public static void setControlScheme(int[] keybinds)
+    public boolean isStatic()
+    public boolean canCollide()
+    public void calculatePhysics(ArrayList<PhysicsObject> objects)
+    public boolean getIsReflective()
+    public void setIsReflective(boolean b)
+}
+class PressurePlate extends Empty implements Detector, PhysicsObject {
+
+    private Texture image;
+    private Texture imagePressed;
+    private Sprite sprite;
+    private ArrayList<Activatable> activatables;
+    private boolean isTriggered;
+    private ArrayList<String> activatableIDs = new ArrayList<>();
+
+    public PressurePlate(float x, float y, float width, float height)
+    public PressurePlate(float x, float y, float width, float height, ArrayList<Activatable> activatables)
+    public PressurePlate(float x, float y, float width, float height, Activatable a)
+    public PressurePlate(int x, int y, int width, int height)
+    public void process()
+    public void setActivatables(ArrayList<Activatable> activatables)
+    public void addActivatable(Activatable a)
+    public void calculatePhysics(ArrayList<PhysicsObject> objects)
+    public ArrayList<Activatable> getActivatables()
+    public boolean isStatic()
+    public void render(SpriteBatch batch)
+    public void destroy()
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public boolean isTriggered()
+    public boolean canCollide()
+}
+class Wall extends Empty implements PhysicsObject {
+
+    private TextureRegion[][] dungeonTextures;
+    private Texture map;
+    private TextureRegion[] textures;
+    private Sprite sprite;
+    protected int type;
+
+    public Wall(float x, float y, float width, float height, int type)
+    public void process(){}
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
+    public void render(SpriteBatch batch)
+    public void destroy()
+    private void setSprite(int type)
+    public JSONObject getIdentifiers()
+    public void setIdentifiers(JSONObject json)
+    public boolean isStatic()
+    public boolean canCollide()
+}
+class FloorTile extends Rectangle implements Tile {
+    private TextureRegion[][] dungeonTextures;
+    private Texture map;
+    private TextureRegion[] textures;
+    private Sprite sprite;
+
+    public FloorTile(float x, float y, float width, float height, int type)
+    public void render(SpriteBatch batch)
+    public void destroy()
+
+}
+class Level extends LaserCatsScreen {
+
+    protected ArrayList<GameObject> gameObjects;
+    protected ArrayList<PhysicsObject> physicsObjects;
+	private ArrayList<Tile> tiles;
+	private ArrayList<GameObject> renderQueue;
+	protected Client client;
+	private JSONObject dataToServer;
+	protected int reflectable;
+	protected Gate exitGate;
+	protected LobbyScreen lobby;
+
+    public Level(Game game, Client client, LobbyScreen lobbyScreen)
+    public void render(float delta)
+    public void dispose()
+    protected void calculatePhysics ()
+    private void createDataJSON(ArrayList<JSONObject> identifiers)
+	public void setPlayerStarts()
+	protected boolean isGameOver()
+	protected void displayLevelEnding()
+	protected Gate findExitGate()
+}
+class LevelLoader extends Level {
+
+    private static final int FINAL_LEVEL_COUNT = 5;
+    private int levelCount;
+
+    public LevelLoader(Game game, Client client, LobbyScreen lobbyScreen, int levelCount)
+    protected void displayLevelEnding()
+}
+abstract class LaserCatsScreen implements Screen {
+
+    protected OrthographicCamera camera;
+    protected SpriteBatch batch;
+    protected Viewport genericViewport;
+    protected Stage stage;
+    protected Table root;
+    protected Game game;
+    protected Skin skin;
+
+    public LaserCatsScreen(Game game)
+	public void show()
+    public abstract void render(float delta);
+    public void resize(int width, int height)
+    public abstract void pause();
+    public abstract void resume();
+    public void hide()
+    public abstract void dispose();
+    public abstract void createActors();
+    public abstract void positionActors();
+    public abstract void setListeners();
+    public abstract void createTextures();
+}
+interface Screen {
+    // from libgdx
+	public void show ();
+	public void render (float delta);
+	public void resize (int width, int height);
+	public void pause ();
+	public void resume ();
+	public void hide ();
+	public void dispose ();
+}
+@enduml
