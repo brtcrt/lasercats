@@ -12,16 +12,18 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import com.badlogic.gdx.utils.Array;
 
 public class Laser implements GameObject {
     public String ID = java.util.UUID.randomUUID().toString();
 
     final private static int MAX_REFLECTIONS = 10;
-    private int x1, y1;
+    protected float x1, y1;
 
+    public boolean isFiring;
     private Vector2 velocity, initialDirection;
-    protected ArrayList<Vector2> vertices;
-    private ShapeRenderer debugRenderer = new ShapeRenderer();
+    protected Array<Vector2> vertices;
+    protected ShapeRenderer debugRenderer = new ShapeRenderer();
     public Viewport viewport;
     public ArrayList<PhysicsObject> physicsObjects;
 
@@ -30,29 +32,36 @@ public class Laser implements GameObject {
 
     public Laser(float x, float y, Vector2 direction, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
     {
+        this.isFiring = true;
         this.initialDirection = direction;
         this.initialDirection.nor();
         this.viewport = viewport;
         Gdx.gl.glLineWidth(10);
-        vertices = new ArrayList<>();
-        vertices.add(new Vector2(x,y));
+        vertices = new Array<>();
+        x1 = x;
+        y1 = y;
         this.physicsObjects = physicsObjects;
         this.ignoreAlways = new ArrayList<>();
         this.ignoreOnFirstReflection = new ArrayList<>();
     }
-
-
     @Override
     public void process() {
-        Vector2 firstVertex = vertices.get(0);
-        vertices.clear();
-        vertices.add(firstVertex);
+        try {
+            vertices.clear();
+            vertices.add(new Vector2(x1, y1)); 
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e);
+        }
+
         Vector2 finalDirection = new Vector2(initialDirection);
 
         int reflections = 0;
 
-        Rectangle viewportBox = new Rectangle(-600, -600,
-                3000, 3000);
+        //I think there are some issues regarding this rectangle
+        //On the initial level we created, laser reflections work just fine.
+        //However, on other levels reflections don't properly work
+        Rectangle viewportBox = new Rectangle(-50_000, -50_000,
+                100_000, 100_000);
 
 
         boolean finishedTraveling = false;
@@ -62,7 +71,7 @@ public class Laser implements GameObject {
         PhysicsObject lastCollidedObject = physicsObjects.get(0);
         while (!finishedTraveling) {
 
-            start = vertices.get(vertices.size() - 1);
+            start = vertices.get(vertices.size - 1); 
             end = new Vector2(start).mulAdd(finalDirection, 100_000);
             vertices.add(end);
 
@@ -73,6 +82,7 @@ public class Laser implements GameObject {
             for (PhysicsObject object : physicsObjects) {
                 if (reflections == 0 && ignoreOnFirstReflection.contains(object)) continue;
                 if (ignoreAlways.contains(object) || object instanceof PressurePlate || object instanceof Glass) continue;
+
 
                 Rectangle collider = object.getCollider();
                 Polygon colliderPolygon = new Polygon(new float[]{
@@ -135,7 +145,6 @@ public class Laser implements GameObject {
     {
         this.initialDirection.rotateDeg(-45);
     }
-
     private Vector2 reflect(Vector2 direction, Vector2 normal)
     {
         normal.nor();
@@ -145,44 +154,48 @@ public class Laser implements GameObject {
         return direction;
         // finalDirection keeps its magnitude
     }
-
     @Override
     public void destroy() {
         debugRenderer.dispose();
     }
-
     @Override
     public JSONObject getIdentifiers() {
         JSONObject json = new JSONObject();
+        ArrayList<int[]> arr = new ArrayList<>();
+        for (int i = 0; i < vertices.size; i++) {
+            int[] coords = {(int)vertices.get(i).x, (int)vertices.get(i).y};
+            arr.add(coords);
+        }
+        double[] dir = {initialDirection.x, initialDirection.y};
         try {
             json.put("type", this.getClass().getName());
-            json.put("vertices", vertices);
-            json.put("initialDirection",initialDirection);
-        } 
+            json.put("id", getID());
+            json.put("x", x1);
+            json.put("y", y1);
+            json.put("initialDirection",dir);
+            json.put("isFiring", isFiring);
+        }
         catch (JSONException e) {
             System.out.println(e);
         }
         return json;
     }
-
     @Override
     public void setIdentifiers(JSONObject json) {
         try {
-            JSONArray a = json.getJSONArray("vertices");
-            vertices.clear();
-            for(int i = 0; i < a.length(); i++){
-                String s = a.getString(i);
-                s = s.replace("(", "");
-                s = s.replace(")", "");
-                String [] xy = s.split(",");
-                vertices.add(new Vector2(Float.parseFloat(xy[0]), Float.parseFloat(xy[1])));
-            }
-            String dir = json.getString("initialDirection");
-            dir = dir.replace("(", "");
-            dir = dir.replace(")", "");
-            String[] split = dir.split(",");
-            this.initialDirection = new Vector2(Float.parseFloat(split[0]), Float.parseFloat(split[1]));
-        } 
+            JSONArray dir = json.getJSONArray("initialDirection");
+            Double xDir = dir.getDouble(0);
+            Double yDir = dir.getDouble(1);
+            this.initialDirection = new Vector2(xDir.floatValue(), yDir.floatValue());
+            initialDirection.nor();
+            this.ID = json.getString("id");
+            Double x = json.getDouble("x");
+            Double y = json.getDouble("y");
+            x1 = x.floatValue();
+            y1 = y.floatValue();
+            isFiring = json.getBoolean("isFiring");
+
+        }
         catch (JSONException e) {
             System.out.println(e);
         }
@@ -190,13 +203,19 @@ public class Laser implements GameObject {
 
     @Override
     public void render(SpriteBatch batch) {
+        if (!isFiring) return;
         batch.end();
+        debugRenderer.flush();
         debugRenderer.setProjectionMatrix(viewport.getCamera().combined);
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
-        for (int i = 0; i < vertices.size() - 1; i ++)
-        {
-            debugRenderer.line(vertices.get(i), vertices.get(i + 1));
+        try {
+            for (int i = 0; i < vertices.size - 1; i ++)
+            {
+                debugRenderer.line(vertices.get(i), vertices.get(i + 1));
+            }
+        } catch (IndexOutOfBoundsException e) {
+            System.out.println(e);
         }
         debugRenderer.end();
         batch.begin();
@@ -216,5 +235,8 @@ public class Laser implements GameObject {
     public Rectangle getCollider() {
         return new Rectangle(0,0,0,0);
     }
+
+    public Rectangle setX(float x) {return new Rectangle();}
+    public Rectangle setY(float y) {return new Rectangle();}
     public String getID() { return this.ID; }
 }

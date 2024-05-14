@@ -3,7 +3,6 @@ package com.lasercats.GameObjects;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
@@ -12,9 +11,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Mirror extends Empty implements PhysicsObject {
-    private TextureRegion[][] dungeonTextures;
+    
     private Texture image;
-    private TextureRegion[] textures;
     private Sprite sprite;
 
     public Mirror(float x, float y, float width, float height){
@@ -23,25 +21,15 @@ public class Mirror extends Empty implements PhysicsObject {
         velocity = new Vector2();
         sprite = new Sprite(image);
     }
-
-    public void process(){
-
-    }
-
+    public void process(){}
     @Override
-    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
-
-    }
-
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
     public void render(SpriteBatch batch){
         batch.draw(sprite, x, y , width, height);
     }
-
     public void destroy(){
         image.dispose();
     }
-
-
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
@@ -50,29 +38,29 @@ public class Mirror extends Empty implements PhysicsObject {
             json.put("y", y);
             json.put("width", width);
             json.put("height", height);
+            json.put("id", getID());
         } catch (JSONException e) {
             System.out.println(e);
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json){
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
+            width = (float)json.getDouble("width");
+            height = (float)json.getDouble("height");
+            this.ID = json.getString("id");
         } catch (JSONException e) {
             System.out.println(e);
         }
     }
-
     @Override
     public boolean isStatic() {
         return true;
     }
-
     @Override
     public boolean canCollide() {
         return true;
     }
 }
-

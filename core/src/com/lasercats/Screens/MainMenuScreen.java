@@ -18,6 +18,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.lasercats.Client.Client;
 import com.lasercats.GameObjects.GameObject;
+import com.lasercats.GameObjects.PhysicsObject;
 import com.lasercats.GameObjects.Player;
 
 public class MainMenuScreen extends LaserCatsScreen {
@@ -45,6 +46,7 @@ public class MainMenuScreen extends LaserCatsScreen {
     private Client client;
     //Includes just the players initially
     private ArrayList<GameObject> initialGameObjects;
+    private ArrayList<PhysicsObject> initialPhysicsObjects;
     private Player player;
     private Player otherPlayer;
 
@@ -55,14 +57,17 @@ public class MainMenuScreen extends LaserCatsScreen {
     //Feel free to remove the unnecessary parts.
     public MainMenuScreen(Game game) {
         super(game);
-        this.player = new Player(32, 32, 128, 80, true);
-		this.otherPlayer = new Player(-300, -300, 128, 80, false);
+        this.player = new Player(32, 32, 64, 64, true);
+		this.otherPlayer = new Player(-300, -300, 64, 64, false);
         initialGameObjects = new ArrayList<GameObject>();
+        initialPhysicsObjects = new ArrayList<PhysicsObject>();
         initialGameObjects.add(player);
         initialGameObjects.add(otherPlayer);
-        client = new Client(initialGameObjects);
+        initialPhysicsObjects.add(player);
+        initialPhysicsObjects.add(otherPlayer);
         this.genericViewport = new ScreenViewport(camera);
         this.genericViewport.apply();
+        client = new Client(initialGameObjects, initialPhysicsObjects, genericViewport);
         this.stage = new Stage(genericViewport, batch);
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         this.root.setFillParent(true);
@@ -87,7 +92,6 @@ public class MainMenuScreen extends LaserCatsScreen {
     }
     @Override
     public void render(float delta) {
-        //Background can be something else. Feel free to change this.
         Gdx.input.setInputProcessor(stage);
         this.camera.update();
         delta = Gdx.graphics.getDeltaTime();
@@ -165,7 +169,6 @@ public class MainMenuScreen extends LaserCatsScreen {
         this.root.add(levelEditorButton).width(width / 3).height(height / 5).colspan(3);
         this.stage.setRoot(root);
         root.setBackground(new TextureRegionDrawable(new TextureRegion(background)));
-        //this.stage.setDebugAll(true);
     }
     @Override
     public void setListeners() {
@@ -178,9 +181,8 @@ public class MainMenuScreen extends LaserCatsScreen {
                 }
             }
         });
-        //TODO change screens later.
         this.playButton.addListener(new ScreenListener(new LobbyScreen(game, this), game));
-        this.levelEditorButton.addListener(new ScreenListener(null, game));
+        this.levelEditorButton.addListener(new ScreenListener(new LevelEditor(game, this), game));
         this.optionsButton.addListener(new ScreenListener(new OptionsScreen(game, this), game));
         this.tutorialButton.addListener(new ScreenListener(new TutorialScreen(game, this), game));
 

@@ -44,11 +44,11 @@ public class Player extends Empty implements PhysicsObject {
     protected final float walkSpeed = 150f;
     protected final float idlePeriod = 0.5f;
     protected final float walkPeriod = 0.14f;
-    private final static float WIDTH = 128 , HEIGHT = 128;
+    private final static float WIDTH = 64 , HEIGHT = 64;
     protected float stateTime;
     public Vector2 direction;
     public static int[] controlScheme;
-
+    protected boolean isFiring = false;
     private float sfxVolume;
 
     public Player (float x, float y, float width, float height, boolean isMainPlayer) {
@@ -65,7 +65,6 @@ public class Player extends Empty implements PhysicsObject {
         TextureRegion[] walkFrames = new TextureRegion[2];
         TextureRegion[] sleepFrames = new TextureRegion[2];
         TextureRegion[] transitionFrames = new TextureRegion[4];
-        TextureRegion[] reverseTransitionFrames = new TextureRegion[4];
 
         walkFrames[0] = tmp[1][0];
         walkFrames[1] = tmp[1][1];
@@ -75,7 +74,6 @@ public class Player extends Empty implements PhysicsObject {
 
         sleepFrames[0] = tmp[2][3];
         sleepFrames[1] = tmp[3][3];
-
 
         // walking to sleeping
         transitionFrames[0] = tmp[2][0];
@@ -97,23 +95,18 @@ public class Player extends Empty implements PhysicsObject {
 
         transitionState = 0;
 
-
         controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
-
 
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
         meowOrange = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow(turuncu).mp3"));
         sfxVolume = 0;
     }
-
     public void addLaser(CatLaser laser)
     {
         this.laser = laser;
     }
-
     public void process()
     {
-
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
 
@@ -124,23 +117,19 @@ public class Player extends Empty implements PhysicsObject {
         } else {
             currentAnimation = idleAnimation;
         }
-
         if (TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(lastInputTime)) > 5000 && !isSleeping && !inTransition) {
             isSleeping = true;
             inTransition = true;
             transitionBeginTime = TimeUtils.nanoTime();
             transitionState = 0;
         }
-
         if (TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(lastInputTime)) < 5000 && isSleeping && !inTransition) {
             isSleeping = false;
             inTransition = true;
             transitionBeginTime = TimeUtils.nanoTime();
             transitionState = 0;
         }
-
         sprite = new Sprite(currentAnimation.getKeyFrame(stateTime));
-
         if (inTransition) {
             if (isSleeping) {
                 transitionAnimation.setPlayMode(Animation.PlayMode.NORMAL);
@@ -153,13 +142,9 @@ public class Player extends Empty implements PhysicsObject {
             sprite = new Sprite(currentAnimation.getKeyFrame(transitionState));
             transitionState += Gdx.graphics.getDeltaTime();
         }
-
-
         if(direction.x > 0) {
             sprite.flip(true, false);
         }
-
-
         sfxVolume = OptionsScreen.getSFXVolume();
 
         if (Gdx.input.isKeyJustPressed(controlScheme[6]))
@@ -185,17 +170,24 @@ public class Player extends Empty implements PhysicsObject {
 
         if (Gdx.input.isKeyJustPressed(controlScheme[5]))
         {
-            if (isMainPlayer) laser.rotateRight();
+            if (!isReflective && isMainPlayer) laser.rotateRight();
+        }
+
+        if (!isReflective && isMainPlayer) {
+            laser.isFiring = false;
+        }
+        if (Gdx.input.isKeyPressed(controlScheme[4])) {
+            if (!isReflective && isMainPlayer) {
+                laser.isFiring = true;
+            }
         }
     }
-
     public void render(SpriteBatch batch)
     {
         batch.setColor(OptionsScreen.getSelectedColor());
         batch.draw(sprite, x - 10, y , WIDTH, HEIGHT);
         batch.setColor(Color.WHITE);
     }
-
     public void move()
     {
         if (!velocity.isZero()) {
@@ -205,10 +197,9 @@ public class Player extends Empty implements PhysicsObject {
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
     }
-
     public JSONObject getIdentifiers()
     {
-        // Fuck libgdx's json library I'm changing it to org.json ~brtcrt
+        // Instead of libgdx's json library I'm using org.json ~brtcrt
         JSONObject json = new JSONObject();
         try {
             json.put("type", this.getClass().getName());
@@ -220,13 +211,14 @@ public class Player extends Empty implements PhysicsObject {
             json.put("y", y);
             json.put("meow", isMeow);
             json.put("meowOrange", isMeowOrange);
+            json.put("id", getID());
+            json.put("isFiring", isFiring);
             isMeow = false;
         } catch (JSONException e) {
             System.out.println(e);
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json)
     {
         try {
@@ -238,18 +230,17 @@ public class Player extends Empty implements PhysicsObject {
             y = (float)json.getDouble("y");
             isMeow = (boolean)json.getBoolean("meow");
             isMeowOrange = (boolean)json.getBoolean("meowOrange");
+            this.ID = json.getString("id");
+            isFiring = json.getBoolean("isFiring");
         } catch (JSONException e) {
             System.out.println(e);
         }
 
     }
-
     public boolean is_walking()
     {
         return !velocity.isZero();
     }
-
-
     public void destroy()
     {
         animationSheet.dispose();
@@ -258,17 +249,14 @@ public class Player extends Empty implements PhysicsObject {
     public static void setControlScheme(int[] keybinds) {
         controlScheme = keybinds;
     }
-
     @Override
     public boolean isStatic() {
         return false;
     }
-
     @Override
     public boolean canCollide() {
         return true;
     }
-
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         // Movement
@@ -306,11 +294,9 @@ public class Player extends Empty implements PhysicsObject {
         velocity.nor();
         move();
     }
-
     public boolean getIsReflective(){
         return this.isReflective;
     }
-
     public void setIsReflective(boolean b){
         this.isReflective = b;
     }

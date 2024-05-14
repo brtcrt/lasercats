@@ -5,28 +5,26 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.util.ArrayList;
 
-public class CatLaser extends Laser{
+public class CatLaser extends Laser {
+
     private Player player;
     public CatLaser(Player player, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
     {
         super(player.getX(), player.getY(),new Vector2(1,1), viewport, physicsObjects);
         this.player = player;
+        this.isFiring = false;
         addObjectToIgnore(player, true);
         player.addLaser(this);
     }
-
     @Override
     public void process() {
-        vertices.clear();
-        vertices.add(new Vector2(player.x + player.width - player.width/12,
-                    player.y + player.height + player.height));
+        if (!isFiring) return;
+        x1 = player.x + player.width - player.width/12;
+        y1 = player.y + player.height + player.height;
         if (player.direction.x < 0)
         {
-            vertices.set(0, new Vector2(player.x + player.width/12,
-                    vertices.get(0).y));
+            x1 = player.x + player.width/12;
         }
-
         super.process();
     }
-
 }

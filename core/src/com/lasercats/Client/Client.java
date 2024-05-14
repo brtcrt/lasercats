@@ -1,16 +1,12 @@
 package com.lasercats.Client;
 
 import com.badlogic.gdx.Gdx;
-
-import com.badlogic.gdx.math.Vector2;
-import com.lasercats.GameObjects.GameObject;
-import com.lasercats.GameObjects.Player;
-
+import com.badlogic.gdx.utils.viewport.Viewport;
+import com.lasercats.GameObjects.*;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-import jdk.internal.reflect.Reflection;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,33 +14,36 @@ import org.json.JSONObject;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Client {
     private final String uri;
     private Socket socket;
-    private Player player;
     private Player otherPlayer;
-    private ArrayList<GameObject> gameObjects;
+    public  Viewport viewport;
+    public ArrayList<GameObject> gameObjects;
+    public ArrayList<PhysicsObject> physicsObjects;
     public JSONObject dataFromServer;
-    private String clientID;
+    private String clientID = java.util.UUID.randomUUID().toString();
     private Room room;
     public JSONArray rooms;
+    public boolean inGame = false;
 
-    public Client (ArrayList<GameObject> gameObjects) {
-        this.uri = "http://localhost:8080";
+    public Client (ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects, Viewport v) {
+        this.uri = "https://lasercats.fly.dev";
+        // this.uri = "http://localhost:8080";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
         this.gameObjects = gameObjects;
-        // IF we ever change the indexes of the two player objects we are fucked btw... ~brtcrt
-        this.player = (Player) gameObjects.get(0);
+        this.physicsObjects = physicsObjects;
+        this.viewport = v;
         this.otherPlayer = (Player) gameObjects.get(1);
         this.rooms = new JSONArray();
     }
 
     public void sendUpdate(JSONObject data) {
         try {
+            data.put("clientID", clientID);
             data.put("roomId", room.getId());
         } catch (JSONException e) {
             System.out.println(e);
@@ -55,6 +54,7 @@ public class Client {
     public void createRoom(String roomName) {
         JSONObject data = new JSONObject();
         try {
+            data.put("clientID", clientID);
             if (!this.room.isEmpty()) {
                 data.put("currentRoom", this.room.getJSON());
             }
@@ -68,8 +68,8 @@ public class Client {
 
     public void createRoom(String roomName, String password) {
         JSONObject data = new JSONObject();
-        // Gdx.app.log("Hashed password", hashPassword(password));
         try {
+            data.put("clientID", clientID);
             if (!this.room.isEmpty()) {
                 data.put("currentRoom", this.room.getJSON());
             }
@@ -105,6 +105,7 @@ public class Client {
     public void joinRoom(Room r) {
         JSONObject data = new JSONObject();
         try {
+            data.put("clientID", clientID);
             data.put("roomId", r.getId());
             data.put("roomName", r.getName());
             data.put("players", r.getPlayerIDs());
@@ -119,6 +120,7 @@ public class Client {
     public void joinRoom(Room r, String password) {
         JSONObject data = new JSONObject();
         try {
+            data.put("clientID", clientID);
             data.put("roomId", r.getId());
             data.put("roomName", r.getName());
             data.put("players", r.getPlayerIDs());
@@ -141,12 +143,26 @@ public class Client {
     }
 
     public void close() {
+        try {
+            JSONObject data = new JSONObject();
+            data.put("clientID", clientID);
+            socket.emit("closeClient", data);
+        } catch (JSONException e) {
+            System.out.println(e);
+        }
         this.socket.close();
     }
     private void connectSocket() {
         try {
             this.socket = IO.socket(uri);
             socket.connect();
+            try {
+                JSONObject data = new JSONObject();
+                data.put("clientID", clientID);
+                socket.emit("newPlayer", data);
+            } catch (JSONException e) {
+                System.out.println(e);
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -162,12 +178,11 @@ public class Client {
             public void call(Object... args) {
                 JSONObject data = new JSONObject();
                 try {
-                    data.put("roomName", room.getName());
+                    data.put("clientID", clientID);
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
-                // socket.emit("newRoom", data);
-                clientID = socket.id();
+                socket.emit("newPlayer", data);
                 Gdx.app.log("SocketIO", "Connected with ID: " + clientID);
             }
         });
@@ -212,12 +227,12 @@ public class Client {
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
-                // Gdx.app.log("Rooms", rooms.toString());
             }
         });
         socket.on("updateFromServer", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
+                if (!inGame) return;
                 dataFromServer = (JSONObject) args[0];
                 try {
                     JSONArray data = dataFromServer.getJSONArray("gameObjects");
@@ -231,26 +246,31 @@ public class Client {
                     } else {
                         JSONObject identifier = (JSONObject) data.get(0);
                         otherPlayer.setIdentifiers(identifier);
-                        if (gameObjects.size() == data.length()) {
-                            for (int i = 2; i < gameObjects.size(); i++) {
-                                // This will cause a lot of problems later on... End me. ~brtcrt
-                                identifier = (JSONObject) data.get(i);
-                                GameObject g = gameObjects.get(i);
-                                g.setIdentifiers(identifier);
-                            }
-                        } else {
-                            if (gameObjects.size() > data.length()) {
-                                Gdx.app.log("Client error","GameObjects too big");
-                            } else {
-                                Gdx.app.log("Client error","Data too big");
+                        gameObjects.get(2).setIdentifiers((JSONObject) data.get(2));
+                        int boxIndex = 3;
+                        // This really should not work ~brtcrt
+                        for (int i = 3; i < gameObjects.size(); i++) {
+                            GameObject o = gameObjects.get(i);
+                            if (o instanceof Box) {
+                                o.setIdentifiers(data.getJSONObject(boxIndex));
+                                boxIndex++;
                             }
                         }
-
                     }
 
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
+            }
+        }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Gdx.app.log("SocketIO", "Disconnected " + clientID);
+            }
+        }).on(Socket.EVENT_CONNECT_ERROR, new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Gdx.app.log("SocketIO", "Connect Error");
             }
         });
     }

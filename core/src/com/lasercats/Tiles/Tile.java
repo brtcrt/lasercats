@@ -6,5 +6,4 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public interface Tile {
     public void render(SpriteBatch batch);
     public void destroy();
-
 }
