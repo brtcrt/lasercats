@@ -12,7 +12,7 @@ import com.badlogic.gdx.graphics.Color;
 import java.util.ArrayList;
 
 public class Gate extends Empty implements PhysicsObject, Activatable {
-    // current Texture is 37x50 for some fucking reason idk it said it was 32x32 on itch.io
+
     private Texture gateClosed;
     private Texture gateOpen;
     private boolean isActive;
@@ -22,7 +22,7 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
     private boolean isLaserCatEntranceGate;
     private boolean isReflectiveCatEntranceGate;
 
-    public Gate(float x, float y, float width, float height){
+    public Gate(float x, float y, float width, float height) {
         super(x, y, width, height);
         velocity = new Vector2();
         gateClosed = new Texture(Gdx.files.internal("gate_closed.png"));
@@ -32,7 +32,6 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         isLaserCatEntranceGate = false;
         isReflectiveCatEntranceGate = false;
     }
-
     public void process(){
         if (activationCount > 0) {
             isActive = true;
@@ -49,12 +48,8 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         }
         activationCount = 0;
     }
-
     @Override
-    public void calculatePhysics(ArrayList<PhysicsObject> objects) {
-
-    }
-
+    public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
     public void render(SpriteBatch batch){
         if (isExitGate) {batch.setColor(Color.GOLD);}
         else if (isLaserCatEntranceGate) {batch.setColor(Color.RED);}
@@ -62,31 +57,23 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         batch.draw(sprite, x, y , width, height);
         batch.setColor(Color.WHITE);
     }
-
     public void destroy(){
         gateClosed.dispose();
         gateOpen.dispose();
     }
-
-
     @Override
-    public void deactivate() {
-    }
-
+    public void deactivate() {}
     @Override
     public void activate() {
         this.activationCount++;
     }
-
     public boolean isActive() {
         return isActive;
     }
-
     @Override
     public boolean canCollide() {
         return !isActive;
     }
-
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
@@ -104,7 +91,6 @@ public class Gate extends Empty implements PhysicsObject, Activatable {
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json){
         try {
             x = (float)json.getDouble("x");

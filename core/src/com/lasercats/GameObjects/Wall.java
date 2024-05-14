@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Wall extends Empty implements PhysicsObject {
+
     private TextureRegion[][] dungeonTextures;
     private Texture map;
     private TextureRegion[] textures;
@@ -28,18 +29,14 @@ public class Wall extends Empty implements PhysicsObject {
     }
 
     public void process(){}
-
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
-
-    public void render(SpriteBatch batch){
+    public void render(SpriteBatch batch) {
         batch.draw(sprite, x, y , width, height);
     }
-
-    public void destroy(){
+    public void destroy() {
         map.dispose();
     }
-
     private void setSprite(int type) {
         textures = new TextureRegion[8];
         textures[0] = dungeonTextures[0][0];
@@ -52,8 +49,7 @@ public class Wall extends Empty implements PhysicsObject {
         textures[7] = dungeonTextures[4][5];
         sprite = new Sprite(textures[type - 1]);
     }
-
-    public JSONObject getIdentifiers(){
+    public JSONObject getIdentifiers() {
         JSONObject json = new JSONObject();
         try {
             json.put("type", this.getClass().getName());
@@ -68,8 +64,7 @@ public class Wall extends Empty implements PhysicsObject {
         }
         return json;
     }
-
-    public void setIdentifiers(JSONObject json){
+    public void setIdentifiers(JSONObject json) {
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
@@ -82,15 +77,12 @@ public class Wall extends Empty implements PhysicsObject {
             System.out.println(e);
         }
     }
-
     @Override
     public boolean isStatic() {
         return true;
     }
-
     @Override
     public boolean canCollide() {
         return true;
     }
 }
-

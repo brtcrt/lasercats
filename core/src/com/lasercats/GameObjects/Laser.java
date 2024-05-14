@@ -12,7 +12,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 import com.badlogic.gdx.utils.Array;
 
 public class Laser implements GameObject {
@@ -23,8 +22,6 @@ public class Laser implements GameObject {
 
     public boolean isFiring;
     private Vector2 velocity, initialDirection;
-//    protected ArrayList<Vector2> vertices;
-//    protected CopyOnWriteArrayList<Vector2> vertices;
     protected Array<Vector2> vertices;
     protected ShapeRenderer debugRenderer = new ShapeRenderer();
     public Viewport viewport;
@@ -40,27 +37,20 @@ public class Laser implements GameObject {
         this.initialDirection.nor();
         this.viewport = viewport;
         Gdx.gl.glLineWidth(10);
-//        vertices = new ArrayList<>();
-//        vertices = new CopyOnWriteArrayList<>();
         vertices = new Array<>();
         x1 = x;
         y1 = y;
-        // vertices.add(new Vector2(x,y));
         this.physicsObjects = physicsObjects;
         this.ignoreAlways = new ArrayList<>();
         this.ignoreOnFirstReflection = new ArrayList<>();
     }
-
-
     @Override
     public void process() {
         try {
-            // Vector2 firstVertex = vertices.get(0);
             vertices.clear();
-            vertices.add(new Vector2(x1, y1)); // size 1
+            vertices.add(new Vector2(x1, y1)); 
         } catch (IndexOutOfBoundsException e) {
             System.out.println(e);
-            System.out.println("kill me please for fucks sake end this misery");
         }
 
         Vector2 finalDirection = new Vector2(initialDirection);
@@ -81,18 +71,9 @@ public class Laser implements GameObject {
         PhysicsObject lastCollidedObject = physicsObjects.get(0);
         while (!finishedTraveling) {
 
-//            if (vertices.size() == 0) {
-            if (vertices.size == 0) {
-                System.out.println("ARRRRRGHHHH");
-                continue;
-            }
-//            System.out.println(vertices.size());
-            //System.out.println(vertices.size);
-//            start = vertices.getLast();
-//            start = vertices.get(vertices.size() - 1); // BUG IS HERE
-            start = vertices.get(vertices.size - 1); // BUG IS HERE
+            start = vertices.get(vertices.size - 1); 
             end = new Vector2(start).mulAdd(finalDirection, 100_000);
-            vertices.add(end); // iter 1: size: 2
+            vertices.add(end);
 
             Vector2 closestIntersectionInDirection = new Vector2();
             float distanceOfClosestIntersectionInDirection = Float.POSITIVE_INFINITY;
@@ -164,7 +145,6 @@ public class Laser implements GameObject {
     {
         this.initialDirection.rotateDeg(-45);
     }
-
     private Vector2 reflect(Vector2 direction, Vector2 normal)
     {
         normal.nor();
@@ -174,12 +154,10 @@ public class Laser implements GameObject {
         return direction;
         // finalDirection keeps its magnitude
     }
-
     @Override
     public void destroy() {
         debugRenderer.dispose();
     }
-
     @Override
     public JSONObject getIdentifiers() {
         JSONObject json = new JSONObject();
@@ -194,7 +172,6 @@ public class Laser implements GameObject {
             json.put("id", getID());
             json.put("x", x1);
             json.put("y", y1);
-            // json.put("vertices", arr);
             json.put("initialDirection",dir);
             json.put("isFiring", isFiring);
         }
@@ -203,16 +180,9 @@ public class Laser implements GameObject {
         }
         return json;
     }
-
     @Override
     public void setIdentifiers(JSONObject json) {
         try {
-            // JSONArray a = json.getJSONArray("vertices");
-//            vertices.clear();
-//            for(int i = 0; i < a.length(); i++){
-//                JSONArray xy = a.getJSONArray(i);
-//                vertices.add(new Vector2((int)(xy.get(0)), (int)(xy.get(1))));
-//            }
             JSONArray dir = json.getJSONArray("initialDirection");
             Double xDir = dir.getDouble(0);
             Double yDir = dir.getDouble(1);
@@ -227,7 +197,6 @@ public class Laser implements GameObject {
 
         }
         catch (JSONException e) {
-            System.out.println("AAAAAAARRRRRRGGHHHHHHHHHHH");
             System.out.println(e);
         }
     }
@@ -240,8 +209,6 @@ public class Laser implements GameObject {
         debugRenderer.setProjectionMatrix(viewport.getCamera().combined);
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
-//        for (int i = 0; i < vertices.size() - 1; i ++)
-
         try {
             for (int i = 0; i < vertices.size - 1; i ++)
             {

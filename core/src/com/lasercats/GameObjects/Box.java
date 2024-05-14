@@ -21,10 +21,7 @@ public class Box extends Empty implements PhysicsObject {
         boxImage = new Texture(Gdx.files.internal("Box.png"));
         sprite = new Sprite(boxImage);
     }
-    public void process(){
-
-    }
-
+    public void process(){}
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         velocity.x = 0;
@@ -40,7 +37,6 @@ public class Box extends Empty implements PhysicsObject {
 
             }
         }
-
         if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
             velocity.y = 0;
         } else {
@@ -49,16 +45,12 @@ public class Box extends Empty implements PhysicsObject {
         velocity.nor();
         move();
     }
-
     public void render(SpriteBatch batch){
         batch.draw(sprite, x - HEIGHT / 8, y , WIDTH, HEIGHT);
     }
-
     public void destroy(){
         boxImage.dispose();
     }
-
-
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
@@ -73,7 +65,6 @@ public class Box extends Empty implements PhysicsObject {
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json){
         try {
             velocity.x = (float)json.getDouble("velocity.x");
@@ -85,21 +76,17 @@ public class Box extends Empty implements PhysicsObject {
             System.out.println(e);
         }
     }
-
     public void move()
     {
         x += velocity.x * moveSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * moveSpeed * Gdx.graphics.getDeltaTime();
     }
-
     @Override
     public boolean isStatic() {
         return false;
     }
-
     @Override
     public boolean canCollide() {
         return true;
     }
 }
-

@@ -1,9 +1,6 @@
 package com.lasercats.Client;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.lasercats.GameObjects.*;
 import io.socket.client.IO;
@@ -21,7 +18,6 @@ import java.util.ArrayList;
 public class Client {
     private final String uri;
     private Socket socket;
-    private Player player;
     private Player otherPlayer;
     public  Viewport viewport;
     public ArrayList<GameObject> gameObjects;
@@ -41,8 +37,6 @@ public class Client {
         this.gameObjects = gameObjects;
         this.physicsObjects = physicsObjects;
         this.viewport = v;
-        // IF we ever change the indexes of the two player objects we are fucked btw... ~brtcrt
-        this.player = (Player) gameObjects.get(0);
         this.otherPlayer = (Player) gameObjects.get(1);
         this.rooms = new JSONArray();
     }
@@ -74,7 +68,6 @@ public class Client {
 
     public void createRoom(String roomName, String password) {
         JSONObject data = new JSONObject();
-        // Gdx.app.log("Hashed password", hashPassword(password));
         try {
             data.put("clientID", clientID);
             if (!this.room.isEmpty()) {
@@ -190,7 +183,6 @@ public class Client {
                     System.out.println(e);
                 }
                 socket.emit("newPlayer", data);
-                // clientID = socket.id();
                 Gdx.app.log("SocketIO", "Connected with ID: " + clientID);
             }
         });
@@ -235,7 +227,6 @@ public class Client {
                 } catch (JSONException e) {
                     System.out.println(e);
                 }
-                // Gdx.app.log("Rooms", rooms.toString());
             }
         });
         socket.on("updateFromServer", new Emitter.Listener() {
@@ -256,13 +247,8 @@ public class Client {
                         JSONObject identifier = (JSONObject) data.get(0);
                         otherPlayer.setIdentifiers(identifier);
                         gameObjects.get(2).setIdentifiers((JSONObject) data.get(2));
-                        // If I have to deal with another networking problem
-                        // I swear to every single god out there
-                        // that I will commit unspeakable atrocities
-                        // that future generations will not be able to
-                        // live a prosperous life for centuries
                         int boxIndex = 3;
-                        // this really should not work
+                        // This really should not work ~brtcrt
                         for (int i = 3; i < gameObjects.size(); i++) {
                             GameObject o = gameObjects.get(i);
                             if (o instanceof Box) {
