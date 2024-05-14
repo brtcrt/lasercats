@@ -34,6 +34,7 @@ public class Client {
 
     public Client (ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects, Viewport v) {
         this.uri = "https://lasercats.fly.dev";
+        // this.uri = "http://localhost:8080";
         this.room = new Room();
         this.connectSocket();
         this.configSocketEvents();
