@@ -98,7 +98,6 @@ public class LobbyScreen extends LaserCatsScreen {
         roomTable.row();
         for (TextButton roomButton : roomButtons) {
             roomList.addActor(roomButton);
-            roomList.addActor(passwordEnterDialog);
         }
         roomTable.add(roomList).expand().align(Align.top);
 
@@ -312,7 +311,7 @@ public class LobbyScreen extends LaserCatsScreen {
                         setPasswordEnterButtonListener(room);
                     }
                     else {
-                        client.joinRoom(getRoomClicked());
+                        client.joinRoom(room);
                     }   
                 }
             }
@@ -324,7 +323,7 @@ public class LobbyScreen extends LaserCatsScreen {
             public void changed(ChangeEvent event, Actor actor) {
                 if (passwordEnterButton.isPressed()) {
                     if (Client.hashPassword(passwordEnterField.getText()).equals(room.getPasswordHash())) {
-                        client.joinRoom(getRoomClicked(), room.getPasswordHash());
+                        client.joinRoom(room, passwordEnterField.getText());
                         passwordEnterDialog.setVisible(false);
                         passwordEnterDialog.hide();
                     }   
