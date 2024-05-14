@@ -41,15 +41,11 @@ public class LevelEditor extends LaserCatsScreen {
     private ArrayList<Tile> tiles;
     private ArrayList<GameObject> renderQueue;
 
-    //private GameObject[][] grid;
-    //private GameObject[][] floatingGrid;
     private GameObject holding;
 
-    //private int gridStart;
     private int tileSize = 64;
 
     private Table buttonTable;
-
     private TextButton goBackButton;
     private TextButton saveButton;
     private TextButton importButton;
@@ -60,7 +56,6 @@ public class LevelEditor extends LaserCatsScreen {
     private ScreenViewport UIViewport;
 
     private Table objectsTable;
-
     private TextButton objectTab1, objectTab2;
     private TextButton wallButtonOne;
     private TextButton wallButtonTwo;
@@ -130,21 +125,15 @@ public class LevelEditor extends LaserCatsScreen {
 
         this.menuScreen = menuScreen;
         physicsObjects = new ArrayList<PhysicsObject>();
-        //grid = new GameObject[1000][1000];
-        //grid = LevelScreen.mergeMatrices(grid,LevelScreen.generateRectangleWall(0,0,10,10) );
-        //gameObjects.addAll(LevelScreen.linearizeMatrix(grid));
-
-//        gameObjects.addAll(LevelScreen.linearizeMatrix(LevelScreen.generateRectangleWall(0,0,10,10)));
-
+        
         createActors();
         positionActors();
         setListeners();
-        //loadFromFile("levels/level1.json");
     }
     @Override
     public void resize(int width, int height)
     {
-        //TODO currently when you resize the window the positioning mechanism of objects breaks.
+        //Currently when you resize the window the positioning mechanism of objects breaks.
         //Other things break as well such as lines between detectors and activators, deletion hitboxes etc.
         levelViewport.update(width, height, false);
         UIViewport.update(width, height, true);
@@ -159,7 +148,6 @@ public class LevelEditor extends LaserCatsScreen {
 
         velocity.x = 0;
         velocity.y = 0;
-        //speed = (int) (root.getWidth() / 102.4);
         if (Gdx.input.isKeyPressed(controlScheme[2])) {
             velocity.x = 1;
         } if (Gdx.input.isKeyPressed(controlScheme[3])) {
@@ -267,7 +255,6 @@ public class LevelEditor extends LaserCatsScreen {
             }
         }
         batch.end();
-
         if (Gdx.input.isKeyJustPressed(Input.Keys.BACKSPACE)) {
             for (int i = 0; i < gameObjects.size(); i++) {
                 GameObject object = gameObjects.get(i);
@@ -298,8 +285,6 @@ public class LevelEditor extends LaserCatsScreen {
                 }
             }
         }
-
-//        UIViewport.apply();S
         stage.act(delta);
         stage.draw();
         drawer.begin(ShapeType.Line);
@@ -313,7 +298,6 @@ public class LevelEditor extends LaserCatsScreen {
             }
         }
         drawer.end();
-        //writeToFile("levels/level1.json");
     }
     @Override
     public void pause() {}
@@ -430,7 +414,6 @@ public class LevelEditor extends LaserCatsScreen {
         root.add(objectsTable).growY().expand().align(Align.topRight);
 
         stage.setRoot(root);
-        //stage.setDebugAll(true);
     }
     @Override
     public void setListeners() {
@@ -578,7 +561,8 @@ public class LevelEditor extends LaserCatsScreen {
                 }
             }
         });
-
+        //The reason we are not using anonymous listeners here is that you can't remove them later becuase
+        //you don't have a reference to them.
         entranceGateOneButton.addListener(entranceGateOneButtonListener);
         entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
         exitGateButton.addListener(exitGateButtonListener);
@@ -655,7 +639,7 @@ public class LevelEditor extends LaserCatsScreen {
     }
 
     public static void fillTiles(ArrayList<Tile> tiles) {
-        // For testing purposes I'll just fill a portion of the level with FloorTiles here ~brtcrt
+        //Fill a portion of the level with FloorTiles here ~brtcrt
         final int startX = -1280;
         final int startY = -1280;
         for (int i = 0; i < 40; i++) {
@@ -713,7 +697,6 @@ public class LevelEditor extends LaserCatsScreen {
     }
 
     private static void loadFromJson(JSONObject json, ArrayList<GameObject> gameObjects, ArrayList<PhysicsObject> physicsObjects) {
-        // ok this is cancer I'm gonna kill myself
         try {
             JSONArray objects = json.getJSONArray("objects");
             for (int i = 0; i < objects.length(); i++) {
@@ -762,7 +745,7 @@ public class LevelEditor extends LaserCatsScreen {
         gameObjects.clear();
         loadFromJson(json, gameObjects, physicsObjects);
     }
-
+    //Input processor triggered when right clicked on a detector.
     private class ActivatableInputHandler extends InputAdapter {
         private Detector detectorObject;
         public ActivatableInputHandler() {

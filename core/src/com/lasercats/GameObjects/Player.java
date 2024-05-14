@@ -95,23 +95,18 @@ public class Player extends Empty implements PhysicsObject {
 
         transitionState = 0;
 
-
         controlScheme = new int[]{Input.Keys.W, Input.Keys.S, Input.Keys.D, Input.Keys.A, Input.Keys.SPACE, Input.Keys.E, Input.Keys.M};
-
 
         meow = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow1.mp3"));
         meowOrange = Gdx.audio.newSound(Gdx.files.internal("sounds/Meow(turuncu).mp3"));
         sfxVolume = 0;
     }
-
     public void addLaser(CatLaser laser)
     {
         this.laser = laser;
     }
-
     public void process()
     {
-
         // Animation
         stateTime += Gdx.graphics.getDeltaTime();
 
@@ -122,23 +117,19 @@ public class Player extends Empty implements PhysicsObject {
         } else {
             currentAnimation = idleAnimation;
         }
-
         if (TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(lastInputTime)) > 5000 && !isSleeping && !inTransition) {
             isSleeping = true;
             inTransition = true;
             transitionBeginTime = TimeUtils.nanoTime();
             transitionState = 0;
         }
-
         if (TimeUtils.nanosToMillis(TimeUtils.timeSinceNanos(lastInputTime)) < 5000 && isSleeping && !inTransition) {
             isSleeping = false;
             inTransition = true;
             transitionBeginTime = TimeUtils.nanoTime();
             transitionState = 0;
         }
-
         sprite = new Sprite(currentAnimation.getKeyFrame(stateTime));
-
         if (inTransition) {
             if (isSleeping) {
                 transitionAnimation.setPlayMode(Animation.PlayMode.NORMAL);
@@ -151,13 +142,9 @@ public class Player extends Empty implements PhysicsObject {
             sprite = new Sprite(currentAnimation.getKeyFrame(transitionState));
             transitionState += Gdx.graphics.getDeltaTime();
         }
-
-
         if(direction.x > 0) {
             sprite.flip(true, false);
         }
-
-
         sfxVolume = OptionsScreen.getSFXVolume();
 
         if (Gdx.input.isKeyJustPressed(controlScheme[6]))
@@ -186,14 +173,12 @@ public class Player extends Empty implements PhysicsObject {
             if (isMainPlayer) laser.rotateRight();
         }
     }
-
     public void render(SpriteBatch batch)
     {
         batch.setColor(OptionsScreen.getSelectedColor());
         batch.draw(sprite, x - 10, y , WIDTH, HEIGHT);
         batch.setColor(Color.WHITE);
     }
-
     public void move()
     {
         if (!velocity.isZero()) {
@@ -203,10 +188,9 @@ public class Player extends Empty implements PhysicsObject {
         x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
         y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
     }
-
     public JSONObject getIdentifiers()
     {
-        // Fuck libgdx's json library I'm changing it to org.json ~brtcrt
+        // Instead of libgdx's json library I'm using org.json ~brtcrt
         JSONObject json = new JSONObject();
         try {
             json.put("type", this.getClass().getName());
@@ -225,7 +209,6 @@ public class Player extends Empty implements PhysicsObject {
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json)
     {
         try {
@@ -243,13 +226,10 @@ public class Player extends Empty implements PhysicsObject {
         }
 
     }
-
     public boolean is_walking()
     {
         return !velocity.isZero();
     }
-
-
     public void destroy()
     {
         animationSheet.dispose();
@@ -258,17 +238,14 @@ public class Player extends Empty implements PhysicsObject {
     public static void setControlScheme(int[] keybinds) {
         controlScheme = keybinds;
     }
-
     @Override
     public boolean isStatic() {
         return false;
     }
-
     @Override
     public boolean canCollide() {
         return true;
     }
-
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         // Movement
@@ -306,11 +283,9 @@ public class Player extends Empty implements PhysicsObject {
         velocity.nor();
         move();
     }
-
     public boolean getIsReflective(){
         return this.isReflective;
     }
-
     public void setIsReflective(boolean b){
         this.isReflective = b;
     }

@@ -8,7 +8,8 @@ import com.badlogic.gdx.math.Vector2;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class TestObject extends Empty implements GameObject, Activatable{
+public class TestObject extends Empty implements GameObject, Activatable {
+
     private Texture imageOpen;
     private Texture imageClosed;
     private Sprite sprite;
@@ -29,28 +30,22 @@ public class TestObject extends Empty implements GameObject, Activatable{
             sprite = new Sprite(imageClosed);
         }
     }
-
     @Override
     public void activate() {
         this.isActive = true;
     }
-
     @Override
     public void deactivate() {
         this.isActive = false;
     }
-
-    public void render(SpriteBatch batch){
+    public void render(SpriteBatch batch) {
         batch.draw(sprite, x, y , width, height);
     }
-
-    public void destroy(){
+    public void destroy() {
         imageOpen.dispose();
         imageClosed.dispose();
     }
-
-
-    public JSONObject getIdentifiers(){
+    public JSONObject getIdentifiers() {
         JSONObject json = new JSONObject();
         try {
             json.put("x", x);
@@ -60,8 +55,7 @@ public class TestObject extends Empty implements GameObject, Activatable{
         }
         return json;
     }
-
-    public void setIdentifiers(JSONObject json){
+    public void setIdentifiers(JSONObject json) {
         try {
             x = (float)json.getDouble("x");
             y = (float)json.getDouble("y");
@@ -69,7 +63,6 @@ public class TestObject extends Empty implements GameObject, Activatable{
             System.out.println(e);
         }
     }
-
     @Override
     public int getActivationCount() {
         return 0;

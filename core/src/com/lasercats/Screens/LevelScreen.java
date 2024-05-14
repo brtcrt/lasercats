@@ -38,7 +38,6 @@ public class LevelScreen extends LaserCatsScreen {
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
-		// OK this is incredibly retarded. I'm actually going to kill myself. ~brtcrt
         physicsObjects = client.physicsObjects;
 		String creatorID = client.getRoom().getPlayerIDs()[0];
 		Player lasercat;
@@ -54,7 +53,6 @@ public class LevelScreen extends LaserCatsScreen {
 		((Player) gameObjects.get(reflectable)).setIsReflective(true);
 		Laser cl = new CatLaser(lasercat, genericViewport, physicsObjects);
 		gameObjects.add(cl);
-		// Create the empty tiles ArrayList here and fill it up later
 		tiles = new ArrayList<Tile>();
         renderQueue = new ArrayList<GameObject>(gameObjects);
 		dataToServer = new JSONObject();
@@ -82,7 +80,6 @@ public class LevelScreen extends LaserCatsScreen {
 		client.sendUpdate(dataToServer);
 
 		ScreenUtils.clear(1, 1, 1, 1);
-		// Ok wtf this might be the single worst piece of code I have ever written. jk I fucked up harder before. ~brtcrt
 		camera.position.x = gameObjects.get(0).getX();
 		camera.position.y = gameObjects.get(0).getY();
 		camera.update();

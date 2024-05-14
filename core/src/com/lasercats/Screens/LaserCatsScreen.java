@@ -11,9 +11,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public abstract class LaserCatsScreen implements Screen {
+
     protected OrthographicCamera camera;
     protected SpriteBatch batch;
-
     //We might need different types of viewports for different screens (or even multiple viewports for one screen). 
     //For this purpose, I think it is okay to have one viewport for every screen.
     protected Viewport genericViewport;

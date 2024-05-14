@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class Mirror extends Empty implements PhysicsObject {
+    
     private Texture image;
     private Sprite sprite;
 
@@ -20,20 +21,15 @@ public class Mirror extends Empty implements PhysicsObject {
         velocity = new Vector2();
         sprite = new Sprite(image);
     }
-
     public void process(){}
-
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {}
-
     public void render(SpriteBatch batch){
         batch.draw(sprite, x, y , width, height);
     }
-
     public void destroy(){
         image.dispose();
     }
-
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
@@ -48,7 +44,6 @@ public class Mirror extends Empty implements PhysicsObject {
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json){
         try {
             x = (float)json.getDouble("x");
@@ -60,15 +55,12 @@ public class Mirror extends Empty implements PhysicsObject {
             System.out.println(e);
         }
     }
-
     @Override
     public boolean isStatic() {
         return true;
     }
-
     @Override
     public boolean canCollide() {
         return true;
     }
 }
-

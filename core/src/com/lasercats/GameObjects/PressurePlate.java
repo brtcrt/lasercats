@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class PressurePlate extends Empty implements Detector, PhysicsObject {
+
     private Texture image;
     private Texture imagePressed;
     private Sprite sprite;
@@ -32,7 +33,6 @@ public class PressurePlate extends Empty implements Detector, PhysicsObject {
         this(x, y, width, height);
         setActivatables(activatables);
     }
-
     public PressurePlate(float x, float y, float width, float height, Activatable a){
         this(x,y,width,height, new ArrayList<Activatable>());
         ArrayList<Activatable> arr = new ArrayList<Activatable>();
@@ -43,7 +43,6 @@ public class PressurePlate extends Empty implements Detector, PhysicsObject {
         this(x,y,width,height, new ArrayList<Activatable>());
         this.activatables = new ArrayList<>();
     }
-
     public void process(){
         for (Activatable a : activatables) {
             if (isTriggered) {
@@ -55,7 +54,6 @@ public class PressurePlate extends Empty implements Detector, PhysicsObject {
             }
         }
     }
-
     @Override
     public void setActivatables(ArrayList<Activatable> activatables) {
         this.activatables = activatables;
@@ -97,17 +95,13 @@ public class PressurePlate extends Empty implements Detector, PhysicsObject {
     public boolean isStatic() {
         return true;
     }
-
     public void render(SpriteBatch batch){
         batch.draw(sprite, x, y , width, height);
     }
-
     public void destroy(){
         imagePressed.dispose();
         image.dispose();
     }
-
-
     public JSONObject getIdentifiers(){
         JSONObject json = new JSONObject();
         try {
@@ -123,7 +117,6 @@ public class PressurePlate extends Empty implements Detector, PhysicsObject {
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json){
         try {
             x = (float)json.getDouble("x");
@@ -139,12 +132,10 @@ public class PressurePlate extends Empty implements Detector, PhysicsObject {
             System.out.println(e);
         }
     }
-
     @Override
     public boolean isTriggered() {
         return isTriggered;
     }
-
     @Override
     public boolean canCollide() {
         return false;

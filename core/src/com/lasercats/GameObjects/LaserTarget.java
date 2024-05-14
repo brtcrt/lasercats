@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class LaserTarget extends Empty implements Detector, PhysicsObject {
+
     private Texture image;
     private Sprite sprite;
     private ArrayList<Activatable> activatables;
@@ -27,9 +28,10 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
         this((float)x, (float)y, (float)width, (float)height);
     }
     public LaserTarget(float x, float y, float width, float height) {
+
         super(x, y, width, height);
         velocity = new Vector2();
-        image = new Texture(Gdx.files.internal("LaserTargetSheet2.png")); // I hand-drew this fucking monstrosity kill me ~brtcrt
+        image = new Texture(Gdx.files.internal("LaserTargetSheet2.png"));
         TextureRegion[][] tmp = TextureRegion.split(image, 32, 32);
         TextureRegion[] offFrames = tmp[0];
         TextureRegion[] onFrames = tmp[1];
@@ -51,8 +53,6 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
         arr.add(a);
         setActivatables(arr);
     }
-
-
     public void process(){
         state += Gdx.graphics.getDeltaTime();
         for (Activatable a : activatables) {
@@ -65,12 +65,10 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
             }
         }
     }
-
     @Override
     public void setActivatables(ArrayList<Activatable> activatables) {
         this.activatables = activatables;
     }
-
     @Override
     public void calculatePhysics(ArrayList<PhysicsObject> objects) {
         reset();
@@ -82,20 +80,16 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
             }
         }
     }
-
     @Override
     public boolean isStatic() {
         return true;
     }
-
-    public void render(SpriteBatch batch){
+    public void render(SpriteBatch batch) {
         batch.draw(sprite, x, y , width, height);
     }
-
-    public void destroy(){
+    public void destroy() {
         image.dispose();
     }
-
     @Override
     public void addActivatable(Activatable a) {
         for (Activatable activatable : activatables) {
@@ -121,7 +115,6 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
         }
         return json;
     }
-
     public void setIdentifiers(JSONObject json){
         try {
             x = (float)json.getDouble("x");
@@ -137,7 +130,6 @@ public class LaserTarget extends Empty implements Detector, PhysicsObject {
             System.out.println(e);
         }
     }
-
     @Override
     public boolean isTriggered() {
         return isTriggered;

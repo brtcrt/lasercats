@@ -2,7 +2,6 @@ package com.lasercats.Levels;
 
 import java.util.ArrayList;
 
-import com.badlogic.gdx.graphics.GL20;
 import com.lasercats.GameObjects.*;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,15 +38,14 @@ public class Level extends LaserCatsScreen {
         this.camera.setToOrtho(false, this.genericViewport.getScreenWidth(), this.genericViewport.getScreenHeight());
         this.root.setFillParent(true);
         gameObjects = client.getGameObjects();
-		// OK this is incredibly retarded. I'm actually going to kill myself. ~brtcrt
 		physicsObjects = client.physicsObjects;
 		String creatorID = client.getRoom().getPlayerIDs()[0];
 		Player lasercat;
-		if(this.client.getID().equals(creatorID)){
+		if (this.client.getID().equals(creatorID)) {
 			lasercat = (Player) gameObjects.get(0);
 			reflectable = 1;
 		}
-		else{
+		else {
 			lasercat = (Player) gameObjects.get(1);
 			reflectable = 0;
 		}
@@ -78,8 +76,6 @@ public class Level extends LaserCatsScreen {
     public void resume() {}
     @Override
     public void render(float delta) {
-		Gdx.gl20.glClearColor(0, 0, 0, 1);
-		Gdx.gl20.glClear(GL20.GL_COLOR_BUFFER_BIT);
         Gdx.input.setInputProcessor(stage);
         this.stage.act(delta);
         this.batch.setProjectionMatrix(this.genericViewport.getCamera().combined);
@@ -90,9 +86,7 @@ public class Level extends LaserCatsScreen {
 		for (GameObject object : gameObjects)
 		{
 			object.process();
-			// identifiers.add(object.getIdentifiers());
 		}
-
 		for (int i = 0; i < 3; i++) {
 			identifiers.add(gameObjects.get(i).getIdentifiers());
 		}
@@ -101,11 +95,9 @@ public class Level extends LaserCatsScreen {
 				identifiers.add(o.getIdentifiers());
 			}
 		}
-
 		createDataJSON(identifiers);
 		client.sendUpdate(dataToServer);
 
-		// Ok wtf this might be the single worst piece of code I have ever written. jk I fucked up harder before. ~brtcrt
 		camera.position.x = gameObjects.get(0).getX();
 		camera.position.y = gameObjects.get(0).getY();
 		if (gameObjects.get(0).getX() + ((Empty)gameObjects.get(0)).width > 1280) {
@@ -161,7 +153,7 @@ public class Level extends LaserCatsScreen {
 		client.close();
     }
     protected void calculatePhysics () {
-		// this is a dumb solution in O(n^2) but should be fine in our case.
+		// This is a suboptimal solution in O(n^2) but should be fine in our case.
 		for (int i = 0; i < physicsObjects.size(); i++) {
 			PhysicsObject o = physicsObjects.get(i);
 			ArrayList<PhysicsObject> passedObjects = new ArrayList<PhysicsObject>(physicsObjects);
@@ -176,7 +168,6 @@ public class Level extends LaserCatsScreen {
 			System.out.println(e);
 		}
 	}
-
 	public void setPlayerStarts() {
 		Player p1 = (Player) gameObjects.get(0);
 		Player p2 = (Player) gameObjects.get(1);
@@ -214,7 +205,18 @@ public class Level extends LaserCatsScreen {
 		}
 		return false;
 	}
-	protected void displayLevelEnding() {}
+	protected void displayLevelEnding() {
+		Player p1 = (Player) gameObjects.get(0);
+		Player p2 = (Player) gameObjects.get(1);
+		gameObjects.clear();
+		physicsObjects.clear();
+		gameObjects.add(p1);
+		gameObjects.add(p2);
+		physicsObjects.add(p1);
+		physicsObjects.add(p2);
+		client.gameObjects = gameObjects;
+		client.physicsObjects = physicsObjects;
+	}
 	protected Gate findExitGate() {
 		for (GameObject object : gameObjects) {
 			if (object instanceof Gate && ((Gate)object).getIsExitGate()) {

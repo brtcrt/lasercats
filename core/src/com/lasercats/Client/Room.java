@@ -53,20 +53,15 @@ public class Room {
             System.out.println(e);
         }
     }
-
     public String getId() {
         return id;
     }
-
     public String getName() {
         return name;
     }
-
     public String[] getPlayerIDs() {
         return playerIDs;
     }
-
-
     public boolean isEmpty() {
         return this.id.isEmpty();
     }
@@ -78,19 +73,15 @@ public class Room {
         }
         return count;
     }
-
     public JSONObject getJSON() {
         return this.json;
     }
-
     public boolean hasPassword() {
         return !this.passwordHash.isEmpty();
     }
-
     public String getPasswordHash() {
         return this.passwordHash;
     }
-
     @Override
     public String toString() {
         return this.name + " - " + getPlayerCount() + " Player(s)";
