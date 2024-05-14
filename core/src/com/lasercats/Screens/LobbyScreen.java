@@ -2,10 +2,6 @@ package com.lasercats.Screens;
 
 import java.util.ArrayList;
 
-import com.lasercats.Levels.Level1;
-import com.lasercats.Levels.Level2;
-import com.lasercats.Levels.Level3;
-
 import com.lasercats.Levels.LevelLoader;
 import org.json.JSONArray;
 import org.json.JSONException;

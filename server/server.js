@@ -82,8 +82,6 @@ io.on("connection", (socket) => {
       }
     }
     clients.push({"socketID": socket.id, "clientID": args["clientID"]});
-    console.log(args);
-    console.log(clients);
   });
   socket.on("getRooms", (args) => {
     socket.emit("updateRooms", { rooms: rooms });
@@ -133,7 +131,6 @@ io.on("connection", (socket) => {
   });
   socket.on("joinRoomReq", (args) => {
     const index = findRoom(rooms, args);
-    // console.log(`Request to join room: ${JSON.stringify(args)}`);
     if (index == -1) {
       // doesn't exist
       socket.emit("joinRoomRes", {
@@ -189,8 +186,6 @@ io.on("connection", (socket) => {
     }
   });
   socket.on("updateFromPlayer", (args) => {
-    // console.log(args);
-    // console.log(rooms);
     socket.to(args["roomId"]).emit("updateFromServer", args);
   });
   socket.on("disconnect", (reason) => {
@@ -203,7 +198,6 @@ io.on("connection", (socket) => {
         break;
       }
     }
-    console.log(clientID);
     const index = findByPlayerId(rooms, clientID);
     if (index > -1) {
       if (rooms[index].players.length < 2) {
@@ -215,7 +209,6 @@ io.on("connection", (socket) => {
     console.log("Player disconnected. Reason: " + reason);
   });
   socket.on("closeClient", (args) => {
-    console.log("close client");
     const index = findByPlayerId(rooms, args["clientID"]);
     if (index > -1) {
       if (rooms[index].players.length < 2) {

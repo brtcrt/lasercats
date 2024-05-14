@@ -86,11 +86,8 @@ public class OptionsScreen extends LaserCatsScreen {
         this.genericViewport.apply();
 
         processor = new KeybindProcessor();
-        //Using a multiplexer for handling inputs via this way is really dumb btw
-        //If you think about a better solution feel free to change this part
         multiplexer = new InputMultiplexer();
 
-        //We can change this part if you guys prefer to have a color changing system that has more options.
         this.furColors = new String[] {"White", "Red", "Green", "Blue"};
         this.stage = new Stage(genericViewport, batch);
         multiplexer.addProcessor(stage);
@@ -387,7 +384,6 @@ public class OptionsScreen extends LaserCatsScreen {
             this.button = button;
         }
     }
-    //Absolute garbage implementation, please change this.
     public static Color getSelectedColor() {
         if (selectedColor.equals("White")) {
             return Color.WHITE;
@@ -404,7 +400,7 @@ public class OptionsScreen extends LaserCatsScreen {
         return null;
     }
     private void loadKeybinds() {
-        // load from binary data
+        // Load from binary data
         keybindsBin = Gdx.files.local("bins/keybinds.bin");
         byte[] keybytes = keybindsBin.readBytes();
 
@@ -412,7 +408,6 @@ public class OptionsScreen extends LaserCatsScreen {
         for (int i = 0; i < keybinds.length; i++) {
             keybinds[i] = (int) keybytes[i];
         }
-        // This is fucking disgusting kill me ~brtcrt
         moveUpKeybind.setText(Input.Keys.toString(keybinds[0]));
         moveDownKeybind.setText(Input.Keys.toString(keybinds[1]));
         moveRightKeybind.setText(Input.Keys.toString(keybinds[2]));
