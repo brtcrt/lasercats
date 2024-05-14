@@ -8,7 +8,7 @@ import com.lasercats.Screens.LobbyScreen;
 
 public class LevelLoader extends Level {
 
-    private static final int FINAL_LEVEL_COUNT = 3;
+    private static final int FINAL_LEVEL_COUNT = 4;
     private int levelCount;
 
     public LevelLoader(Game game, Client client, LobbyScreen lobbyScreen, int levelCount) {
