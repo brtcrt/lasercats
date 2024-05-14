@@ -21,11 +21,12 @@ public class Laser implements GameObject {
     final private static int MAX_REFLECTIONS = 10;
     protected float x1, y1;
 
+    public boolean isFiring;
     private Vector2 velocity, initialDirection;
 //    protected ArrayList<Vector2> vertices;
 //    protected CopyOnWriteArrayList<Vector2> vertices;
     protected Array<Vector2> vertices;
-    private ShapeRenderer debugRenderer = new ShapeRenderer();
+    protected ShapeRenderer debugRenderer = new ShapeRenderer();
     public Viewport viewport;
     public ArrayList<PhysicsObject> physicsObjects;
 
@@ -34,6 +35,7 @@ public class Laser implements GameObject {
 
     public Laser(float x, float y, Vector2 direction, Viewport viewport, ArrayList<PhysicsObject> physicsObjects)
     {
+        this.isFiring = true;
         this.initialDirection = direction;
         this.initialDirection.nor();
         this.viewport = viewport;
@@ -194,6 +196,7 @@ public class Laser implements GameObject {
             json.put("y", y1);
             // json.put("vertices", arr);
             json.put("initialDirection",dir);
+            json.put("isFiring", isFiring);
         }
         catch (JSONException e) {
             System.out.println(e);
@@ -220,6 +223,7 @@ public class Laser implements GameObject {
             Double y = json.getDouble("y");
             x1 = x.floatValue();
             y1 = y.floatValue();
+            isFiring = json.getBoolean("isFiring");
 
         }
         catch (JSONException e) {
@@ -230,7 +234,9 @@ public class Laser implements GameObject {
 
     @Override
     public void render(SpriteBatch batch) {
+        if (!isFiring) return;
         batch.end();
+        debugRenderer.flush();
         debugRenderer.setProjectionMatrix(viewport.getCamera().combined);
         debugRenderer.begin(ShapeRenderer.ShapeType.Line);
         debugRenderer.setColor(Color.RED);
