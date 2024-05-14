@@ -12,11 +12,13 @@ public class CatLaser extends Laser {
     {
         super(player.getX(), player.getY(),new Vector2(1,1), viewport, physicsObjects);
         this.player = player;
+        this.isFiring = false;
         addObjectToIgnore(player, true);
         player.addLaser(this);
     }
     @Override
     public void process() {
+        if (!isFiring) return;
         x1 = player.x + player.width - player.width/12;
         y1 = player.y + player.height + player.height;
         if (player.direction.x < 0)

@@ -25,6 +25,8 @@ const io = new Server(8080, {
   },
 });
 
+console.log("Server started. Listening on port 8080.")
+
 let clients = [
   {
     socketID: 22222,
@@ -40,13 +42,13 @@ let rooms = [
   {
     roomId: uuid.v4(),
     roomName: "a",
-    players: [22222],
+    players: ["acasda-123asd-12asd-df3412"],
     passwordHash: "",
   },
   {
     roomId: uuid.v4(),
     roomName: "b",
-    players: [312323],
+    players: ["asdasx-xaswd-sdfgsd-df3412"],
     passwordHash:
       "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", // hash of abc
   },
@@ -197,9 +199,11 @@ io.on("connection", (socket) => {
     for (let i = 0; i < clients.length; i++) {
       if (clients[i].socketID == socket.id) {
         clientID = clients[i].clientID;
-        return;
+        clients.splice(i, 1);
+        break;
       }
     }
+    console.log(clientID);
     const index = findByPlayerId(rooms, clientID);
     if (index > -1) {
       if (rooms[index].players.length < 2) {
@@ -211,6 +215,7 @@ io.on("connection", (socket) => {
     console.log("Player disconnected. Reason: " + reason);
   });
   socket.on("closeClient", (args) => {
+    console.log("close client");
     const index = findByPlayerId(rooms, args["clientID"]);
     if (index > -1) {
       if (rooms[index].players.length < 2) {

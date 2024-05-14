@@ -48,7 +48,7 @@ public class Player extends Empty implements PhysicsObject {
     protected float stateTime;
     public Vector2 direction;
     public static int[] controlScheme;
-
+    protected boolean isFiring = false;
     private float sfxVolume;
 
     public Player (float x, float y, float width, float height, boolean isMainPlayer) {
@@ -170,7 +170,16 @@ public class Player extends Empty implements PhysicsObject {
 
         if (Gdx.input.isKeyJustPressed(controlScheme[5]))
         {
-            if (isMainPlayer) laser.rotateRight();
+            if (!isReflective && isMainPlayer) laser.rotateRight();
+        }
+
+        if (!isReflective && isMainPlayer) {
+            laser.isFiring = false;
+        }
+        if (Gdx.input.isKeyPressed(controlScheme[4])) {
+            if (!isReflective && isMainPlayer) {
+                laser.isFiring = true;
+            }
         }
     }
     public void render(SpriteBatch batch)
@@ -203,6 +212,7 @@ public class Player extends Empty implements PhysicsObject {
             json.put("meow", isMeow);
             json.put("meowOrange", isMeowOrange);
             json.put("id", getID());
+            json.put("isFiring", isFiring);
             isMeow = false;
         } catch (JSONException e) {
             System.out.println(e);
@@ -221,6 +231,7 @@ public class Player extends Empty implements PhysicsObject {
             isMeow = (boolean)json.getBoolean("meow");
             isMeowOrange = (boolean)json.getBoolean("meowOrange");
             this.ID = json.getString("id");
+            isFiring = json.getBoolean("isFiring");
         } catch (JSONException e) {
             System.out.println(e);
         }
