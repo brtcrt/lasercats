@@ -237,8 +237,6 @@ public class OptionsScreen extends LaserCatsScreen {
 
         stage.setRoot(root);
     }
-    //In terms of the font of actors of the display table, they look fine on 1024 x 720 on base scaling, but look small on higher resolutions.
-    //These labels especially look blurry in higher font scaling though.
     private void positionAudioOptions() {
         displayTable.clear();
         displayTable.add(sfxLabel).expandX().align(Align.left);

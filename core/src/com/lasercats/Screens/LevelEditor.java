@@ -116,8 +116,6 @@ public class LevelEditor extends LaserCatsScreen {
         multiplexer = new InputMultiplexer();
         multiplexer.addProcessor(stage);
 
-//        genericViewport = new ExtendViewport(1024, 720, camera);
-//        genericViewport.apply();
         gameObjects = new ArrayList<>();
         tiles = new ArrayList<Tile>();
         fillTiles(tiles);
@@ -528,7 +526,6 @@ public class LevelEditor extends LaserCatsScreen {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (pressurePlateButton.isPressed()) {
-                    //Same here.
                     GameObject pressurePlate = new PressurePlate(Gdx.input.getX()/tileSize, Gdx.input.getY()/tileSize, tileSize, tileSize, new ArrayList<Activatable>());
                     holding = pressurePlate;
                 }
@@ -561,7 +558,7 @@ public class LevelEditor extends LaserCatsScreen {
                 }
             }
         });
-        //The reason we are not using anonymous listeners here is that you can't remove them later becuase
+        //The reason we are not using anonymous listeners here is that you can't remove them later because
         //you don't have a reference to them.
         entranceGateOneButton.addListener(entranceGateOneButtonListener);
         entranceGateTwoButton.addListener(entranceGateTwoButtonListener);
