@@ -41,9 +41,9 @@ public class Player extends Empty implements PhysicsObject {
 
     public Laser laser;
 
-    protected final float walkSpeed = 150f;
-    protected final float idlePeriod = 0.5f;
-    protected final float walkPeriod = 0.14f;
+    protected final float WALK_SPEED = 150f;
+    protected final float IDLE_PERIOD = 0.5f;
+    protected final float WALK_PERIOD = 0.14f;
     private final static float WIDTH = 64 , HEIGHT = 64;
     protected float stateTime;
     public Vector2 direction;
@@ -81,12 +81,12 @@ public class Player extends Empty implements PhysicsObject {
         transitionFrames[2] = tmp[2][2];
         transitionFrames[3] = tmp[2][3];
 
-        idleAnimation = new Animation<TextureRegion>(idlePeriod, idleFrames);
+        idleAnimation = new Animation<TextureRegion>(IDLE_PERIOD, idleFrames);
         idleAnimation.setPlayMode(Animation.PlayMode.LOOP);
-        walkAnimation = new Animation<TextureRegion>(walkPeriod, walkFrames);
+        walkAnimation = new Animation<TextureRegion>(WALK_PERIOD, walkFrames);
         walkAnimation.setPlayMode(Animation.PlayMode.LOOP);
         transitionAnimation = new Animation<TextureRegion>(0.2f, transitionFrames);
-        sleepAnimation = new Animation<TextureRegion>(idlePeriod, sleepFrames);
+        sleepAnimation = new Animation<TextureRegion>(IDLE_PERIOD, sleepFrames);
         sleepAnimation.setPlayMode(Animation.PlayMode.LOOP);
         currentAnimation = sleepAnimation;
 
@@ -112,7 +112,7 @@ public class Player extends Empty implements PhysicsObject {
 
         if (isSleeping) {
             currentAnimation = sleepAnimation;
-        } else if (is_walking()) {
+        } else if (isWalking()) {
             currentAnimation = walkAnimation;
         } else {
             currentAnimation = idleAnimation;
@@ -194,8 +194,8 @@ public class Player extends Empty implements PhysicsObject {
             lastInputTime = TimeUtils.nanoTime();
         }
         if (inTransition) return;
-        x += velocity.x * walkSpeed * Gdx.graphics.getDeltaTime();
-        y += velocity.y * walkSpeed * Gdx.graphics.getDeltaTime();
+        x += velocity.x * WALK_SPEED * Gdx.graphics.getDeltaTime();
+        y += velocity.y * WALK_SPEED * Gdx.graphics.getDeltaTime();
     }
     public JSONObject getIdentifiers()
     {
@@ -237,7 +237,7 @@ public class Player extends Empty implements PhysicsObject {
         }
 
     }
-    public boolean is_walking()
+    public boolean isWalking()
     {
         return !velocity.isZero();
     }

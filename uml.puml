@@ -214,9 +214,9 @@ class Player extends Empty implements PhysicsObject {
     private boolean isMeowOrange = false;
     private boolean isReflective = false;
     public Laser laser;
-    protected final float walkSpeed = 150f;
-    protected final float idlePeriod = 0.5f;
-    protected final float walkPeriod = 0.14f;
+    protected final float WALK_SPEED = 150f;
+    protected final float IDLE_PERIOD = 0.5f;
+    protected final float WALK_PERIOD = 0.14f;
     private final static float WIDTH = 64 , HEIGHT = 64;
     protected float stateTime;
     public Vector2 direction;
@@ -230,7 +230,7 @@ class Player extends Empty implements PhysicsObject {
     public void render(SpriteBatch batch)oid move()
     public JSONObject getIdentifiers()
     public void setIdentifiers(JSONObject json)
-    public boolean is_walking()
+    public boolean isWalking()
     public void destroy()
     public static void setControlScheme(int[] keybinds)
     public boolean isStatic()
