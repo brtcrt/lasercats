@@ -1,0 +1,28 @@
+11-17/03/2024 (10 hours)
+	• Started implementing screens (a prototype of the main menu is done) and learning Scene2D.ui library for the project
+	• Requirements Stage Presentation
+18-24/03/2024
+	• CS Midterm therefore no significant progress was made
+25-31/03/2024  (5 hours)
+	• Cleaned up/refactored some of the code to make the code compatible with screen transitions
+01-07/04/2024 (6-8 hours)
+	• Started implementing options part of the game
+	• Worked heavily on the UI stage presentation and report
+08-14/04/2024 (20 hours)
+	• Options part of the game is completed with serialization of all options
+	• Refactored code to work better with screen transitions
+	• Started finding proper assets for the UI and replacing the older placeholder assets
+	• Completed majority of the code for the tutorials part of the game
+22-28/04/2024 (3-5 hours)
+	• Worked on the initial design report
+29-05/05/2024 (10-12 hours)
+	• Finalized UI of most screens with proper assets and improved functionality.
+	• Designed a few levels.
+06-12/05/2024 (20 hours)
+	• Bug fixing
+	• Level editor implementation and slight modifications to level elements to make them compatible with level editor
+13/05/2024-18/05/2024 (20 hours)
+	• Bug fixing
+	• Level finalization
+	• Cleaning up the github repository and project code
+	• Demo presentation and preperation, design report v2
