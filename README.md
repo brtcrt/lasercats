@@ -27,5 +27,8 @@ JDK Version 11 or higher.
    ```sh
    git clone https://github.com/brtcrt/lasercats.git
    ```
-   
+2. Use you IDE's build tool or the terminal to build the gradle project from the desktop/build.gradle file.
+
+OR 
+
 2. Follow the directions given in [https://libgdx.com/wiki/start/import-and-running] for importing and running a libGDX project. 
