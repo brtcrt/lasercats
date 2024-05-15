@@ -27,7 +27,7 @@ JDK Version 11 or higher.
    ```sh
    git clone https://github.com/brtcrt/lasercats.git
    ```
-2. Use you IDE's import feature or the terminal to build the gradle project from the desktop/build.gradle (desktop/build.gradle) file.
+2. Use you IDE's import feature or the terminal to build the gradle project from the desktop/build.gradle [a link](desktop/build.gradle) file.
 
 3. Run the project using the gradle run task under desktop/other.
 
