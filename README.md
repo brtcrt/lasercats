@@ -6,6 +6,7 @@
   </a>
 
 <h3 align="center">Laser Cats</h3>
+</div>
 
 
 <!-- ABOUT THE PROJECT -->
