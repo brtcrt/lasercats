@@ -2,7 +2,6 @@ package com.lasercats.Levels;
 
 import com.badlogic.gdx.Game;
 import com.lasercats.Client.Client;
-import com.lasercats.GameObjects.Player;
 import com.lasercats.Screens.LevelEditor;
 import com.lasercats.Screens.LobbyScreen;
 
