@@ -27,4 +27,4 @@ JDK Version 11 or higher.
    git clone https://github.com/brtcrt/lasercats.git
    ```
    
-3. Follow the directions given in [https://libgdx.com/wiki/start/import-and-running] for importing and running a libGDX project. 
+2. Follow the directions given in [https://libgdx.com/wiki/start/import-and-running] for importing and running a libGDX project. 
