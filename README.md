@@ -11,9 +11,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-Laser Cats is a 2D, two-player, tile-based, desktop puzzle game where players will play as two cats, one with laser shooting capabilities, the other with laser reflecting capabilities, to solve a variety of puzzles.
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
-
+Laser Cats is a 2D, two-player, tile-based, desktop puzzle game where the players control two cats, one that shoots lasers and one that reflects them. The players will work together to solve levels and progress.
 
 
 ### Built With
