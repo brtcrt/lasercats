@@ -17,12 +17,12 @@ Laser Cats is a 2D, two-player, tile-based, desktop puzzle game where the player
 
 ### Prerequisites
 
-JDK Version 11 or higher.
+JDK Version 11 or higher
 
 
 ### Installation and Running
 
-1. Clone the repo
+1. Clone the repo.
 
    ```sh
    git clone https://github.com/brtcrt/lasercats.git
@@ -33,4 +33,4 @@ JDK Version 11 or higher.
 
 OR 
 
-2. Follow the directions given in [https://libgdx.com/wiki/start/import-and-running] for importing and running a libGDX project. 
+2. Follow the directions given in [https://libgdx.com/wiki/start/import-and-running] for importing and running a libGDX project.
