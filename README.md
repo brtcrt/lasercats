@@ -20,17 +20,21 @@ Laser Cats is a 2D, two-player, tile-based, desktop puzzle game where the player
 JDK Version 11 or higher
 
 
-### Installation and Running
+### Installation and Running via Source Code
 
 1. Clone the repo.
 
    ```sh
    git clone https://github.com/brtcrt/lasercats.git
    ```
-2. Use you IDE's import feature or the terminal to build the gradle project from the [build.gradle](desktop/build.gradle) file.
+2. Use your IDE's import feature or the terminal to build the gradle project from the [build.gradle](desktop/build.gradle) file.
 
 3. Run the project using the gradle run task from lasercats/Tasks/other.
 
 OR 
 
-2. Follow the directions given in [https://libgdx.com/wiki/start/import-and-running] for importing and running a libGDX project.
+2. Follow the directions given in [libgdx's importing and running page](https://libgdx.com/wiki/start/import-and-running) for importing and running a libGDX project.
+
+### Installation and Running via Executable
+1. Head over to [releases](https://github.com/brtcrt/lasercats/releases/tag/Alpha) and follow the instructions there.
+2. In order to run from the .jar file, you'll need a JRE. Tested using `OpenJDK Runtime Environment Temurin-21.0.1+12 (build 21.0.1+12-LTS)`
